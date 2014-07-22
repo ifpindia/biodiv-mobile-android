@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@color/bg_color">
     <EditText android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,5 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="@string/register"/>
+        android:text="@string/register"
+        android:textStyle="bold"
+        android:textColor="@color/bg_color"
+        android:background="@drawable/app_btn"/>
 </LinearLayout>

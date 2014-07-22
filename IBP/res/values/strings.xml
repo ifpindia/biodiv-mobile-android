@@ -12,8 +12,17 @@
 	<string name="or">Or</string>
 	<string name="login_with_facebook">Login with Facebook</string>
 	<string name="login_with_twitter">Login with Twitter</string>
-	<string name="forgot_password">Forgot Password</string>
+	<string name="forgot_password">Forgot Password?</string>
 	<string name="register">Register</string>
 	<string name="msg_term_conditions">By registering you agree to our &lt;a href="http://indiabiodiversity.org/terms"&gt; Terms &amp; Conditions &lt;/a&gt;</string>
 	
+	<string name="error_unknown_error">Sorry, unknown error occurred. Please try again!</string>
+	<string name="not_connected_text">Web: Connection Problem. Try again</string>
+	<string name="error_uncaught">Sorry, there was an unexpected error.</string>
+	<string name="error">Error</string>
+	<string name="resend_email">Resend Email</string>
+	<string name="cancel">Cancel</string>
+	<string name="ok">Ok</string>
+	<string name="loading">Loading..</string>
+	<string name="alert">Alert</string>
 </resources>
