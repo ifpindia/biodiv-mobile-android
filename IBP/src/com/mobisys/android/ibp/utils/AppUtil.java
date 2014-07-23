@@ -3,16 +3,32 @@ package com.mobisys.android.ibp.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.mobisys.android.ibp.R;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.TypedValue;
 
 public class AppUtil {
 
+	public static int getDipValue(int param, Context context){
+    	return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, param, context.getResources().getDisplayMetrics());
+    }
+	
 	public static String parseErrorResponse(Context context, String content, Throwable e){
-		return "Error occured";
+		try {
+			JSONObject jobj=new JSONObject(content);
+			//String error=jobj.optString("error");
+			String message=jobj.optString("message");
+			return message;
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return "Error occured ";
+		}
 	}
 	
 	public static boolean emailValidator(String email){

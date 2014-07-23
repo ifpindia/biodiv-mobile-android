@@ -53,8 +53,8 @@ public class RegisterActivity extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				//validateRegisterDetails();
-				showConfirmationScreen("Welcome user Devaki. A verification link has been sent to devaki.anugu@gmail.com. Please click on the verification link in the email to activate your account.");
+				validateRegisterDetails();
+				//showConfirmationScreen("Welcome user Devaki. A verification link has been sent to devaki.anugu@gmail.com. Please click on the verification link in the email to activate your account.");
 			}
 		});
 	}
@@ -118,7 +118,7 @@ public class RegisterActivity extends ActionBarActivity {
 		try {
 			JSONObject jobj=new JSONObject(response);
 			boolean success=jobj.optBoolean("success");
-			String message=jobj.optString("message");
+			String message=jobj.optString("msg");
 			
 			if(mPg!=null && mPg.isShowing()) mPg.dismiss();
 			

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="fb_app_id">681570278574753</string>
 
     <string name="app_name">IBP</string>
     <string name="email">Email</string>
@@ -25,4 +26,6 @@
 	<string name="ok">Ok</string>
 	<string name="loading">Loading..</string>
 	<string name="alert">Alert</string>
+	<string name="home">Home</string>
+	
 </resources>

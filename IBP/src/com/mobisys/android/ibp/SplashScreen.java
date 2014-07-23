@@ -57,12 +57,18 @@ public class SplashScreen extends Activity{
 	}
 
 	protected void startApp() {
-		String user_key = SharedPreferencesUtil.getSharedPreferencesString(getApplicationContext(), Request.HEADER_AUTH_KEY, null);
-		if(user_key==null){
+	    String token=SharedPreferencesUtil.getSharedPreferencesString(SplashScreen.this, Constants.APP_TOKEN, null);
+		if(token==null){
 			Intent i=new Intent(SplashScreen.this, LoginActivity.class);
 			startActivity(i);
 		}
 		else{
+			showHomeActivity();
 		}
+	}
+	
+	private void showHomeActivity() {
+		Intent i=new Intent(SplashScreen.this, HomeActivity.class);
+		startActivity(i);
 	}
 }

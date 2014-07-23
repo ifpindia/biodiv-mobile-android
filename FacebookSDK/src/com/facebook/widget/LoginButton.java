@@ -207,25 +207,25 @@ public class LoginButton extends Button {
             // so in case the users do not explicitly specify a style, we need
             // to use sensible defaults.
             this.setGravity(Gravity.CENTER);
-            this.setTextColor(getResources().getColor(R.color.com_facebook_loginview_text_color));
-            this.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimension(R.dimen.com_facebook_loginview_text_size));
-            this.setTypeface(Typeface.DEFAULT_BOLD);
+           // this.setTextColor(getResources().getColor(R.color.com_facebook_loginview_text_color));
+           // this.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+            //        getResources().getDimension(R.dimen.com_facebook_loginview_text_size));
+            //this.setTypeface(Typeface.DEFAULT_BOLD);
             if (isInEditMode()) {
                 // cannot use a drawable in edit mode, so setting the background color instead
                 // of a background resource.
-                this.setBackgroundColor(getResources().getColor(R.color.com_facebook_blue));
+                //this.setBackgroundColor(getResources().getColor(R.color.com_facebook_blue));
                 // hardcoding in edit mode as getResources().getString() doesn't seem to work in IntelliJ
-                loginText = "Log in with Facebook";
+               // loginText = "Log in with Facebook";
             } else {
-                this.setBackgroundResource(R.drawable.com_facebook_button_blue);
-                this.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_inverse_icon, 0, 0, 0);
+                this.setBackgroundResource(R.drawable.facebook);
+               /* this.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_inverse_icon, 0, 0, 0);
                 this.setCompoundDrawablePadding(
                         getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_compound_drawable_padding));
                 this.setPadding(getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_padding_left),
                         getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_padding_top),
                         getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_padding_right),
-                        getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_padding_bottom));
+                        getResources().getDimensionPixelSize(R.dimen.com_facebook_loginview_padding_bottom));*/
             }
         }
         parseAttributes(attrs);
@@ -589,11 +589,11 @@ public class LoginButton extends Button {
 
     private void setButtonText() {
         if (sessionTracker != null && sessionTracker.getOpenSession() != null) {
-            setText((logoutText != null) ? logoutText :
-                    getResources().getString(R.string.com_facebook_loginview_log_out_button));
+           /* setText((logoutText != null) ? logoutText :
+                    getResources().getString(R.string.com_facebook_loginview_log_out_button));*/
         } else {
-            setText((loginText != null) ? loginText :
-                    getResources().getString(R.string.com_facebook_loginview_log_in_button));
+            /*setText((loginText != null) ? loginText :
+                    getResources().getString(R.string.com_facebook_loginview_log_in_button));*/
         }
     }
 
