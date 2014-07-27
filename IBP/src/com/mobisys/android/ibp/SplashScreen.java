@@ -3,7 +3,6 @@ package com.mobisys.android.ibp;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 import android.app.Activity;

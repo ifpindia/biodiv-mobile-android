@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.mobisys.android.ibp.Constants;
 import com.mobisys.android.ibp.R;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
@@ -58,10 +59,10 @@ public class WebService {
 			client.get(url, asyncHandler);
 		}
 		else if(Request.METHOD_POST.equals(methodString)){
-			/*if(!actionString.contains(Request.PATH_LOGIN)){
-				String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
-				if(user_key!=null) client.addHeader(Request.HEADER_AUTH_KEY, user_key);
-			}*/
+			if(actionString.contains(Request.PATH_LOGOUT)){
+				String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
+				if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
+			}
 			String url = HttpUtils.getUri(actionString, (Bundle) null).toString();
 			Log.d(TAG, url);
 			if(paramsBundle!=null) Log.d(TAG, "Params: "+paramsBundle.toString());

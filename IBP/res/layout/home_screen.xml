@@ -2,6 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_color">
-
+    android:background="@color/bg_color"
+    android:gravity="center|center_horizontal">
+	<Button android:id="@+id/btn_new_observation"
+        android:layout_width="140dp"
+        android:layout_height="100dp"
+        android:textColor="@color/bg_color"
+        android:text="@string/new_observation"
+        android:textStyle="bold"
+        android:background="@drawable/app_btn"/>
+	<Button android:id="@+id/btn_browse_observation"
+        android:layout_width="140dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/btn_new_observation"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/bg_color"
+        android:text="@string/browse_obesrvation"
+        android:textStyle="bold"
+        android:background="@drawable/app_btn"/>
 </RelativeLayout>

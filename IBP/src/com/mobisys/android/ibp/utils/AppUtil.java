@@ -11,6 +11,11 @@ import com.mobisys.android.ibp.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.TypedValue;
 
 public class AppUtil {
@@ -29,6 +34,12 @@ public class AppUtil {
 			e1.printStackTrace();
 			return "Error occured ";
 		}
+	}
+	
+	public static boolean isNetworkAvailable(Context context) {
+	    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 	
 	public static boolean emailValidator(String email){
@@ -65,6 +76,17 @@ public class AppUtil {
 			}
 		});
 		builder.show();
+	}
+
+	public static Drawable getPressedStateDrawable(Context context){
+		StateListDrawable states = new StateListDrawable();
+		states.addState(new int[] {android.R.attr.state_pressed},
+				context.getResources().getDrawable(R.color.orange_color));
+		states.addState(new int[] {android.R.attr.state_focused},
+				context.getResources().getDrawable(R.color.orange_color));
+		states.addState(new int[] { },new ColorDrawable(0));
+
+		return states;
 	}
 	
 }

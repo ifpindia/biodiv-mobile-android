@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="fb_app_id">681570278574753</string>
-
+	<string name="wait_fetch_location">Please wait while we fetch location..</string>
     <string name="app_name">IBP</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -16,7 +16,7 @@
 	<string name="forgot_password">Forgot Password?</string>
 	<string name="register">Register</string>
 	<string name="msg_term_conditions">By registering you agree to our &lt;a href="http://indiabiodiversity.org/terms"&gt; Terms &amp; Conditions &lt;/a&gt;</string>
-	
+	<string name="no_connection">Please make sure you are connected to the Internet.</string>
 	<string name="error_unknown_error">Sorry, unknown error occurred. Please try again!</string>
 	<string name="not_connected_text">Web: Connection Problem. Try again</string>
 	<string name="error_uncaught">Sorry, there was an unexpected error.</string>
@@ -27,5 +27,17 @@
 	<string name="loading">Loading..</string>
 	<string name="alert">Alert</string>
 	<string name="home">Home</string>
+	<string name="menu">Menu</string>
+	<string name="new_observation">New Observation</string>
+	<string name="what_s_near_me">What\'s near me</string>
+	<string name="my_collection">My Collection</string>
+	<string name="settings">Settings</string>
+	<string name="logout">Logout</string>
+	<string name="logging_out">Logging Out</string>
+	<string name="browse_obesrvation">Browse Obesrvation</string>
+	<string name="obeservations_near_me">Obeservations Near Me</string>
+	<string name="loading_species_group">Loading Species Group</string>
+	<string name="observations">Observations</string>
+	<string name="unknown">Unknown</string>
 	
 </resources>
