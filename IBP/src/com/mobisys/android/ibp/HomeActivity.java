@@ -63,6 +63,17 @@ public class HomeActivity extends BaseSlidingActivity{
 				}
 			}
 		});
+		
+		findViewById(R.id.btn_new_observation).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i=new Intent(HomeActivity.this, NewSightingActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				finish();
+			}
+		});
 	}
 
 	protected void showCategoryDialog() {

@@ -34,10 +34,25 @@
 	<string name="settings">Settings</string>
 	<string name="logout">Logout</string>
 	<string name="logging_out">Logging Out</string>
-	<string name="browse_obesrvation">Browse Obesrvation</string>
+	<string name="browse_obesrvation">Browse Observation</string>
 	<string name="obeservations_near_me">Obeservations Near Me</string>
 	<string name="loading_species_group">Loading Species Group</string>
 	<string name="observations">Observations</string>
 	<string name="unknown">Unknown</string>
+	<string name="new_sighting">New Sighting</string>
+	<string name="add_photos">Add Photos</string>
+	<string name="add_photo">Add Photo</string>
+	<string name="category">Category</string>
+	<string name="select_category">Select Category</string>
+	<string name="help_identify">Help Identify</string>
+	<string name="common_name">Common Name</string>
+	<string name="scientific_name">Scientific Name</string>
+	<string name="additional_comments">Additional comments</string>
+	<string name="date_sighted">Date Sighted</string>
+	<string name="submit">Submit</string>
+	<string name="pick_date">Pick Date</string>
+	<string name="gallery">Gallery</string>
+	<string name="camera">Camera</string>
+	<string name="select_from">Select from</string>
 	
 </resources>

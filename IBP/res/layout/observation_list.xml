@@ -8,6 +8,25 @@
         android:layout_height="fill_parent"
 		android:divider="@color/brown_color"
         android:dividerHeight="1dp"
-        android:cacheColorHint="@android:color/transparent">
- </ListView>
+        android:cacheColorHint="@android:color/transparent"/>
+    <LinearLayout android:id="@+id/more_loading_layout" 
+	    android:layout_width="fill_parent"
+	    android:layout_height="50dp"
+	    android:layout_alignParentBottom="true"
+	    android:gravity="center"
+	    android:orientation="horizontal"
+	    android:background="#40000000"
+	    android:visibility="gone">
+		<ProgressBar android:id="@+id/more_loading"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/android:progressBarStyleSmall"/>
+		
+		<TextView android:id="@+id/label_more_loading"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="8dp"
+		    android:textColor="@android:color/white"
+		    android:text="@string/loading"/>
+	</LinearLayout>
 </RelativeLayout>

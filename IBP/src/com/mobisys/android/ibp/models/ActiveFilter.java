@@ -1,6 +1,7 @@
 package com.mobisys.android.ibp.models;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,6 +10,8 @@ import android.os.Parcelable;
 public class ActiveFilter implements Parcelable{
 
 	private double lat;
+	@JsonProperty("long")
+	private double lng;
 	private int maxRadius;
 	
 	public ActiveFilter(){}
@@ -17,9 +20,10 @@ public class ActiveFilter implements Parcelable{
 		readFromParcel(in);
 	}
 	
-	public ActiveFilter(double lat, int maxRadius) {
+	public ActiveFilter(double lat,double lng, int maxRadius) {
 		super();
 		this.lat = lat;
+		this.lng = lng;
 		this.maxRadius = maxRadius;
 	}
 
@@ -29,6 +33,14 @@ public class ActiveFilter implements Parcelable{
 
 	public void setLat(double lat) {
 		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
 	}
 
 	public int getMaxRadius() {
@@ -46,6 +58,8 @@ public class ActiveFilter implements Parcelable{
 		long temp;
 		temp = Double.doubleToLongBits(lat);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(lng);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + maxRadius;
 		return result;
 	}
@@ -61,6 +75,8 @@ public class ActiveFilter implements Parcelable{
 		ActiveFilter other = (ActiveFilter) obj;
 		if (Double.doubleToLongBits(lat) != Double.doubleToLongBits(other.lat))
 			return false;
+		if (Double.doubleToLongBits(lng) != Double.doubleToLongBits(other.lng))
+			return false;
 		if (maxRadius != other.maxRadius)
 			return false;
 		return true;
@@ -68,11 +84,13 @@ public class ActiveFilter implements Parcelable{
 
 	@Override
 	public String toString() {
-		return "ActiveFilter [lat=" + lat + ", maxRadius=" + maxRadius + "]";
+		return "ActiveFilter [lat=" + lat + ", lng=" + lng + ", maxRadius="
+				+ maxRadius + "]";
 	}
 
 	private void readFromParcel(Parcel in) {
 		lat=in.readDouble();
+		lng=in.readDouble();
 		maxRadius=in.readInt();
 	}
 
@@ -84,6 +102,7 @@ public class ActiveFilter implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeDouble(lat);
+		dest.writeDouble(lng);
 		dest.writeInt(maxRadius);
 	}
 

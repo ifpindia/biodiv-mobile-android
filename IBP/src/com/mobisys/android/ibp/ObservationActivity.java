@@ -24,19 +24,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ObservationActivity extends BaseSlidingActivity{
+public class ObservationActivity extends BaseSlidingActivity implements OnScrollListener{
 
 	private long selected_group_id=-1;
 	private Dialog mPG;
 	private ObservationListAdapter mAdapter;
 	private ListView mList;
-	 
+	private ArrayList<ObservationInstanceList> mObsList=new ArrayList<ObservationInstanceList>();
+	private int mOffset=0;
+	private boolean mNoMoreItems = false, mMoreLoading = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,8 +61,12 @@ public class ObservationActivity extends BaseSlidingActivity{
 		b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
 		b.putString(Request.MAXRADIUS, String.valueOf(1000));
 		if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
+		b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24)); 
 		
-		mPG= ProgressDialog.show(ObservationActivity.this,getString(R.string.loading));
+		if(!mMoreLoading)
+			mPG= ProgressDialog.show(ObservationActivity.this,getString(R.string.loading));
+		else
+			findViewById(R.id.more_loading_layout).setVisibility(View.VISIBLE);
 		
 		WebService.sendRequest(ObservationActivity.this, Request.METHOD_GET, Request.PATH_NEARBY_OBSERVATIONS, b, new ResponseHandler() {
 			
@@ -88,9 +97,36 @@ public class ObservationActivity extends BaseSlidingActivity{
 						
 						@Override
 						public void run() {
-							if(mPG!=null && mPG.isShowing()) mPG.dismiss();
-							mAdapter=new ObservationListAdapter(ObservationActivity.this,0,obs.getObservationInstanceList());
-							mList.setAdapter(mAdapter);
+							if(!mMoreLoading){
+								if(mPG!=null && mPG.isShowing()) mPG.dismiss();
+								if(obs.getObservationInstanceList()!=null && !obs.getObservationInstanceList().isEmpty()) {
+									mObsList=obs.getObservationInstanceList();
+									mAdapter=new ObservationListAdapter(ObservationActivity.this,0,mObsList);
+									mList.setAdapter(mAdapter);
+									mList.setOnScrollListener(ObservationActivity.this);
+								}
+								else {
+									Log.d("obs parse", "***error");
+									mMoreLoading = false;
+								}	
+							}
+							else if(mMoreLoading){ //Scrolling up to load more items
+								if(obs.getObservationInstanceList()==null||obs.getObservationInstanceList().size()==0){ 
+									mNoMoreItems=true;
+									mMoreLoading = false;
+									findViewById(R.id.more_loading_layout).setVisibility(View.GONE);
+									return;
+								}
+								if(obs.getObservationInstanceList()!=null && obs.getObservationInstanceList().size()>0){
+									for(int i=0;i<obs.getObservationInstanceList().size();i++){
+										mObsList.add(obs.getObservationInstanceList().get(i));
+									}
+									mAdapter.notifyDataSetChanged();
+								}
+								findViewById(R.id.more_loading_layout).setVisibility(View.GONE);
+								mMoreLoading = false;
+							}
+							Log.d("ObservationActivity","No of observation after parse: "+mObsList.size());
 						}
 					});
 					
@@ -158,6 +194,21 @@ public class ObservationActivity extends BaseSlidingActivity{
  			MImageLoader.displayImage(ObservationActivity.this, getItem(position).getThumbnail(), holder.image, R.drawable.user_stub);
  			return row;
  		}
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
+		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+	    if(loadMore && !mMoreLoading && !mNoMoreItems){
+	    	mMoreLoading=true;
+	    	mOffset=mOffset+1;
+	    	getNearByObservation();
+	    }
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		
 	}
 	
 }

@@ -93,6 +93,21 @@ public class BaseSlidingActivity extends SlidingActivity{
 				else AppUtil.showErrorDialog(getString(R.string.no_connection), BaseSlidingActivity.this);
 			}
 		});
+		
+		getSlidingMenu().findViewById(R.id.observation).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!(BaseSlidingActivity.this instanceof NewSightingActivity)){
+					Intent intent = new Intent(BaseSlidingActivity.this,NewSightingActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+				else{
+					getSlidingMenu().toggle();
+				}
+			}
+		});
 	}
 	
 	
@@ -108,6 +123,13 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_observation).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.VISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+		}
+		if(BaseSlidingActivity.this instanceof NewSightingActivity){
+			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_observation).setVisibility(View.VISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 		}

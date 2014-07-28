@@ -33,4 +33,6 @@ public class Request {
 	public static final String NEARBY_TYPE = "type";
 	public static final String MAXRADIUS = "maxRadius";
 	public static final String GROUP_ID = "sGroup";
+	public static final String PARAM_OFFSET = "offset";
+	
 }
