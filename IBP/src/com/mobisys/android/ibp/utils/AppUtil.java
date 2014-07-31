@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,11 +40,33 @@ public class AppUtil {
 	public static int mYear;
     public static int mMonth;
     public static int mDay;
-    
+    public static final String GOOGLE_GEOCODER = "http://maps.googleapis.com/maps/api/geocode/json?latlng=";
 	
 	public static interface DateListener {
 		public void onSelectedDate(Date date);
 		public void onCancelClicked();
+	}
+	
+	public static String getAddressFromGPSData(double lat, double longi, HttpRetriever agent) {
+		String request = GOOGLE_GEOCODER + lat + ","
+				+ longi + "&sensor=true";
+		// Log.d("GeoCoder", request);
+		String response = agent.retrieve(request);
+		String formattedAddress = "";
+		if (response != null) {
+			Log.d("GeoCoder", response);
+			try {
+				JSONObject parentObject = new JSONObject(response);
+				JSONArray arrayOfAddressResults = parentObject
+						.getJSONArray("results");
+				JSONObject addressItem = arrayOfAddressResults.getJSONObject(0);
+				formattedAddress = addressItem.getString("formatted_address");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return formattedAddress;
 	}
 	
 	public static int getDipValue(int param, Context context){
@@ -233,4 +256,17 @@ public class AppUtil {
 	     }
 	    return rotate;
 	 }
+
+	public static String GetMimeType(Context context, Uri uriImage){
+	    String strMimeType = null;
+	    Cursor cursor = context.getContentResolver().query(uriImage,
+	                        new String[] { MediaStore.MediaColumns.MIME_TYPE },
+	                        null, null, null);
+
+	    if (cursor != null && cursor.moveToNext()){
+	        strMimeType = cursor.getString(0);
+	    }
+
+	    return strMimeType;
+	}
 }

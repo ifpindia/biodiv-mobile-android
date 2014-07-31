@@ -20,6 +20,8 @@ public class Request {
 	public static final String PATH_LOGOUT = "/api/logout";
 	public static final String PATH_SPECIES_CATEGORIES = "/speciesGroup/list";
 	public static final String PATH_NEARBY_OBSERVATIONS = "/observation/listJSON";
+	public static final String PATH_SAVE_OBSERVATION = "/api/observation/save";
+	public static final String PATH_UPLOAD_RESOURCE="/api/observation/upload_resource";
 	
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
@@ -34,5 +36,16 @@ public class Request {
 	public static final String MAXRADIUS = "maxRadius";
 	public static final String GROUP_ID = "sGroup";
 	public static final String PARAM_OFFSET = "offset";
+
+	public static final String SPECIES_GROUP_ID = "group_id";
+	public static final String HABITAT_ID = "habitat_id";
+	public static final String FROM_DATE = "fromDate";
+	public static final String PLACE_NAME = "placeName";
+	public static final String AREAS = "areas";
+	public static final String COMMON_NAME = "commonName";
+	public static final String SCI_NAME = "recoName";
+	public static final String RESOURCE_TYPE = "resType";
+	public static final String RESOURCE_LIST_TYPE = "resourceListType";
+	public static final String AGREE_TERMS = "agreeTerms";
 	
 }

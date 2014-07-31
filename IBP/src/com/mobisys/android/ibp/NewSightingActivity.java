@@ -22,28 +22,44 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.mobisys.android.ibp.database.CategoriesTable;
+import com.mobisys.android.ibp.database.ObservationParamsTable;
 import com.mobisys.android.ibp.models.Category;
+import com.mobisys.android.ibp.models.ObservationParams;
+import com.mobisys.android.ibp.models.ObservationParams.StatusType;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.AppUtil.DateListener;
+import com.mobisys.android.ibp.utils.HttpRetriever;
+import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
+import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
+import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 public class NewSightingActivity extends BaseSlidingActivity{
 
-	private String mCategorySelected=null;
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
 	private Button mSelectedButton;
 	private Uri mFileUri;
 	private ArrayList<Uri> mImageUrls;
+	private double mLat=0, mLng=0;
+	private HttpRetriever mHttpRetriever;
+	private Category mSelectedCategory=null;
+	private String mSelectedDate=null;
+	private String mAddress;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_sighting);
 		mImageUrls = new ArrayList<Uri>();
+		mHttpRetriever = new HttpRetriever();
 		initActionTitle(getString(R.string.new_sighting));
 		initScreen();
 	}
@@ -131,9 +147,113 @@ public class NewSightingActivity extends BaseSlidingActivity{
 				showSelectDialog();
 			}
 		});
-	
+		
+		((RelativeLayout)findViewById(R.id.address_layout)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i=new Intent(NewSightingActivity.this, ObservationMapActivity.class);
+				i.putExtra(Constants.LAT, mLat);
+				i.putExtra(Constants.LNG, mLng);
+				startActivityForResult(i, Constants.LOCATION_ADDRESS);
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_submit)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				validateParams();
+			}
+		});
+		
+		mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewSightingActivity.this, Constants.LAT, String.valueOf(0)));
+		mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewSightingActivity.this, Constants.LNG, String.valueOf(0)));
+		if(mLat!=0.0 && mLng!=0.0){
+			((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
+			ReveseGeoCodeUtil.doReverseGeoCoding(NewSightingActivity.this, mLat,mLng, mHttpRetriever, new ReveseGeoCodeListener() {
+				
+				@Override
+				public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
+					((TextView)findViewById(R.id.address)).setText(address);
+					mLat=lat;
+					mLng=lng;
+					mAddress=address;
+				}
+			});
+		}
 	}
 	
+	protected void validateParams() {
+		if(mImageUrls==null||mImageUrls.size()==0){
+			AppUtil.showDialog("You must submit atleast one photo.", NewSightingActivity.this);
+			return;
+		}
+		if(mSelectedCategory==null){ 
+			AppUtil.showDialog("Please Select Category", NewSightingActivity.this);
+			return;
+		}
+		if(mSelectedDate==null){ 
+			AppUtil.showDialog("Please select sighting date", NewSightingActivity.this);
+			return;
+		}
+		
+		if(!((CheckBox)findViewById(R.id.chk_help_identify)).isChecked()){
+			String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
+			String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
+			if(common_name.length()==0 && sci_name.length()==0){
+				AppUtil.showDialog("Please enter all fields", NewSightingActivity.this);
+				return;
+			} 
+		} 
+		resizeImagesAndStoreDatatoDB();
+	}
+
+	private void resizeImagesAndStoreDatatoDB() {
+		final ArrayList<String> imageStringPath=new ArrayList<String>();
+		final ArrayList<String> mImageType=new ArrayList<String>();
+			
+		if(mImageUrls!=null && mImageUrls.size()>0){
+			for(int i=0;i<mImageUrls.size();i++){
+				String imagepath=AppUtil.getRealPathFromURI(mImageUrls.get(i), NewSightingActivity.this);
+				if(Preferences.DEBUG) Log.d("NewSightingActivity", "***image path for server "+imagepath);
+	    		imageStringPath.add(imagepath);
+	    		
+	    		String imageType=AppUtil.GetMimeType(NewSightingActivity.this, mImageUrls.get(i));
+	    		if(Preferences.DEBUG) Log.d("AddPlacesActivity", "***image type for server "+imageType);
+	    		mImageType.add(imageType);
+			}
+		}
+		createSaveParamObject(imageStringPath, mImageType);
+	}
+
+	private void createSaveParamObject(ArrayList<String> imageStringPath, ArrayList<String> imageType) {
+		ObservationParams sp=new ObservationParams();
+		sp.setGroupId(mSelectedCategory.getId());
+		sp.setHabitatId(267838);
+		sp.setFromDate(mSelectedDate);
+		sp.setPlaceName(mAddress);
+		sp.setAreas("Point("+mLng+" "+mLat+")");
+		String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
+		String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
+		sp.setCommonName(common_name);
+		sp.setRecoName(sci_name);
+		String resources = imageStringPath.toString().replace("[", "").replace("]", "").replace(", ", ",");
+		String imageType2=imageType.toString().replace("[", "").replace("]", "").replace(", ", ",");
+		sp.setResources(resources);
+		sp.setImageType(imageType2);
+		sp.setStatus(StatusType.PENDING);
+		ObservationParamsTable.createEntryInTable(NewSightingActivity.this, sp);
+		ArrayList<ObservationParams> spList=(ArrayList<ObservationParams>) ObservationParamsTable.getAllRecords(NewSightingActivity.this);
+		Log.d("Total","Db record: "+spList.size());
+		
+		ObservationRequestQueue.getInstance().executeAllSubmitRequests(NewSightingActivity.this);
+		Toast.makeText(NewSightingActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
+		Intent i = new Intent(NewSightingActivity.this, HomeActivity.class);
+		startActivity(i);
+		finish();
+	}
+
 	private void showSelectDialog() {
 		final CharSequence[] methods = {getString(R.string.gallery), getString(R.string.camera)};
 		 
@@ -174,9 +294,9 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onSelectedDate(Date date) {
-				//mSelectedDate=date;
 				SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
 				((Button)findViewById(R.id.btn_date_sighted)).setText(sdf.format(date));
+				mSelectedDate=sdf.format(date);
 			}
 
 			@Override
@@ -190,6 +310,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		final ArrayList<String> categoryListStr=new ArrayList<String>();
 		final ArrayList<Category> categoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(NewSightingActivity.this);
 		if(categoryList!=null && categoryList.size()>0){
+			categoryList.remove(0);
 			for(int i=0;i<categoryList.size();i++){
 				categoryListStr.add(categoryList.get(i).getName());
 			}
@@ -201,9 +322,9 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				mCategorySelected=categoryListStr.get(which);
-				Log.d("NewSighingActivity", "Category selected: "+mCategorySelected);
-				((Button)findViewById(R.id.btn_category)).setText(""+mCategorySelected);
+				mSelectedCategory=categoryList.get(which);
+				Log.d("NewSighingActivity", "Category selected: "+categoryListStr.get(which));
+				((Button)findViewById(R.id.btn_category)).setText(""+categoryListStr.get(which));
 			}
 		});
 	
@@ -276,6 +397,13 @@ public class NewSightingActivity extends BaseSlidingActivity{
     		Bitmap rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
     		//mSelectedImageView.setBackgroundDrawable(new ColorDrawable(0));
             mSelectedImageView.setImageBitmap(rotatedBitmap);      
+		}
+		else if(resultCode == RESULT_OK && requestCode == Constants.LOCATION_ADDRESS){
+			String address=data.getStringExtra(Constants.ADDRESS);
+            mLat=data.getDoubleExtra(Constants.LAT, 0);
+            mLng=data.getDoubleExtra(Constants.LNG, 0);
+            mAddress=address;
+            ((TextView)findViewById(R.id.address)).setText(address);
 		}
     }
 	

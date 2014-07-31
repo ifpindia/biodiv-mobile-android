@@ -9,7 +9,7 @@ import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Observation;
-import com.mobisys.android.ibp.models.ObservationInstanceList;
+import com.mobisys.android.ibp.models.ObservationInstance;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
@@ -38,7 +38,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private Dialog mPG;
 	private ObservationListAdapter mAdapter;
 	private ListView mList;
-	private ArrayList<ObservationInstanceList> mObsList=new ArrayList<ObservationInstanceList>();
+	private ArrayList<ObservationInstance> mObsList=new ArrayList<ObservationInstance>();
 	private int mOffset=0;
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	
@@ -137,7 +137,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		}).start();
 	}
 	
-	private class ObservationListAdapter extends ArrayAdapter<ObservationInstanceList>{
+	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
  		
  		private LayoutInflater mInflater;
  		private class ViewHolder {
@@ -151,7 +151,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  			}
  		}
  
- 		public ObservationListAdapter(Context context, int textViewResourceId,ArrayList<ObservationInstanceList> objects) {
+ 		public ObservationListAdapter(Context context, int textViewResourceId,ArrayList<ObservationInstance> objects) {
  			super(context, textViewResourceId, objects);
  			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
  		}
@@ -170,17 +170,14 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  			else{
  				holder = (ViewHolder)row.getTag();
  			}
+ 			
  			if(getItem(position).getMaxVotedReco()!=null){
- 				holder.common_name.setText(getItem(position).getMaxVotedReco().getName());
- 				if(getItem(position).getMaxVotedReco().getTaxonomyDefinition()!=null){
- 					holder.latin_name.setVisibility(View.VISIBLE);
- 					holder.latin_name.setText(getItem(position).getMaxVotedReco().getTaxonomyDefinition().getName());
- 				}
- 				else holder.latin_name.setVisibility(View.GONE);
- 			}
- 			else{ 
- 				holder.common_name.setText(R.string.unknown);
- 				holder.latin_name.setVisibility(View.GONE);
+ 				if(getItem(position).getMaxVotedReco().getCommonName().length()>0)
+ 					holder.common_name.setText(getItem(position).getMaxVotedReco().getCommonName());
+ 				else 
+ 					holder.common_name.setText(R.string.unknown);
+ 				holder.latin_name.setVisibility(View.VISIBLE);
+ 				holder.latin_name.setText(getItem(position).getMaxVotedReco().getScientificName());
  			}
  			
  			row.setOnClickListener(new OnClickListener() {

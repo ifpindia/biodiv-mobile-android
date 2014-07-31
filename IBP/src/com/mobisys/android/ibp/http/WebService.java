@@ -59,10 +59,8 @@ public class WebService {
 			client.get(url, asyncHandler);
 		}
 		else if(Request.METHOD_POST.equals(methodString)){
-			if(actionString.contains(Request.PATH_LOGOUT)){
-				String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
-				if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
-			}
+			String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
+			if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
 			String url = HttpUtils.getUri(actionString, (Bundle) null).toString();
 			Log.d(TAG, url);
 			if(paramsBundle!=null) Log.d(TAG, "Params: "+paramsBundle.toString());
@@ -97,7 +95,11 @@ public class WebService {
 
 			@Override
 			public void onFailure(Throwable e, String content) {
-				Log.d(TAG, "Error-Content: "+content);
+				Log.d(TAG, "Error-Content: "+content);/*.substring(0, 9683));
+				String content1 = content.substring(0, 9683);
+				String content2 = content.substring(9684, 19367);
+				String content3 = content.substring(19368, 29050);
+				String content4 = content.substring(29051);*/
 				String msg = AppUtil.parseErrorResponse(context, content, e);
 				responseHandler.onFailure(e, msg);
 			}
@@ -114,6 +116,8 @@ public class WebService {
 					asyncHandler);
 		}
 		else if(Request.METHOD_POST.equals(methodString)){
+			String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
+			if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
 			String url = HttpUtils.getUri(actionString, null).toString();
 			Log.d(TAG, url);
 			client.post(context, url, (HttpEntity)reqEntity, null, asyncHandler);

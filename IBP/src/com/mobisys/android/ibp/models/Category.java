@@ -3,11 +3,13 @@ package com.mobisys.android.ibp.models;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
+@DatabaseTable(tableName="Category")
 public class Category implements Parcelable{
 	
 	@DatabaseField(id=true)

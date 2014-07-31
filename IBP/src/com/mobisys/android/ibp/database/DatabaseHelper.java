@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.mobisys.android.ibp.models.Category;
+import com.mobisys.android.ibp.models.ObservationParams;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,6 +28,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 	public static final String CREATE_TABLE = "create table ";
 	public static final String PRIMARY_KEY = " (_id integer primary key autoincrement, ";
 	private Dao<Category, Integer> mCategoryDao;
+	private Dao<ObservationParams, Integer> mSaveParamsDao;
 	
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -47,10 +49,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
     	return mCategoryDao;
     }
     
+    public Dao<ObservationParams, Integer> getSaveParamsDao() throws java.sql.SQLException {
+    	if(mSaveParamsDao==null){
+    		mSaveParamsDao = getDao(ObservationParams.class);
+    	}
+    	return mSaveParamsDao;
+    }
+    
     @Override
     public void close(){
     	super.close();
     	mCategoryDao = null;
+    	mSaveParamsDao = null;
     }
 	
 	public boolean isTableExist(SQLiteDatabase db, String table_name){
@@ -69,6 +79,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 	public void createTablesIfNotExists(){
 		try {
 			TableUtils.createTableIfNotExists(connectionSource, Category.class);
+			TableUtils.createTableIfNotExists(connectionSource, ObservationParams.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -10,7 +10,7 @@ import android.os.Parcelable;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
 public class Observation implements Parcelable{
 
-	private ArrayList<ObservationInstanceList> observationInstanceList;
+	private ArrayList<ObservationInstance> observationInstanceList;
 	private ActiveFilter activeFilters;
 	
 	public Observation(){}
@@ -19,18 +19,18 @@ public class Observation implements Parcelable{
 		readFromParcel(in);
 	}
 	
-	public Observation(ArrayList<ObservationInstanceList> observationInstanceList, ActiveFilter activeFilters) {
+	public Observation(ArrayList<ObservationInstance> observationInstanceList, ActiveFilter activeFilters) {
 		super();
 		this.observationInstanceList = observationInstanceList;
 		this.activeFilters = activeFilters;
 	}
 
-	public ArrayList<ObservationInstanceList> getObservationInstanceList() {
+	public ArrayList<ObservationInstance> getObservationInstanceList() {
 		return observationInstanceList;
 	}
 
 	public void setObservationInstanceList(
-			ArrayList<ObservationInstanceList> observationInstanceList) {
+			ArrayList<ObservationInstance> observationInstanceList) {
 		this.observationInstanceList = observationInstanceList;
 	}
 
@@ -86,8 +86,8 @@ public class Observation implements Parcelable{
 	}
 
 	private void readFromParcel(Parcel in) {
-		observationInstanceList=new ArrayList<ObservationInstanceList>();
-		in.readList(observationInstanceList, ObservationInstanceList.class.getClassLoader());
+		observationInstanceList=new ArrayList<ObservationInstance>();
+		in.readList(observationInstanceList, ObservationInstance.class.getClassLoader());
 		activeFilters=in.readParcelable(ActiveFilter.class.getClassLoader());
 	}
 

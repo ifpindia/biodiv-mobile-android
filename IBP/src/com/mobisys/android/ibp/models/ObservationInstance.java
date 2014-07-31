@@ -1,15 +1,51 @@
 package com.mobisys.android.ibp.models;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.ObjectCodec;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
-public class ObservationInstanceList implements Parcelable{
+public class ObservationInstance implements Parcelable{
 
+	public static class NameRecordDeserializer extends JsonDeserializer<NameRecord> {
+		@Override
+	    public NameRecord deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+			ObjectCodec oc = parser.getCodec();
+			JsonNode node = oc.readTree(parser);
+			Iterator<JsonNode> iter;
+			StringBuilder b=new StringBuilder();
+			if(node!=null && node.get("commonNamesRecoList")!=null){
+				iter = node.get("commonNamesRecoList").get("205").getElements();
+				while(iter.hasNext()){
+					JsonNode n = iter.next();
+					b.append(n.get("name").asText());
+					if(iter.hasNext()) b.append(", ");
+					//Log.d("Observation", "Name: "+n.get("name").asText());
+				}
+			}
+			String commnName=b.toString();
+			String sciName="";
+			if(node!=null && node.get("sciNameReco")!=null)
+				sciName=node.get("sciNameReco").get("name").asText();
+			
+			NameRecord nr=new NameRecord();
+			nr.setCommonName(commnName);
+			nr.setScientificName(sciName);
+			return nr;
+		}
+	}
+	
 	private long id;
 	private String placeName;
 	private Category group;
@@ -23,18 +59,19 @@ public class ObservationInstanceList implements Parcelable{
 	private String notes;
 	private String summary;
 	private int rating;
-	private MaxVotedRecord maxVotedReco;
+	@JsonDeserialize(using = NameRecordDeserializer.class)
+	private NameRecord maxVotedReco;
 	
-	public ObservationInstanceList(){}
+	public ObservationInstance(){}
 	
-	public ObservationInstanceList(Parcel in){
+	public ObservationInstance(Parcel in){
 		readFromParcel(in);
 	}
 	
-	public ObservationInstanceList(long id, String placeName, Category group,
+	public ObservationInstance(long id, String placeName, Category group,
 			Habitat habitat, Date fromDate, Date toDate, Date createdOn,
 			Date lastRevised, Author author, String thumbnail, String notes,
-			String summary, int rating, MaxVotedRecord maxVotedReco) {
+			String summary, int rating, NameRecord maxVotedReco) {
 		super();
 		this.id = id;
 		this.placeName = placeName;
@@ -156,11 +193,11 @@ public class ObservationInstanceList implements Parcelable{
 		this.rating = rating;
 	}
 
-	public MaxVotedRecord getMaxVotedReco() {
+	public NameRecord getMaxVotedReco() {
 		return maxVotedReco;
 	}
 
-	public void setMaxVotedReco(MaxVotedRecord maxVotedReco) {
+	public void setMaxVotedReco(NameRecord maxVotedReco) {
 		this.maxVotedReco = maxVotedReco;
 	}
 
@@ -197,7 +234,7 @@ public class ObservationInstanceList implements Parcelable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ObservationInstanceList other = (ObservationInstanceList) obj;
+		ObservationInstance other = (ObservationInstance) obj;
 		if (author == null) {
 			if (other.author != null)
 				return false;
@@ -284,7 +321,7 @@ public class ObservationInstanceList implements Parcelable{
 		notes=in.readString();
 		summary=in.readString();
 		rating=in.readInt();
-		maxVotedReco=in.readParcelable(MaxVotedRecord.class.getClassLoader());
+		maxVotedReco=in.readParcelable(NameRecord.class.getClassLoader());
 	}
 
 	@Override
@@ -310,14 +347,14 @@ public class ObservationInstanceList implements Parcelable{
 		dest.writeParcelable(maxVotedReco, flags);
 	}
 
-	public static final Creator<ObservationInstanceList> CREATOR = new Creator<ObservationInstanceList>() {
+	public static final Creator<ObservationInstance> CREATOR = new Creator<ObservationInstance>() {
 		
-		public ObservationInstanceList createFromParcel(Parcel source) {
-			return new ObservationInstanceList(source);
+		public ObservationInstance createFromParcel(Parcel source) {
+			return new ObservationInstance(source);
 		}
 		
-		public ObservationInstanceList[] newArray(int size) {
-			return new ObservationInstanceList[size];
+		public ObservationInstance[] newArray(int size) {
+			return new ObservationInstance[size];
 		}
 	};
 }
