@@ -81,9 +81,13 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				showCategoryDialog();
+				showCategoryDialogNew();
 			}
 		});
+		
+		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
+		((Button)findViewById(R.id.btn_date_sighted)).setText(sdf.format(new Date()));
+		mSelectedDate=sdf.format(new Date());
 		
 		((Button)findViewById(R.id.btn_date_sighted)).setOnClickListener(new View.OnClickListener() {
 			
@@ -277,7 +281,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
         alert.show();
 	}
 	
-	protected void startCameraActivity() {
+	private void startCameraActivity() {
 		File dir = new File(AppUtil.getDir());
 		if(!dir.exists()) dir.mkdirs();
 		String filename=String.valueOf(System.currentTimeMillis());
@@ -289,7 +293,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		startActivityForResult(intent, Constants.CAMERA_PHOTO);
 	}
 
-	protected void showDate() {
+	private void showDate() {
 		AppUtil.getDate(NewSightingActivity.this, new DateListener() {
 			
 			@Override
@@ -306,7 +310,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		});
 	}
 	
-	protected void showCategoryDialog() {
+	private void showCategoryDialogNew() {
 		final ArrayList<String> categoryListStr=new ArrayList<String>();
 		final ArrayList<Category> categoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(NewSightingActivity.this);
 		if(categoryList!=null && categoryList.size()>0){

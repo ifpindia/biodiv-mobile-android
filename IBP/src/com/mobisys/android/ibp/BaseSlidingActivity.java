@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 public class BaseSlidingActivity extends SlidingActivity{
 	private Dialog mPg;
+	public boolean isMyCollection=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,19 @@ public class BaseSlidingActivity extends SlidingActivity{
 				}
 			}
 		});
+		
+		getSlidingMenu().findViewById(R.id.my_collection).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				isMyCollection=true;
+				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION,isMyCollection);
+				Intent intent = new Intent(BaseSlidingActivity.this,ObservationActivity.class);
+				intent.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+		});
 	}
 	
 	
@@ -122,8 +136,17 @@ public class BaseSlidingActivity extends SlidingActivity{
 		if(BaseSlidingActivity.this instanceof ObservationActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_observation).setVisibility(View.INVISIBLE);
-			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.VISIBLE);
-			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			//getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.VISIBLE);
+			//getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			isMyCollection=SharedPreferencesUtil.getSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION, false);
+			if(!isMyCollection){
+				getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.VISIBLE);
+				getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			}	
+			else{
+				getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
+				getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.VISIBLE);
+			}	
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof NewSightingActivity){
@@ -150,6 +173,8 @@ public class BaseSlidingActivity extends SlidingActivity{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				isMyCollection=false;
+				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION,isMyCollection);
 				Log.d("HomeActivity", "category selected: "+categoryListStr.get(which));
 				Intent i=new Intent(BaseSlidingActivity.this, ObservationActivity.class);
 				i.putExtra(Constants.GROUP_ID, categoryList.get(which).getId());
@@ -170,6 +195,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 			public void onSuccess(String response) {
 				if(mPg!=null&&mPg.isShowing()) mPg.dismiss();
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.APP_TOKEN, null);
+				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.USER_ID, null);
 				showLoginActivity();
 			}
 			
@@ -186,4 +212,6 @@ public class BaseSlidingActivity extends SlidingActivity{
 		startActivity(i);
 		finish();
 	}
+	
+	
 }

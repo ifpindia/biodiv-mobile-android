@@ -19,7 +19,7 @@ public class Request {
 	public static final String PATH_FB_LOGIN="/api/oauth/callback/facebook";
 	public static final String PATH_LOGOUT = "/api/logout";
 	public static final String PATH_SPECIES_CATEGORIES = "/speciesGroup/list";
-	public static final String PATH_NEARBY_OBSERVATIONS = "/observation/listJSON";
+	public static final String PATH_GET_OBSERVATIONS = "/observation/listJSON";
 	public static final String PATH_SAVE_OBSERVATION = "/api/observation/save";
 	public static final String PATH_UPLOAD_RESOURCE="/api/observation/upload_resource";
 	
@@ -47,5 +47,6 @@ public class Request {
 	public static final String RESOURCE_TYPE = "resType";
 	public static final String RESOURCE_LIST_TYPE = "resourceListType";
 	public static final String AGREE_TERMS = "agreeTerms";
+	public static final String USER = "user";
 	
 }

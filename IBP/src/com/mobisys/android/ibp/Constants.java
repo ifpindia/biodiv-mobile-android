@@ -22,5 +22,7 @@ public class Constants {
 	public static final String IMAGE = "IMAGE";
 	public static final String RESOURCE_LIST_TYPE = "ofObv";
 	public static final String AGREE_TERMS_VALUE = "on";
+	public static final String IS_MY_COLLECTION = "isMyCollection";
+	public static final String USER_ID = "user_id";
 	
 }

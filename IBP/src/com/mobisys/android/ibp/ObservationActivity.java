@@ -41,12 +41,12 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private ArrayList<ObservationInstance> mObsList=new ArrayList<ObservationInstance>();
 	private int mOffset=0;
 	private boolean mNoMoreItems = false, mMoreLoading = false;
+	private boolean userScrolled=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.observation_list);
-		initActionTitle(getString(R.string.observations));
 		selected_group_id=getIntent().getLongExtra(Constants.GROUP_ID, -1);
 		mList=(ListView)findViewById(R.id.list);
 		getNearByObservation();
@@ -54,21 +54,30 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 
 	private void getNearByObservation() {
 		Bundle b=new Bundle();
-		double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LAT, "0.0"));
-		double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LNG, "0.0"));
-		b.putString(Constants.LAT, String.valueOf(lat));
-		b.putString(Constants.LNG, String.valueOf(lng));
-		b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
-		b.putString(Request.MAXRADIUS, String.valueOf(1000));
-		if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
-		b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24)); 
-		
+		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
+		if(!isMyCollection){
+			initActionTitle(getString(R.string.observations));
+			double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LAT, "0.0"));
+			double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LNG, "0.0"));
+			b.putString(Constants.LAT, String.valueOf(18.4638392));//lat));
+			b.putString(Constants.LNG, String.valueOf(73.86471));//lng));
+			b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
+			b.putString(Request.MAXRADIUS, String.valueOf(1000));
+			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
+			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
+		}
+		else{
+			initActionTitle(getString(R.string.my_collection));
+			String id=SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this, Constants.USER_ID,null);
+			b.putString(Request.USER, String.valueOf(id));
+			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
+		}
 		if(!mMoreLoading)
 			mPG= ProgressDialog.show(ObservationActivity.this,getString(R.string.loading));
 		else
 			findViewById(R.id.more_loading_layout).setVisibility(View.VISIBLE);
 		
-		WebService.sendRequest(ObservationActivity.this, Request.METHOD_GET, Request.PATH_NEARBY_OBSERVATIONS, b, new ResponseHandler() {
+		WebService.sendRequest(ObservationActivity.this, Request.METHOD_GET, Request.PATH_GET_OBSERVATIONS, b, new ResponseHandler() {
 			
 			@Override
 			public void onSuccess(String response) {
@@ -114,6 +123,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 								if(obs.getObservationInstanceList()==null||obs.getObservationInstanceList().size()==0){ 
 									mNoMoreItems=true;
 									mMoreLoading = false;
+									userScrolled=true;
 									findViewById(R.id.more_loading_layout).setVisibility(View.GONE);
 									return;
 								}
@@ -196,7 +206,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
 		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
-	    if(loadMore && !mMoreLoading && !mNoMoreItems){
+	    if(userScrolled && loadMore && !mMoreLoading && !mNoMoreItems){
 	    	mMoreLoading=true;
 	    	mOffset=mOffset+1;
 	    	getNearByObservation();
@@ -205,7 +215,9 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		
+		if(scrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+            userScrolled = true;
+        }   
 	}
 	
 }

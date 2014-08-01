@@ -132,7 +132,7 @@ public class LoginActivity extends ActionBarActivity {
 			
 			@Override
 			public void onSuccess(String response) {
-				parseFbDetails(response);
+				parseLoginDetail(response);
 			}
 			
 			@Override
@@ -143,12 +143,15 @@ public class LoginActivity extends ActionBarActivity {
 		});
 	}
 
-	protected void parseFbDetails(String response) {
+	/*protected void parseFbDetails(String response) {
 		if(response.contains("token")){
 			JSONObject jobj;
 			try {
 				jobj = new JSONObject(response);
 				String token=jobj.optString("token");
+				String id=jobj.optString("id");
+				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.USER_ID, id);
+				
 				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.APP_TOKEN, token);
 				showHomeActivity();
 				if(mPg!=null && mPg.isShowing()) mPg.dismiss();
@@ -169,7 +172,7 @@ public class LoginActivity extends ActionBarActivity {
 			}
 		}
 	}
-
+*/
 	private void showHomeActivity() {
 		Intent i=new Intent(LoginActivity.this, HomeActivity.class);
 		startActivity(i);
@@ -259,7 +262,8 @@ public class LoginActivity extends ActionBarActivity {
 			try {
 				jobj = new JSONObject(response);
 				String token=jobj.optString("token");
-				String username=jobj.optString("username");
+				String id=jobj.optString("id");
+				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.USER_ID, id);
 				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.APP_TOKEN, token);
 				showHomeActivity();
 				if(mPg!=null && mPg.isShowing()) mPg.dismiss();

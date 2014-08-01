@@ -14,6 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
 public class ObservationInstance implements Parcelable{
@@ -25,18 +26,18 @@ public class ObservationInstance implements Parcelable{
 			JsonNode node = oc.readTree(parser);
 			Iterator<JsonNode> iter;
 			StringBuilder b=new StringBuilder();
-			if(node!=null && node.get("commonNamesRecoList")!=null){
-				iter = node.get("commonNamesRecoList").get("205").getElements();
+			if(!node.isNull() && node.get("commonNamesRecoList")!=null){
+				iter = node.get("commonNamesRecoList").getElements();
 				while(iter.hasNext()){
 					JsonNode n = iter.next();
 					b.append(n.get("name").asText());
 					if(iter.hasNext()) b.append(", ");
-					//Log.d("Observation", "Name: "+n.get("name").asText());
+					Log.d("Observation", "Name: "+n.get("name").asText());
 				}
 			}
 			String commnName=b.toString();
 			String sciName="";
-			if(node!=null && node.get("sciNameReco")!=null)
+			if(!node.isNull()&& node.get("sciNameReco")!=null)
 				sciName=node.get("sciNameReco").get("name").asText();
 			
 			NameRecord nr=new NameRecord();

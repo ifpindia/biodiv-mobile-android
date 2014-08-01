@@ -101,7 +101,7 @@
 		        android:textColor="@android:color/white"
 		        android:text="@string/what_s_near_me"
 		        android:textSize="18sp"
-		        android:drawableLeft="@drawable/new_observation"
+		        android:drawableLeft="@drawable/pin"
 		        android:drawablePadding="8dp"
 		        android:background="@drawable/menu_selector"
 		        android:clickable="true"/>

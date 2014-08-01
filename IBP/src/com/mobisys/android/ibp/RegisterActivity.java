@@ -46,9 +46,9 @@ public class RegisterActivity extends ActionBarActivity {
 	}
 	
 	private void initScreen(){
-		((TextView)findViewById(R.id.msg_agree)).setText(Html.fromHtml(getString(R.string.msg_term_conditions)));
+		/*((TextView)findViewById(R.id.msg_agree)).setText(Html.fromHtml(getString(R.string.msg_term_conditions)));
 		((TextView)findViewById(R.id.msg_agree)).setMovementMethod(LinkMovementMethod.getInstance());
-		
+		*/
 		((Button)findViewById(R.id.btn_register)).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -62,9 +62,9 @@ public class RegisterActivity extends ActionBarActivity {
 	private void validateRegisterDetails() {
 		String email=((EditText)findViewById(R.id.email)).getText().toString();
 		String password=((EditText)findViewById(R.id.password)).getText().toString();
-		String confirm_password=((EditText)findViewById(R.id.confirm_password)).getText().toString();
+		//String confirm_password=((EditText)findViewById(R.id.confirm_password)).getText().toString();
 		String name=((EditText)findViewById(R.id.name)).getText().toString();
-		String location=((EditText)findViewById(R.id.location)).getText().toString();
+		//String location=((EditText)findViewById(R.id.location)).getText().toString();
 		
 		if((name.length()==0)) {
 			Toast.makeText(RegisterActivity.this, "Name can not be empty", Toast.LENGTH_SHORT).show();
@@ -81,21 +81,21 @@ public class RegisterActivity extends ActionBarActivity {
 			return;
         }
 		
-		if(!password.equals(confirm_password)){
+		/*if(!password.equals(confirm_password)){
 			Toast.makeText(RegisterActivity.this, "Password not matching", Toast.LENGTH_SHORT).show();
 			return;
-        }
+        }*/
 		
-		register(email, password, confirm_password, name, location);
+		register(email, password/*, confirm_password*/, name/*, location*/);
 	}
 
-	private void register(String email, String password, String confirm_password, String name, String location) {
+	private void register(String email, String password/*, String confirm_password*/, String name/*, String location*/) {
 		Bundle b=new Bundle();
 		b.putString(Request.PARAM_EMAIL, email);
 		b.putString(Request.PARAM_PASSWORD, password);
-		b.putString(Request.PARAM_PASSWORD2, confirm_password);
+		//b.putString(Request.PARAM_PASSWORD2, confirm_password);
 		b.putString(Request.PARAM_NAME, name);
-		if(location!=null && location.length()>0) b.putString(Request.PARAM_LOCATION, location);
+		//if(location!=null && location.length()>0) b.putString(Request.PARAM_LOCATION, location);
 		
 		mPg= ProgressDialog.show(RegisterActivity.this,getString(R.string.loading));
 		
