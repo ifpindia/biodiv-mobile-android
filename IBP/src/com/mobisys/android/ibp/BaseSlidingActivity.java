@@ -95,6 +95,21 @@ public class BaseSlidingActivity extends SlidingActivity{
 			}
 		});
 		
+		getSlidingMenu().findViewById(R.id.status).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				if(!(BaseSlidingActivity.this instanceof ObservationStatusActivity)){
+					Intent intent = new Intent(BaseSlidingActivity.this,ObservationStatusActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+				else{
+					getSlidingMenu().toggle();
+				}
+			}
+		});
+		
 		getSlidingMenu().findViewById(R.id.observation).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -114,12 +129,14 @@ public class BaseSlidingActivity extends SlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				isMyCollection=true;
-				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION,isMyCollection);
-				Intent intent = new Intent(BaseSlidingActivity.this,ObservationActivity.class);
-				intent.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
+				if(AppUtil.isNetworkAvailable(BaseSlidingActivity.this)){
+					isMyCollection=true;
+					SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION,isMyCollection);
+					Intent intent = new Intent(BaseSlidingActivity.this,ObservationActivity.class);
+					intent.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
 			}
 		});
 	}
@@ -132,6 +149,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof ObservationActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
@@ -148,6 +166,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 				getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.VISIBLE);
 			}	
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof NewSightingActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
@@ -155,6 +174,15 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
+		}
+		if(BaseSlidingActivity.this instanceof ObservationStatusActivity){
+			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_observation).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.VISIBLE);
 		}
 	}
 	
@@ -196,6 +224,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 				if(mPg!=null&&mPg.isShowing()) mPg.dismiss();
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.APP_TOKEN, null);
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.USER_ID, null);
+				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION, false);
 				showLoginActivity();
 			}
 			

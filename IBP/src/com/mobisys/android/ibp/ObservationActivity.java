@@ -17,6 +17,7 @@ import com.mobisys.android.ibp.widget.MImageLoader;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,7 +31,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ObservationActivity extends BaseSlidingActivity implements OnScrollListener{
 
@@ -136,8 +136,10 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 								findViewById(R.id.more_loading_layout).setVisibility(View.GONE);
 								mMoreLoading = false;
 							}
+							initScreen();
 							Log.d("ObservationActivity","No of observation after parse: "+mObsList.size());
 						}
+
 					});
 					
 				} catch (Exception e) {
@@ -145,6 +147,22 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				}
 			}
 		}).start();
+	}
+	
+	private void initScreen() {
+		if(isMyCollection){
+			findViewById(R.id.btn_show_map).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_show_map).setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent i=new Intent(ObservationActivity.this, MyCollectionMapActivity.class);
+					i.putParcelableArrayListExtra(ObservationInstance.OI, mObsList);
+					startActivity(i);
+				}
+			});
+		}
+		else findViewById(R.id.btn_show_map).setVisibility(View.GONE);
 	}
 	
 	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
@@ -167,7 +185,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  		}
  
  		@Override
- 		public View getView(int position, View convertView, ViewGroup parent) {
+ 		public View getView(final int position, View convertView, ViewGroup parent) {
  			View row = convertView;
  			ViewHolder holder = null;
  			if(row == null){
@@ -194,7 +212,9 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				
 				@Override
 				public void onClick(View v) {
-					Toast.makeText(ObservationActivity.this, "To DO", Toast.LENGTH_SHORT).show();
+					Intent i=new Intent(ObservationActivity.this, ObservationDetailActivity.class);
+					i.putExtra(ObservationInstance.ObsInstance, getItem(position));
+					startActivity(i);
 				}
 			});
  			

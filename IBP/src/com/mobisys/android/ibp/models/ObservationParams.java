@@ -40,6 +40,8 @@ public class ObservationParams implements Parcelable{
 	private StatusType status;
 	@DatabaseField
 	private String message;
+	@DatabaseField
+	private String notes;
 	
 	public ObservationParams(){}
 	
@@ -49,7 +51,7 @@ public class ObservationParams implements Parcelable{
 	
 	public ObservationParams(long server_id, long group_id, long habitat_id,
 			String fromDate, String placeName, String areas, String commonName,
-			String recoName, String resources, String image_type, StatusType status, String message) {
+			String recoName, String resources, String image_type, StatusType status, String message, String notes) {
 		super();
 		this.server_id = server_id;
 		this.group_id = group_id;
@@ -63,6 +65,7 @@ public class ObservationParams implements Parcelable{
 		this.image_type = image_type;
 		this.status = status;
 		this.message = message;
+		this.notes = notes;
 	}
 
 	public long getServerId() {
@@ -162,6 +165,14 @@ public class ObservationParams implements Parcelable{
 		this.message = message;
 	}
 
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
 	private void readFromParcel(Parcel in) {
 		server_id=in.readLong();
 		group_id=in.readLong();
@@ -175,6 +186,7 @@ public class ObservationParams implements Parcelable{
 		image_type=in.readString();
 		status=StatusType.valueOf(in.readString());
 		message=in.readString();
+		notes=in.readString();
 	}
 
 	@Override
@@ -196,6 +208,7 @@ public class ObservationParams implements Parcelable{
 		dest.writeString(image_type);
 		dest.writeString(status.name());
 		dest.writeString(message);
+		dest.writeString(notes);
 	}
 
 	public static final Creator<ObservationParams> CREATOR = new Creator<ObservationParams>() {

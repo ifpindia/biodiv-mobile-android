@@ -240,8 +240,10 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		sp.setAreas("Point("+mLng+" "+mLat+")");
 		String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
 		String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
+		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
 		sp.setCommonName(common_name);
 		sp.setRecoName(sci_name);
+		sp.setNotes(notes);
 		String resources = imageStringPath.toString().replace("[", "").replace("]", "").replace(", ", ",");
 		String imageType2=imageType.toString().replace("[", "").replace("]", "").replace(", ", ",");
 		sp.setResources(resources);

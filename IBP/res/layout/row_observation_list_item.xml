@@ -37,7 +37,16 @@
 	  	    android:ellipsize="end"
 	  	    android:textColor="@color/brown_color"
 	  	    android:layout_marginTop="6dp"
-	  	    android:textSize="15sp"
+	  	    android:textSize="14sp"
+	  	    android:visibility="gone"/>
+	  	<TextView android:id="@+id/error_message"
+	  	    android:layout_width="wrap_content"
+	  	    android:layout_height="wrap_content"
+	  	    android:singleLine="true"
+	  	    android:ellipsize="end"
+	  	    android:textColor="@color/brown_color"
+	  	    android:layout_marginTop="6dp"
+	  	    android:textSize="12sp"
 	  	    android:visibility="gone"/>
 	</LinearLayout>
 	<ImageButton android:id="@+id/arrow"

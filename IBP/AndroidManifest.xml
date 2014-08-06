@@ -45,6 +45,14 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name="com.mobisys.android.ibp.ObservationDetailActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.mobisys.android.ibp.ObservationStatusActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name="com.mobisys.android.ibp.NewSightingActivity"
             android:label="@string/app_name" 
             android:windowSoftInputMode="stateUnchanged">
@@ -67,6 +75,10 @@
             android:label="@string/app_name"/>
         <activity
             android:name="com.mobisys.android.ibp.ConfirmationScreenActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.mobisys.android.ibp.MyCollectionMapActivity"
             android:label="@string/app_name" >
         </activity>
         <receiver android:name=".NetworkStateReceiver">

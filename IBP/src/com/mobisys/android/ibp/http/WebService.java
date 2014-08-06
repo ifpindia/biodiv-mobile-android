@@ -51,8 +51,8 @@ public class WebService {
 		AsyncHttpClient client = new AsyncHttpClient();
 		
 		if(Request.METHOD_GET.equals(methodString)){
-			/*String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
-			if(user_key!=null) client.addHeader(Request.HEADER_AUTH_KEY, user_key);*/
+			String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
+			if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
 			String url = HttpUtils.getUri(actionString, paramsBundle).toString();
 			Log.d(TAG, "URL: "+url);
 			

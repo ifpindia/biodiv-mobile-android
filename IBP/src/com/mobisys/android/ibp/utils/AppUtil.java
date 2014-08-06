@@ -3,6 +3,8 @@ package com.mobisys.android.ibp.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -268,5 +270,23 @@ public class AppUtil {
 	    }
 
 	    return strMimeType;
+	}
+	
+	public static Date getDateFromString(String str, String date_format){
+		SimpleDateFormat  format = new SimpleDateFormat(date_format);  
+		try {  
+		    Date date = format.parse(str);  
+		    System.out.println(date);  
+		    return date;
+		} catch (ParseException e) {  
+		    e.printStackTrace();  
+		}
+		return null;
+	}
+	
+	public static String getStringFromDate(Date date, String date_format){
+		SimpleDateFormat  dateformat = new SimpleDateFormat(date_format);  
+		String datetime = dateformat.format(date);
+		return datetime;
 	}
 }

@@ -141,9 +141,43 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:background="@drawable/menu_separator"/>
-		<RelativeLayout android:id="@+id/layout_settings"
+		<RelativeLayout android:id="@+id/layout_observation_status"
 		    android:layout_width="match_parent"
 		    android:layout_height="50dp">
+		    <View android:id="@+id/indicator_status"
+		        android:layout_width="12dp"
+		        android:layout_height="match_parent"
+		        android:layout_alignParentLeft="true"
+		        android:paddingTop="10dp" android:paddingBottom="10dp"
+		        android:paddingLeft="8dp" android:paddingRight="8dp"
+		        android:visibility="invisible"
+		        android:background="@color/orange_color"/>
+		    <TextView android:id="@+id/status"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_toRightOf="@id/indicator_status"
+		        android:layout_centerVertical="true"
+		        android:paddingTop="10dp" android:paddingBottom="10dp"
+		        android:paddingLeft="8dp" android:paddingRight="8dp"
+		        android:gravity="center_vertical"
+		        android:textColor="@android:color/white"
+		        android:text="@string/observation_status"
+		        android:textSize="16sp"
+		        android:ellipsize="end"
+	    		android:singleLine="true"
+		        android:drawableLeft="@drawable/obs_status"
+		        android:drawablePadding="8dp"
+		        android:background="@drawable/menu_selector"
+		        android:clickable="true"/>
+		</RelativeLayout>
+		<ImageView android:id="@+id/separator10"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:background="@drawable/menu_separator"/>
+		<RelativeLayout android:id="@+id/layout_settings"
+		    android:layout_width="match_parent"
+		    android:layout_height="50dp"
+		    android:visibility="gone">
 		    <View android:id="@+id/indicator_settings"
 		        android:layout_width="12dp"
 		        android:layout_height="match_parent"
@@ -171,7 +205,8 @@
 		<ImageView android:id="@+id/separator6"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:background="@drawable/menu_separator"/>
+		    android:background="@drawable/menu_separator"
+		    android:visibility="gone"/>
 		<TextView android:id="@+id/logout"
 	        android:layout_width="match_parent"
 	        android:layout_height="50dp"

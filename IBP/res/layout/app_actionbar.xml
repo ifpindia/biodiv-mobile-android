@@ -12,9 +12,12 @@
         android:src="@drawable/menu"
         android:background="@drawable/menu_bg_selector"/>
 	<TextView android:id="@+id/title"
-	    android:layout_width="wrap_content"
+	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
+	    android:layout_toRightOf="@+id/btn_menu"
 	    android:layout_centerInParent="true"
-	    android:text="Register"
+	    android:gravity="center"
+	    android:ellipsize="end"
+	    android:singleLine="true"
 	    android:textAppearance="@style/ActionBarTextStyle"/>
 </RelativeLayout>

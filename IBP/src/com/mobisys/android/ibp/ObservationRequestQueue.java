@@ -74,6 +74,7 @@ public class ObservationRequestQueue {
 		b.putString(Request.FROM_DATE, sp.getFromDate());
 		b.putString(Request.PLACE_NAME, sp.getPlaceName());
 		b.putString(Request.AREAS, sp.getAreas());
+		b.putString(Request.NOTES, sp.getNotes());
 		if(sp.getCommonName().length()>0) b.putString(Request.COMMON_NAME, sp.getCommonName());
 		if(sp.getRecoName().length()>0) b.putString(Request.SCI_NAME, sp.getRecoName());
 		b.putString(Request.RESOURCE_LIST_TYPE, Constants.RESOURCE_LIST_TYPE);
@@ -130,6 +131,7 @@ public class ObservationRequestQueue {
 					return;
 				}
 				sp.setStatus(StatusType.FAILURE);
+				sp.setMessage(content);
 				ObservationParamsTable.updateRowFromTable(context, sp);
 				//ObservationParamsTable.deleteRowFromTable(context, sp);
 				if(!single){
@@ -164,8 +166,24 @@ public class ObservationRequestQueue {
 			@Override
 			public void onSuccess(String response) {
 				//ObservationParamsTable.deleteRowFromTable(context, sp);
-				sp.setStatus(StatusType.SUCCESS);
-				ObservationParamsTable.updateRowFromTable(context, sp);
+				try {
+					JSONObject jObj=new JSONObject(response);
+					boolean success=jObj.optBoolean("success");
+					if(success){
+						sp.setStatus(StatusType.SUCCESS);
+						ObservationParamsTable.updateRowFromTable(context, sp);
+					}
+					else{
+						sp.setStatus(StatusType.FAILURE);
+						String fail=jObj.optString("msg");
+						sp.setMessage(fail);
+						ObservationParamsTable.updateRowFromTable(context, sp);
+					}
+					
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
 				if(!single){
 					ObservationParams cp_new = ObservationParamsTable.getFirstRecord(context);
 					observationMethods(single, cp_new, context);
@@ -180,6 +198,7 @@ public class ObservationRequestQueue {
 					return;
 				}
 				sp.setStatus(StatusType.FAILURE);
+				sp.setMessage(content);
 				ObservationParamsTable.updateRowFromTable(context, sp);
 				if(!single){
 					ObservationParams cp_new = ObservationParamsTable.getFirstRecord(context);

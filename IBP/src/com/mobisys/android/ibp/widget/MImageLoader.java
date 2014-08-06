@@ -12,11 +12,12 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.squareup.picasso.Picasso;
 
 public class MImageLoader {
 
 	private static final String UNIVERSAL_IMAGE_LOADER = "universal-image-loader";
-	//private static final String PICASSO_IMAGE_LOADER = "picasso";
+	private static final String PICASSO_IMAGE_LOADER = "picasso";
 	
 	public static final String IMAGE_LOADER_TYPE = UNIVERSAL_IMAGE_LOADER;
 	
@@ -63,12 +64,12 @@ public class MImageLoader {
 			initImageLoader(context);
 			mImageLoader.displayImage(url, imageView, defaulDisplayImageOptions(place_holder_res));
 		}
-		/*else if(PICASSO_IMAGE_LOADER.equals(IMAGE_LOADER_TYPE)){
+		else if(PICASSO_IMAGE_LOADER.equals(IMAGE_LOADER_TYPE)){
 			Picasso.with(context).load(url)
 				.placeholder(place_holder_res)
 				.error(place_holder_res)
 				.into(imageView);
-		}*/
+		}
 	}
 	
 	public static void displayImage(Context context, String url, ImageView imageView, int place_holder_res, ImageLoadingListener listener){

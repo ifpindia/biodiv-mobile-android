@@ -48,5 +48,10 @@ public class Request {
 	public static final String RESOURCE_LIST_TYPE = "resourceListType";
 	public static final String AGREE_TERMS = "agreeTerms";
 	public static final String USER = "user";
+	public static final String NOTES = "notes";
+
+	public static final String OBV_ID = "id";
+
+	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
 	
 }

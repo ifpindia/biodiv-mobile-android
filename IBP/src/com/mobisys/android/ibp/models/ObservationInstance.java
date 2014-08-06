@@ -1,7 +1,7 @@
 package com.mobisys.android.ibp.models;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.codehaus.jackson.JsonNode;
@@ -19,6 +19,9 @@ import android.util.Log;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
 public class ObservationInstance implements Parcelable{
 
+	public static final String OI = "oi";
+	public static final String ObsInstance = "obs_instance";
+	
 	public static class NameRecordDeserializer extends JsonDeserializer<NameRecord> {
 		@Override
 	    public NameRecord deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
@@ -49,12 +52,13 @@ public class ObservationInstance implements Parcelable{
 	
 	private long id;
 	private String placeName;
+	private String topology;
 	private Category group;
 	private Habitat habitat;
-	private Date fromDate;
-	private Date toDate;
-	private Date createdOn;
-	private Date lastRevised;
+	private String fromDate;
+	private String toDate;
+	private String createdOn;
+	private String lastRevised;
 	private Author author;
 	private String thumbnail;
 	private String notes;
@@ -62,6 +66,7 @@ public class ObservationInstance implements Parcelable{
 	private int rating;
 	@JsonDeserialize(using = NameRecordDeserializer.class)
 	private NameRecord maxVotedReco;
+	private ArrayList<Resource> resource;
 	
 	public ObservationInstance(){}
 	
@@ -69,13 +74,14 @@ public class ObservationInstance implements Parcelable{
 		readFromParcel(in);
 	}
 	
-	public ObservationInstance(long id, String placeName, Category group,
-			Habitat habitat, Date fromDate, Date toDate, Date createdOn,
-			Date lastRevised, Author author, String thumbnail, String notes,
-			String summary, int rating, NameRecord maxVotedReco) {
+	public ObservationInstance(long id, String placeName, String topology,Category group,
+			Habitat habitat, String fromDate, String toDate, String createdOn,
+			String lastRevised, Author author, String thumbnail, String notes,
+			String summary, int rating, NameRecord maxVotedReco, ArrayList<Resource> resource) {
 		super();
 		this.id = id;
 		this.placeName = placeName;
+		this.topology=topology;
 		this.group = group;
 		this.habitat = habitat;
 		this.fromDate = fromDate;
@@ -88,6 +94,7 @@ public class ObservationInstance implements Parcelable{
 		this.summary = summary;
 		this.rating = rating;
 		this.maxVotedReco=maxVotedReco;
+		this.resource = resource;
 	}
 
 	public long getId() {
@@ -106,6 +113,14 @@ public class ObservationInstance implements Parcelable{
 		this.placeName = placeName;
 	}
 
+	public String getTopology() {
+		return topology;
+	}
+
+	public void setTopology(String topology) {
+		this.topology = topology;
+	}
+
 	public Category getGroup() {
 		return group;
 	}
@@ -122,35 +137,35 @@ public class ObservationInstance implements Parcelable{
 		this.habitat = habitat;
 	}
 
-	public Date getFromDate() {
+	public String getFromDate() {
 		return fromDate;
 	}
 
-	public void setFromDate(Date fromDate) {
+	public void setFromDate(String fromDate) {
 		this.fromDate = fromDate;
 	}
 
-	public Date getToDate() {
+	public String getToDate() {
 		return toDate;
 	}
 
-	public void setToDate(Date toDate) {
+	public void setToDate(String toDate) {
 		this.toDate = toDate;
 	}
 
-	public Date getCreatedOn() {
+	public String getCreatedOn() {
 		return createdOn;
 	}
 
-	public void setCreatedOn(Date createdOn) {
+	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
 
-	public Date getLastRevised() {
+	public String getLastRevised() {
 		return lastRevised;
 	}
 
-	public void setLastRevised(Date lastRevised) {
+	public void setLastRevised(String lastRevised) {
 		this.lastRevised = lastRevised;
 	}
 
@@ -202,127 +217,33 @@ public class ObservationInstance implements Parcelable{
 		this.maxVotedReco = maxVotedReco;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((author == null) ? 0 : author.hashCode());
-		result = prime * result
-				+ ((createdOn == null) ? 0 : createdOn.hashCode());
-		result = prime * result
-				+ ((fromDate == null) ? 0 : fromDate.hashCode());
-		result = prime * result + ((group == null) ? 0 : group.hashCode());
-		result = prime * result + ((habitat == null) ? 0 : habitat.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result
-				+ ((lastRevised == null) ? 0 : lastRevised.hashCode());
-		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
-		result = prime * result
-				+ ((placeName == null) ? 0 : placeName.hashCode());
-		result = prime * result + rating;
-		result = prime * result + ((summary == null) ? 0 : summary.hashCode());
-		result = prime * result
-				+ ((thumbnail == null) ? 0 : thumbnail.hashCode());
-		result = prime * result + ((toDate == null) ? 0 : toDate.hashCode());
-		return result;
+	public ArrayList<Resource> getResource() {
+		return resource;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ObservationInstance other = (ObservationInstance) obj;
-		if (author == null) {
-			if (other.author != null)
-				return false;
-		} else if (!author.equals(other.author))
-			return false;
-		if (createdOn == null) {
-			if (other.createdOn != null)
-				return false;
-		} else if (!createdOn.equals(other.createdOn))
-			return false;
-		if (fromDate == null) {
-			if (other.fromDate != null)
-				return false;
-		} else if (!fromDate.equals(other.fromDate))
-			return false;
-		if (group == null) {
-			if (other.group != null)
-				return false;
-		} else if (!group.equals(other.group))
-			return false;
-		if (habitat == null) {
-			if (other.habitat != null)
-				return false;
-		} else if (!habitat.equals(other.habitat))
-			return false;
-		if (id != other.id)
-			return false;
-		if (lastRevised == null) {
-			if (other.lastRevised != null)
-				return false;
-		} else if (!lastRevised.equals(other.lastRevised))
-			return false;
-		if (notes == null) {
-			if (other.notes != null)
-				return false;
-		} else if (!notes.equals(other.notes))
-			return false;
-		if (placeName == null) {
-			if (other.placeName != null)
-				return false;
-		} else if (!placeName.equals(other.placeName))
-			return false;
-		if (rating != other.rating)
-			return false;
-		if (summary == null) {
-			if (other.summary != null)
-				return false;
-		} else if (!summary.equals(other.summary))
-			return false;
-		if (thumbnail == null) {
-			if (other.thumbnail != null)
-				return false;
-		} else if (!thumbnail.equals(other.thumbnail))
-			return false;
-		if (toDate == null) {
-			if (other.toDate != null)
-				return false;
-		} else if (!toDate.equals(other.toDate))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "ObservationInstanceList [id=" + id + ", placeName=" + placeName
-				+ ", group=" + group + ", habitat=" + habitat + ", fromDate="
-				+ fromDate + ", toDate=" + toDate + ", createdOn=" + createdOn
-				+ ", lastRevised=" + lastRevised + ", author=" + author
-				+ ", thumbnail=" + thumbnail + ", notes=" + notes
-				+ ", summary=" + summary + ", rating=" + rating + "]";
+	public void setResource(ArrayList<Resource> resource) {
+		this.resource = resource;
 	}
 
 	private void readFromParcel(Parcel in) {
 		id=in.readLong();
 		placeName=in.readString();
+		topology=in.readString();
 		group=in.readParcelable(Category.class.getClassLoader());
 		habitat=in.readParcelable(Habitat.class.getClassLoader());
-		fromDate= (Date) in.readSerializable();
-		toDate= (Date) in.readSerializable();
-		createdOn= (Date) in.readSerializable();
-		lastRevised= (Date) in.readSerializable();
+		fromDate= in.readString();
+		toDate= in.readString();
+		createdOn= in.readString();
+		lastRevised= in.readString();
 		author=in.readParcelable(Author.class.getClassLoader());
 		thumbnail=in.readString();
 		notes=in.readString();
 		summary=in.readString();
 		rating=in.readInt();
 		maxVotedReco=in.readParcelable(NameRecord.class.getClassLoader());
+		resource=new ArrayList<Resource>();
+		in.readList(resource, Resource.class.getClassLoader());
+		
 	}
 
 	@Override
@@ -334,18 +255,20 @@ public class ObservationInstance implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(id);
 		dest.writeString(placeName);
+		dest.writeString(topology);
 		dest.writeParcelable(group, flags);
 		dest.writeParcelable(habitat, flags);
-		dest.writeSerializable(fromDate);
-		dest.writeSerializable(toDate);
-		dest.writeSerializable(createdOn);
-		dest.writeSerializable(lastRevised);
+		dest.writeString(fromDate);
+		dest.writeString(toDate);
+		dest.writeString(createdOn);
+		dest.writeString(lastRevised);
 		dest.writeParcelable(author, flags);
 		dest.writeString(thumbnail);
 		dest.writeString(notes);
 		dest.writeString(summary);
 		dest.writeInt(rating);
 		dest.writeParcelable(maxVotedReco, flags);
+		dest.writeList(resource);
 	}
 
 	public static final Creator<ObservationInstance> CREATOR = new Creator<ObservationInstance>() {
@@ -358,4 +281,5 @@ public class ObservationInstance implements Parcelable{
 			return new ObservationInstance[size];
 		}
 	};
+	
 }
