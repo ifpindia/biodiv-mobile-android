@@ -236,8 +236,15 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		sp.setGroupId(mSelectedCategory.getId());
 		sp.setHabitatId(267838);
 		sp.setFromDate(mSelectedDate);
-		sp.setPlaceName(mAddress);
-		sp.setAreas("Point("+mLng+" "+mLat+")");
+		if(!Preferences.NEW_DEBUG){
+			if(mAddress.equals(getResources().getString(R.string.label_reverse_lookup_error))) sp.setPlaceName(null);
+			else sp.setPlaceName(mAddress);
+		}
+		else sp.setPlaceName(Constants.DEFAULT_ADDRESS);
+		
+		if(Preferences.NEW_DEBUG) sp.setAreas("Point("+Constants.DEFAULT_LNG+" "+Constants.DEFAULT_LAT+")");
+		else sp.setAreas("Point("+mLng+" "+mLat+")");
+		
 		String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
 		String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
 		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
@@ -254,7 +261,8 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		Log.d("Total","Db record: "+spList.size());
 		
 		ObservationRequestQueue.getInstance().executeAllSubmitRequests(NewSightingActivity.this);
-		Toast.makeText(NewSightingActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
+		if(AppUtil.isNetworkAvailable(NewSightingActivity.this)) Toast.makeText(NewSightingActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
+		else Toast.makeText(NewSightingActivity.this, R.string.observation_msg_without_internet, Toast.LENGTH_SHORT).show();
 		Intent i = new Intent(NewSightingActivity.this, HomeActivity.class);
 		startActivity(i);
 		finish();
@@ -290,6 +298,9 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		
 		File file = new File(AppUtil.getImagePath(filename));
 		mFileUri = Uri.fromFile(file);
+		Log.d("On camera click","*** Uri: "+mFileUri.toString());
+		MyApplication myApplication = (MyApplication)getApplication();
+		myApplication.setPictUri(mFileUri);
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
 		startActivityForResult(intent, Constants.CAMERA_PHOTO);
@@ -341,7 +352,10 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode == RESULT_OK && requestCode == Constants.CAMERA_PHOTO){
-        	Bitmap bmp = convertUriToBitmap(mFileUri, 800, 800);
+			MyApplication myApplication = (MyApplication)getApplication();
+            mFileUri=myApplication.getPicUri();
+            Log.d("OnActivityResult","*** Uri: "+mFileUri.toString());
+			Bitmap bmp = convertUriToBitmap(mFileUri, 800, 800);
         	mFileUri = getImageUri(this, bmp);
         	
     		if(mImageUrls.size()==0) mImageUrls.add(mFileUri);

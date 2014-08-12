@@ -320,7 +320,6 @@ public class LoginActivity extends ActionBarActivity {
 		mPg= ProgressDialog.show(LoginActivity.this,getString(R.string.loading));
 		Bundle b=new Bundle();
 		b.putString(Request.PARAM_EMAIL, email);
-		mPg= ProgressDialog.show(LoginActivity.this,getString(R.string.loading));
 		
 		WebService.sendRequest(LoginActivity.this, Request.METHOD_POST, Request.PATH_FORGOT_PASSWORD, b, new ResponseHandler() {
 			

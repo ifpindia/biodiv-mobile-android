@@ -176,7 +176,12 @@ public class ObservationRequestQueue {
 					else{
 						sp.setStatus(StatusType.FAILURE);
 						String fail=jObj.optString("msg");
-						sp.setMessage(fail);
+						JSONArray jarray=jObj.getJSONArray("errors");
+						if(jarray!=null && jarray.length()>0){
+							sp.setMessage(jarray.getJSONObject(0).optString("message"));
+						}
+						else sp.setMessage(fail);
+						
 						ObservationParamsTable.updateRowFromTable(context, sp);
 					}
 					

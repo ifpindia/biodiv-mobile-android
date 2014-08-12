@@ -7,9 +7,10 @@ public class Constants {
 	public static final String APP_TOKEN = "token";
 	public static final String LAT = "lat";
 	public static final String LNG = "long";
-	public static final String DEFAULT_LAT="12.9715";
-	public static final String DEFAULT_LNG="77.5945";
-	public static final String DEFAULT_LOC="Blue Cross Enterprises KG Halli, D Souza Layout, Sampangi Rama Nagar, Bangalore, Karnataka 560002";
+	public static final String DEFAULT_LAT ="18.4638392";
+	public static final String DEFAULT_LNG ="73.86471";
+	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
+	
 	public static final String NEARBY = "nearBy";
 	protected static final String GROUP_ID = "species_group_id";
 	public static final String DATE_FORMAT = "dd/MM/yyyy";
@@ -24,5 +25,4 @@ public class Constants {
 	public static final String AGREE_TERMS_VALUE = "on";
 	public static final String IS_MY_COLLECTION = "isMyCollection";
 	public static final String USER_ID = "user_id";
-	
 }

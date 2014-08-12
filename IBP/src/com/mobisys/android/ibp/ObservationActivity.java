@@ -57,10 +57,16 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
 		if(!isMyCollection){
 			initActionTitle(getString(R.string.observations));
-			double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LAT, "0.0"));
-			double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LNG, "0.0"));
-			b.putString(Constants.LAT, String.valueOf(18.4638392));//lat));
-			b.putString(Constants.LNG, String.valueOf(73.86471));//lng));
+			double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LAT, Constants.DEFAULT_LAT));
+			double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LNG, Constants.DEFAULT_LNG));
+			if(Preferences.NEW_DEBUG){
+				b.putString(Constants.LAT, Constants.DEFAULT_LAT);
+				b.putString(Constants.LNG, Constants.DEFAULT_LNG);
+			}
+			else{
+				b.putString(Constants.LAT, String.valueOf(lat));
+				b.putString(Constants.LNG, String.valueOf(lng));
+			}
 			b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
 			b.putString(Request.MAXRADIUS, String.valueOf(1000));
 			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));

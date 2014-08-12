@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     android:padding="8dp"
     android:background="@color/bg_color">
    <ImageView android:id="@+id/image" 
@@ -36,15 +36,11 @@
 	  	    android:singleLine="true"
 	  	    android:ellipsize="end"
 	  	    android:textColor="@color/brown_color"
-	  	    android:layout_marginTop="6dp"
 	  	    android:textSize="14sp"/>
 	  	<TextView android:id="@+id/error_message"
 	  	    android:layout_width="wrap_content"
 	  	    android:layout_height="wrap_content"
-	  	    android:singleLine="true"
-	  	    android:ellipsize="end"
 	  	    android:textColor="@color/brown_color"
-	  	    android:layout_marginTop="6dp"
 	  	    android:textSize="12sp"/>
 	</LinearLayout>
 	<ImageButton android:id="@+id/arrow"
