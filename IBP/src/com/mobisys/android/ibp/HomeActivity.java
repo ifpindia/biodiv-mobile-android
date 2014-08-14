@@ -32,7 +32,7 @@ import android.widget.Toast;
 public class HomeActivity extends BaseSlidingActivity{
 
 	boolean mLocationFetching=false;
-	private double mLat, mLng;
+	//private double mLat, mLng;
 	ArrayList<Category> mCategoryList;
 	private Dialog mPg;
 	
@@ -68,7 +68,7 @@ public class HomeActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				Intent i=new Intent(HomeActivity.this, NewSightingActivity.class);
+				Intent i=new Intent(HomeActivity.this, NewObservationActivity.class);
 				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(i);
 				finish();
@@ -109,8 +109,8 @@ public class HomeActivity extends BaseSlidingActivity{
 			public void gotLocation(Location location) {
 				if(location!=null){
 					mLocationFetching=false;
-					mLat = location.getLatitude();
-					mLng = location.getLongitude();
+					//mLat = location.getLatitude();
+					//mLng = location.getLongitude();
 					
 				}			
 			}

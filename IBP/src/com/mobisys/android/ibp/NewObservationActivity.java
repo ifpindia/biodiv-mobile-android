@@ -41,7 +41,7 @@ import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
-public class NewSightingActivity extends BaseSlidingActivity{
+public class NewObservationActivity extends BaseSlidingActivity{
 
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
@@ -156,7 +156,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				Intent i=new Intent(NewSightingActivity.this, ObservationMapActivity.class);
+				Intent i=new Intent(NewObservationActivity.this, SelectLocationActivity.class);
 				i.putExtra(Constants.LAT, mLat);
 				i.putExtra(Constants.LNG, mLng);
 				startActivityForResult(i, Constants.LOCATION_ADDRESS);
@@ -171,11 +171,11 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			}
 		});
 		
-		mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewSightingActivity.this, Constants.LAT, String.valueOf(0)));
-		mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewSightingActivity.this, Constants.LNG, String.valueOf(0)));
+		mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewObservationActivity.this, Constants.LAT, String.valueOf(0)));
+		mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewObservationActivity.this, Constants.LNG, String.valueOf(0)));
 		if(mLat!=0.0 && mLng!=0.0){
 			((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
-			ReveseGeoCodeUtil.doReverseGeoCoding(NewSightingActivity.this, mLat,mLng, mHttpRetriever, new ReveseGeoCodeListener() {
+			ReveseGeoCodeUtil.doReverseGeoCoding(NewObservationActivity.this, mLat,mLng, mHttpRetriever, new ReveseGeoCodeListener() {
 				
 				@Override
 				public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
@@ -190,15 +190,15 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	
 	protected void validateParams() {
 		if(mImageUrls==null||mImageUrls.size()==0){
-			AppUtil.showDialog("You must submit atleast one photo.", NewSightingActivity.this);
+			AppUtil.showDialog("You must submit atleast one photo.", NewObservationActivity.this);
 			return;
 		}
 		if(mSelectedCategory==null){ 
-			AppUtil.showDialog("Please Select Category", NewSightingActivity.this);
+			AppUtil.showDialog("Please Select Category", NewObservationActivity.this);
 			return;
 		}
 		if(mSelectedDate==null){ 
-			AppUtil.showDialog("Please select sighting date", NewSightingActivity.this);
+			AppUtil.showDialog("Please select sighting date", NewObservationActivity.this);
 			return;
 		}
 		
@@ -206,7 +206,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
 			String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
 			if(common_name.length()==0 && sci_name.length()==0){
-				AppUtil.showDialog("Please enter all fields", NewSightingActivity.this);
+				AppUtil.showDialog("Please enter all fields", NewObservationActivity.this);
 				return;
 			} 
 		} 
@@ -219,11 +219,11 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			
 		if(mImageUrls!=null && mImageUrls.size()>0){
 			for(int i=0;i<mImageUrls.size();i++){
-				String imagepath=AppUtil.getRealPathFromURI(mImageUrls.get(i), NewSightingActivity.this);
+				String imagepath=AppUtil.getRealPathFromURI(mImageUrls.get(i), NewObservationActivity.this);
 				if(Preferences.DEBUG) Log.d("NewSightingActivity", "***image path for server "+imagepath);
 	    		imageStringPath.add(imagepath);
 	    		
-	    		String imageType=AppUtil.GetMimeType(NewSightingActivity.this, mImageUrls.get(i));
+	    		String imageType=AppUtil.GetMimeType(NewObservationActivity.this, mImageUrls.get(i));
 	    		if(Preferences.DEBUG) Log.d("AddPlacesActivity", "***image type for server "+imageType);
 	    		mImageType.add(imageType);
 			}
@@ -256,14 +256,14 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		sp.setResources(resources);
 		sp.setImageType(imageType2);
 		sp.setStatus(StatusType.PENDING);
-		ObservationParamsTable.createEntryInTable(NewSightingActivity.this, sp);
-		ArrayList<ObservationParams> spList=(ArrayList<ObservationParams>) ObservationParamsTable.getAllRecords(NewSightingActivity.this);
+		ObservationParamsTable.createEntryInTable(NewObservationActivity.this, sp);
+		ArrayList<ObservationParams> spList=(ArrayList<ObservationParams>) ObservationParamsTable.getAllRecords(NewObservationActivity.this);
 		Log.d("Total","Db record: "+spList.size());
 		
-		ObservationRequestQueue.getInstance().executeAllSubmitRequests(NewSightingActivity.this);
-		if(AppUtil.isNetworkAvailable(NewSightingActivity.this)) Toast.makeText(NewSightingActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
-		else Toast.makeText(NewSightingActivity.this, R.string.observation_msg_without_internet, Toast.LENGTH_SHORT).show();
-		Intent i = new Intent(NewSightingActivity.this, HomeActivity.class);
+		ObservationRequestQueue.getInstance().executeAllSubmitRequests(NewObservationActivity.this);
+		if(AppUtil.isNetworkAvailable(NewObservationActivity.this)) Toast.makeText(NewObservationActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
+		else Toast.makeText(NewObservationActivity.this, R.string.observation_msg_without_internet, Toast.LENGTH_SHORT).show();
+		Intent i = new Intent(NewObservationActivity.this, HomeActivity.class);
 		startActivity(i);
 		finish();
 	}
@@ -271,7 +271,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	private void showSelectDialog() {
 		final CharSequence[] methods = {getString(R.string.gallery), getString(R.string.camera)};
 		 
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewSightingActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
         builder.setTitle(getString(R.string.select_from));
         builder.setItems(methods, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
@@ -307,7 +307,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	}
 
 	private void showDate() {
-		AppUtil.getDate(NewSightingActivity.this, new DateListener() {
+		AppUtil.getDate(NewObservationActivity.this, new DateListener() {
 			
 			@Override
 			public void onSelectedDate(Date date) {
@@ -325,15 +325,15 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	
 	private void showCategoryDialogNew() {
 		final ArrayList<String> categoryListStr=new ArrayList<String>();
-		final ArrayList<Category> categoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(NewSightingActivity.this);
+		final ArrayList<Category> categoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(NewObservationActivity.this);
 		if(categoryList!=null && categoryList.size()>0){
 			categoryList.remove(0);
 			for(int i=0;i<categoryList.size();i++){
 				categoryListStr.add(categoryList.get(i).getName());
 			}
 		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewSightingActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, categoryListStr);
-		AlertDialog.Builder builder = new AlertDialog.Builder(NewSightingActivity.this);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewObservationActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, categoryListStr);
+		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
         builder.setTitle(R.string.select_category);
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
 			
@@ -370,11 +370,11 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		    }
     		
         	//mImageUrls.add(mFileUri);
-    		String path = AppUtil.getRealPathFromURI(mFileUri, NewSightingActivity.this);
+    		String path = AppUtil.getRealPathFromURI(mFileUri, NewObservationActivity.this);
     		//This is just for display image in ImageView
     		File imageFile = new File(path);
     		//Rotate if necessary
-    		int rotate=AppUtil.getCameraPhotoOrientation(NewSightingActivity.this, mFileUri, path);
+    		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, mFileUri, path);
     		Matrix matrix = new Matrix();
     		matrix.postRotate(rotate);
     		
@@ -406,7 +406,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
     		
     		File imageFile = new File(AppUtil.getRealPathFromURI(selectedImage, getApplicationContext()));
     		//Rotate if necessary
-    		int rotate=AppUtil.getCameraPhotoOrientation(NewSightingActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
+    		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
     		Matrix matrix = new Matrix();
     		matrix.postRotate(rotate);
     		
@@ -438,7 +438,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	public Bitmap convertUriToBitmap(Uri selectedImage,int width, int height){
 		File imageFile = new File(AppUtil.getRealPathFromURI(selectedImage, getApplicationContext()));
 		//Rotate if necessary
-		int rotate=AppUtil.getCameraPhotoOrientation(NewSightingActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
+		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
 		Matrix matrix = new Matrix();
 		matrix.postRotate(rotate);
 		

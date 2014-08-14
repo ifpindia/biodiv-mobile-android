@@ -51,7 +51,7 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				Intent i=new Intent(ObservationStatusActivity.this, NewSightingActivity.class);
+				Intent i=new Intent(ObservationStatusActivity.this, NewObservationActivity.class);
 				startActivity(i);
 				finish();
 			}

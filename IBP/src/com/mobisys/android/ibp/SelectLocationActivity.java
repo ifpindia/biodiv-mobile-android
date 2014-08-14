@@ -22,7 +22,7 @@ import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
-public class ObservationMapActivity extends ActionBarActivity{
+public class SelectLocationActivity extends ActionBarActivity{
 
 	private double mLng,mLat;
 	private GoogleMap mMap;
@@ -79,8 +79,8 @@ public class ObservationMapActivity extends ActionBarActivity{
 			mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();	
        }
        else{
-    	   mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationMapActivity.this, Constants.LAT, "0"));
-   		   mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationMapActivity.this, Constants.LNG, "0"));
+    	   mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(SelectLocationActivity.this, Constants.LAT, "0"));
+   		   mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(SelectLocationActivity.this, Constants.LNG, "0"));
    		   LatLng lat_lng = new LatLng(mLat,mLng);
    		   mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
        }
@@ -88,14 +88,12 @@ public class ObservationMapActivity extends ActionBarActivity{
 			DisplayMetrics displaymetrics = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 			
-			final int width = displaymetrics.widthPixels;
-		
 			mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 				
 				@Override
 				public void onCameraChange(CameraPosition cameraPosition) {
 					mMap.setOnCameraChangeListener(mRequestListener);
-					if(Preferences.DEBUG) Log.d("SightingMapActivity", "********on moving");
+					if(Preferences.DEBUG) Log.d("SightingMapActivity", "Lat: "+mCameraPos.target.latitude+" Lng: "+mCameraPos.target.longitude);
 					//mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPos));
 					mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(mCameraPos.target.latitude,mCameraPos.target.longitude) , 13));
 				}
@@ -107,8 +105,8 @@ public class ObservationMapActivity extends ActionBarActivity{
 	private GoogleMap.OnCameraChangeListener mRequestListener=new GoogleMap.OnCameraChangeListener() {
 
 		@Override
-		public void onCameraChange(CameraPosition arg0) {
-			if(Preferences.DEBUG) Log.d("QuestaMapActivity", "********changing Location");
+		public void onCameraChange(CameraPosition cameraPos) {
+			if(Preferences.DEBUG) Log.d("QuestaMapActivity", "********changing Location to "+"Lat: "+cameraPos.target.latitude+" Lng: "+cameraPos.target.longitude);
 			Message msg = Message.obtain(mRequestHandler, REQUEST_ADDRESS);
 			mRequestHandler.removeMessages(REQUEST_ADDRESS);
 			mRequestHandler.sendMessageDelayed(msg, 1000);
@@ -126,7 +124,7 @@ public class ObservationMapActivity extends ActionBarActivity{
     };
     
     private void doReverseGeocoding(double latitude, double longitude) {
-        ReveseGeoCodeUtil.doReverseGeoCoding(ObservationMapActivity.this, latitude, longitude, mHttpRetriever, new ReveseGeoCodeListener() {
+        ReveseGeoCodeUtil.doReverseGeoCoding(SelectLocationActivity.this, latitude, longitude, mHttpRetriever, new ReveseGeoCodeListener() {
 			
 			@Override
 			public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
