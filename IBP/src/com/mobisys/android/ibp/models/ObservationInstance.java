@@ -40,12 +40,17 @@ public class ObservationInstance implements Parcelable{
 			}
 			String commnName=b.toString();
 			String sciName="";
-			if(!node.isNull()&& node.get("sciNameReco")!=null)
+			String speciesId=null;
+			if(!node.isNull()&& node.get("sciNameReco")!=null){
 				sciName=node.get("sciNameReco").get("name").asText();
+				if(node.get("sciNameReco").get("speciesId")!=null)
+					speciesId=node.get("sciNameReco").get("speciesId").asText();
+			}	
 			
 			NameRecord nr=new NameRecord();
 			nr.setCommonName(commnName);
 			nr.setScientificName(sciName);
+			nr.setSpeciesIdForSciRecord(speciesId);
 			return nr;
 		}
 	}

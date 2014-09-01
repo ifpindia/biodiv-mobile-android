@@ -67,4 +67,7 @@
 	<string name="submitted">Submitted:</string>
 	<string name="notes">Notes:</string>
 	<string name="observation_status">Submitted observations status</string> 
+	<string name="msg_password_sent">Password will be sent to this email id.</string>
+	<string name="no_obs_msg">No observations submitted by you. Please submit observation by entering following button.</string>
+	<string name="select_loc">Select Location</string>
 </resources>

@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +32,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParserInterface;
+import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
 import com.mobisys.android.ibp.database.CategoriesTable;
 import com.mobisys.android.ibp.database.ObservationParamsTable;
 import com.mobisys.android.ibp.models.Category;
@@ -41,7 +46,7 @@ import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
-public class NewSightingActivity extends BaseSlidingActivity{
+public class NewSightingActivity extends BaseSlidingActivity {//implements SelectedLocationListener{
 
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
@@ -53,6 +58,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	private Category mSelectedCategory=null;
 	private String mSelectedDate=null;
 	private String mAddress;
+	private com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView mCommNameAutoText, mSciNameAutoText;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,19 +71,40 @@ public class NewSightingActivity extends BaseSlidingActivity{
 	}
 
 	private void initScreen() {
+		mCommNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_common_name);
+		mCommNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
+			
+			@Override
+			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
+				return getStringArray(response);
+			}
+		});
+
+		mSciNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_sci_name);
+		mSciNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
+			
+			@Override
+			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
+				return getStringArray(response);
+			}
+		});
+		
 		((CheckBox)findViewById(R.id.chk_help_identify)).setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
 			    if(!isChecked){
 			    	findViewById(R.id.edit_common_name).setVisibility(View.VISIBLE);
 			    	findViewById(R.id.edit_sci_name).setVisibility(View.VISIBLE);
-
+			    	findViewById(R.id.rule03).setVisibility(View.VISIBLE);
+			    	findViewById(R.id.rule05).setVisibility(View.VISIBLE);
 			    }else{
+			    	findViewById(R.id.rule03).setVisibility(View.GONE);
+			    	findViewById(R.id.rule05).setVisibility(View.GONE);
 			    	findViewById(R.id.edit_common_name).setVisibility(View.GONE);
 			    	findViewById(R.id.edit_sci_name).setVisibility(View.GONE);
 			    }
 		}});
 		
-		((Button)findViewById(R.id.btn_category)).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.category_layout).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -86,10 +113,10 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		});
 		
 		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-		((Button)findViewById(R.id.btn_date_sighted)).setText(sdf.format(new Date()));
+		((TextView)findViewById(R.id.date_sighted)).setText(sdf.format(new Date()));
 		mSelectedDate=sdf.format(new Date());
 		
-		((Button)findViewById(R.id.btn_date_sighted)).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.date_layout).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -188,6 +215,29 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		}
 	}
 	
+	private ArrayList<DisplayStringInterface> getStringArray(String response) {
+		ArrayList<DisplayStringInterface> array=new ArrayList<DisplayStringInterface>();
+		try {
+			JSONArray jsonArray=new JSONArray(response);
+			if(jsonArray!=null){
+				for(int i=0;i<jsonArray.length();i++){
+					final String str=jsonArray.getJSONObject(i).optString("label");
+					array.add(new DisplayStringInterface() {
+						
+						@Override
+						public String getDisplayString() {
+							
+							return str;
+						}
+					});
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return array;
+	}
+
 	protected void validateParams() {
 		if(mImageUrls==null||mImageUrls.size()==0){
 			AppUtil.showDialog("You must submit atleast one photo.", NewSightingActivity.this);
@@ -203,8 +253,8 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		}
 		
 		if(!((CheckBox)findViewById(R.id.chk_help_identify)).isChecked()){
-			String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
-			String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
+			String common_name=mCommNameAutoText.getText().toString();
+			String sci_name=mSciNameAutoText.getText().toString();
 			if(common_name.length()==0 && sci_name.length()==0){
 				AppUtil.showDialog("Please enter all fields", NewSightingActivity.this);
 				return;
@@ -245,8 +295,8 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		if(Preferences.NEW_DEBUG) sp.setAreas("Point("+Constants.DEFAULT_LNG+" "+Constants.DEFAULT_LAT+")");
 		else sp.setAreas("Point("+mLng+" "+mLat+")");
 		
-		String common_name=((EditText)findViewById(R.id.edit_common_name)).getText().toString();
-		String sci_name=((EditText)findViewById(R.id.edit_sci_name)).getText().toString();
+		String common_name=mCommNameAutoText.getText().toString();
+		String sci_name=mSciNameAutoText.getText().toString();
 		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
 		sp.setCommonName(common_name);
 		sp.setRecoName(sci_name);
@@ -312,7 +362,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			@Override
 			public void onSelectedDate(Date date) {
 				SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-				((Button)findViewById(R.id.btn_date_sighted)).setText(sdf.format(date));
+				((TextView)findViewById(R.id.date_sighted)).setText(sdf.format(date));
 				mSelectedDate=sdf.format(date);
 			}
 
@@ -341,7 +391,7 @@ public class NewSightingActivity extends BaseSlidingActivity{
 			public void onClick(DialogInterface dialog, int which) {
 				mSelectedCategory=categoryList.get(which);
 				Log.d("NewSighingActivity", "Category selected: "+categoryListStr.get(which));
-				((Button)findViewById(R.id.btn_category)).setText(""+categoryListStr.get(which));
+				((TextView)findViewById(R.id.category)).setText(""+categoryListStr.get(which));
 			}
 		});
 	
@@ -449,4 +499,15 @@ public class NewSightingActivity extends BaseSlidingActivity{
 		Bitmap rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
 		return rotatedBitmap;
 	}
+
+	/*@Override
+	public void onSelectedLocation(String selectedLocation) {
+		
+	}
+
+	@Override
+	public void onFetchLatLngForSelectedLoc(double lat, double lng) {
+		
+	}*/
+
 }	

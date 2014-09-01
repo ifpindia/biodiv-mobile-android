@@ -63,8 +63,14 @@ public class MyCollectionMapActivity extends ActionBarActivity{
 	private void setUpMap(final Context ctx) {
 		double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(MyCollectionMapActivity.this, Constants.LAT, "0"));
 		double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(MyCollectionMapActivity.this, Constants.LNG, "0"));
+		LatLng lat_lng ;
+		if(Preferences.NEW_DEBUG){
+			lat_lng = new LatLng(Double.valueOf(Constants.DEFAULT_LAT),Double.valueOf(Constants.DEFAULT_LNG));
+		}
+		else{
+			lat_lng = new LatLng(lat,lng);
+		}
 		
-		LatLng lat_lng = new LatLng(lat,lng);
 		mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
 		if(mCameraPos!=null){
 			mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPos));

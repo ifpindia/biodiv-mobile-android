@@ -156,8 +156,9 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	}
 	
 	private void initScreen() {
-		if(isMyCollection){
+		//if(isMyCollection){
 			findViewById(R.id.btn_show_map).setVisibility(View.VISIBLE);
+			findViewById(R.id.view01).setVisibility(View.VISIBLE);
 			findViewById(R.id.btn_show_map).setOnClickListener(new View.OnClickListener() {
 				
 				@Override
@@ -167,8 +168,11 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					startActivity(i);
 				}
 			});
-		}
-		else findViewById(R.id.btn_show_map).setVisibility(View.GONE);
+		//}
+		/*else{ 
+			findViewById(R.id.btn_show_map).setVisibility(View.GONE);
+			findViewById(R.id.view01).setVisibility(View.GONE);
+		}*/
 	}
 	
 	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
@@ -198,8 +202,8 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  				row = mInflater.inflate(R.layout.row_observation_list_item, null);
  				holder = new ViewHolder(row);
  				row.setTag(holder);
- 				Drawable selector=AppUtil.getPressedStateDrawable(ObservationActivity.this);
- 				row.setBackgroundDrawable(selector);
+ 				Drawable selector=AppUtil.getListSelectorNew(ObservationActivity.this);
+				row.setBackgroundDrawable(selector);
  			}
  			else{
  				holder = (ViewHolder)row.getTag();

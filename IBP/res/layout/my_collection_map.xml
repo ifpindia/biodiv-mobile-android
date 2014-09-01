@@ -5,15 +5,14 @@
     <RelativeLayout android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:background="@color/brown_color">
+        android:background="@drawable/title_bar_bg">
         <TextView android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:text="@string/map"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/bg_color"/>
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/HeaderTextStyle"/>
     </RelativeLayout>
     <fragment android:id="@+id/map"
 	  android:layout_width="fill_parent"

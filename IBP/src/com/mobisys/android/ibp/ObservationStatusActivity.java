@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -86,6 +87,8 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  				row = mInflater.inflate(R.layout.row_observation_status_list_item, parent,false);
  				holder = new ViewHolder(row);
  				row.setTag(holder);
+ 				Drawable selector=AppUtil.getListSelectorNew(ObservationStatusActivity.this);
+				row.setBackgroundDrawable(selector);
  			}
  			else{
  				holder = (ViewHolder)row.getTag();

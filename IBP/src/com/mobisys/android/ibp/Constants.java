@@ -25,4 +25,6 @@ public class Constants {
 	public static final String AGREE_TERMS_VALUE = "on";
 	public static final String IS_MY_COLLECTION = "isMyCollection";
 	public static final String USER_ID = "user_id";
+	public static final String SPECIES_ID = "species_id";
+	public static final String SCI_NAME = "sci_name";
 }

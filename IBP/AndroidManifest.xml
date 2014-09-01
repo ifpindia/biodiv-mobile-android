@@ -81,6 +81,10 @@
             android:name="com.mobisys.android.ibp.MyCollectionMapActivity"
             android:label="@string/app_name" >
         </activity>
+         <activity
+            android:name="com.mobisys.android.ibp.SpeciesInfoWebViewActivity"
+            android:label="@string/app_name" >
+        </activity>
         <receiver android:name=".NetworkStateReceiver">
 		   <intent-filter>
 		      <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

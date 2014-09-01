@@ -6,4 +6,9 @@
     <color name="brown_color">#452715</color>
     <color name="orange_color">#d57a33</color>
     <color name="blue_color">#0089B7</color>
+    <color name="header_title_text_color">#dcdc5b</color>
+    <color name="questa_brown_color">#cca077</color>
+    <color name="light_gray_bg">#dddddd</color>
+    <color name="green_color">#549316</color>
+     <color name="list_item_name_text_color">#b3ff55</color>
 </resources>

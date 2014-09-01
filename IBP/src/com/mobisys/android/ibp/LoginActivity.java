@@ -17,10 +17,14 @@ import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -287,32 +291,31 @@ public class LoginActivity extends ActionBarActivity {
 	}
 
 	private void forgotPasswordDialog() {
-		final Dialog dialog = new Dialog(LoginActivity.this);
-		dialog.setTitle(R.string.forgot_password);
-		dialog.setContentView(R.layout.dialog_email);
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final View v = inflater.inflate(R.layout.dialog_forgot_password, null);
 		
-		dialog.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(getString(R.string.forgot_password));
+		builder.setView(v);
+		builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		
-		dialog.findViewById(R.id.btn_ok).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				//final String password=SharedPreferencesUtil.getSharedPreferencesString(MainActivity.this, Constants.PARAM_USER_PASSWORD, null);
-				String email=((EditText)dialog.findViewById(R.id.edit_email)).getText().toString();
+			public void onClick(DialogInterface dialog, int which) {
+				String email=((EditText)v.findViewById(R.id.edit_email)).getText().toString();
 				dialog.dismiss();
 				
 				if(AppUtil.emailValidator(email)) forgotPassword(email);
 				else Toast.makeText(LoginActivity.this, "Invalid email", Toast.LENGTH_SHORT).show();
 			}
 		});
-		
-		dialog.show();
+		builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.show();
 	}
 
 	

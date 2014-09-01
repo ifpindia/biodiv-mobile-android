@@ -15,6 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mobisys.android.ibp.R;
+import com.mobisys.android.ibp.http.HttpUtils;
+import com.mobisys.android.ibp.http.Request;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -288,5 +290,21 @@ public class AppUtil {
 		SimpleDateFormat  dateformat = new SimpleDateFormat(date_format);  
 		String datetime = dateformat.format(date);
 		return datetime;
+	}
+	
+	public static Drawable getListSelectorNew(Context context){
+		StateListDrawable states = new StateListDrawable();
+		states.addState(new int[] {android.R.attr.state_pressed},
+				context.getResources().getDrawable(R.drawable.list_item_bg_o));
+		states.addState(new int[] {android.R.attr.state_focused},
+				context.getResources().getDrawable(R.drawable.list_item_bg_o));
+		states.addState(new int[] { },
+				context.getResources().getDrawable(R.drawable.list_item_bg));
+
+		return states;
+	}
+
+	public static String getSpeciesUrl(String speciesId) {
+		return "http://"+HttpUtils.HOST+Request.PATH_SHOW_SPECIES_DETAIL+speciesId;
 	}
 }

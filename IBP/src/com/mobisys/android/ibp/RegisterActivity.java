@@ -14,8 +14,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,7 +91,7 @@ public class RegisterActivity extends ActionBarActivity {
 		Bundle b=new Bundle();
 		b.putString(Request.PARAM_EMAIL, email);
 		b.putString(Request.PARAM_PASSWORD, password);
-		//b.putString(Request.PARAM_PASSWORD2, confirm_password);
+		b.putString(Request.PARAM_PASSWORD2, password);
 		b.putString(Request.PARAM_NAME, name);
 		//if(location!=null && location.length()>0) b.putString(Request.PARAM_LOCATION, location);
 		

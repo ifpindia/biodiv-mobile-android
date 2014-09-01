@@ -22,6 +22,8 @@ public class Request {
 	public static final String PATH_GET_OBSERVATIONS = "/observation/listJSON";
 	public static final String PATH_SAVE_OBSERVATION = "/api/observation/save";
 	public static final String PATH_UPLOAD_RESOURCE="/api/observation/upload_resource";
+	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
+	public static final String PATH_SHOW_SPECIES_DETAIL = "/api/species/show/";
 	
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
@@ -52,6 +54,5 @@ public class Request {
 
 	public static final String OBV_ID = "id";
 
-	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
 	
 }

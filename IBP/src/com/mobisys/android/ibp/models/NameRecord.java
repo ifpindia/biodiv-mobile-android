@@ -7,17 +7,19 @@ public class NameRecord implements Parcelable{
 
 	private String common_name;
 	private String scientific_name;
+	private String speciesId; //sciRec species id
 	
 	public NameRecord(){}
 	
 	public NameRecord(Parcel in){
 		readFromParcel(in);
 	}
-	
-	public NameRecord(String common_name, String scientific_name) {
+
+	public NameRecord(String common_name, String scientific_name,String speciesId) {
 		super();
 		this.common_name = common_name;
 		this.scientific_name = scientific_name;
+		this.speciesId = speciesId;
 	}
 
 	public String getCommonName() {
@@ -36,9 +38,18 @@ public class NameRecord implements Parcelable{
 		this.scientific_name = scientific_name;
 	}
 
+	public String getSpeciesIdForSciRecord() {
+		return speciesId;
+	}
+
+	public void setSpeciesIdForSciRecord(String speciesId) {
+		this.speciesId = speciesId;
+	}
+
 	private void readFromParcel(Parcel in) {
 		common_name=in.readString();
 		scientific_name=in.readString();
+		speciesId=in.readString();
 	}
 
 	@Override
@@ -49,6 +60,7 @@ public class NameRecord implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(common_name);
 		dest.writeString(scientific_name);
+		dest.writeString(speciesId);
 	}
 	
 	public static final Creator<NameRecord> CREATOR = new Creator<NameRecord>() {
