@@ -157,8 +157,11 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	
 	private void initScreen() {
 		//if(isMyCollection){
+		if(mObsList!=null && mObsList.size()>0){
+			mList.setVisibility(View.VISIBLE);
 			findViewById(R.id.btn_show_map).setVisibility(View.VISIBLE);
 			findViewById(R.id.view01).setVisibility(View.VISIBLE);
+			findViewById(R.id.error_layout).setVisibility(View.GONE);
 			findViewById(R.id.btn_show_map).setOnClickListener(new View.OnClickListener() {
 				
 				@Override
@@ -168,11 +171,22 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					startActivity(i);
 				}
 			});
-		//}
-		/*else{ 
+		}
+		else{
+			mList.setVisibility(View.GONE);
+			findViewById(R.id.error_layout).setVisibility(View.VISIBLE);
 			findViewById(R.id.btn_show_map).setVisibility(View.GONE);
 			findViewById(R.id.view01).setVisibility(View.GONE);
-		}*/
+			findViewById(R.id.btn_new_obs).setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent i=new Intent(ObservationActivity.this, NewSightingActivity.class);
+					startActivity(i);
+					finish();
+				}
+			});
+		}
 	}
 	
 	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
@@ -210,10 +224,19 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  			}
  			
  			if(getItem(position).getMaxVotedReco()!=null){
- 				if(getItem(position).getMaxVotedReco().getCommonName().length()>0)
+ 				if(getItem(position).getMaxVotedReco().getCommonName().length()>0){
+ 					holder.common_name.setVisibility(View.VISIBLE);
  					holder.common_name.setText(getItem(position).getMaxVotedReco().getCommonName());
- 				else 
- 					holder.common_name.setText(R.string.unknown);
+ 				}	
+ 				else{
+ 					if(getItem(position).getMaxVotedReco().getScientificName().length()==0){ //common name and sci name empty, 
+ 						holder.common_name.setVisibility(View.VISIBLE);
+ 						holder.common_name.setText(R.string.unknown);
+ 					}
+ 					else{  // common name empty but sci name present
+ 						holder.common_name.setVisibility(View.GONE);
+ 					} 
+ 				}	
  				holder.latin_name.setVisibility(View.VISIBLE);
  				holder.latin_name.setText(getItem(position).getMaxVotedReco().getScientificName());
  			}
@@ -224,6 +247,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				public void onClick(View v) {
 					Intent i=new Intent(ObservationActivity.this, ObservationDetailActivity.class);
 					i.putExtra(ObservationInstance.ObsInstance, getItem(position));
+					i.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
 					startActivity(i);
 				}
 			});

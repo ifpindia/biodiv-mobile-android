@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -69,6 +70,9 @@ public class ObservationRequestQueue {
 	
 	private void submitObservation(final boolean single, final ObservationParams sp, final Context context) {
 		Bundle b=new Bundle();	
+		if(sp.getObv_id()!=-1)
+			b.putString(Request.OBV_ID, String.valueOf(sp.getObv_id()));
+		
 		b.putString(Request.SPECIES_GROUP_ID, String.valueOf(sp.getGroupId()));
 		b.putString(Request.HABITAT_ID, String.valueOf(sp.getHabitatId()));
 		b.putString(Request.FROM_DATE, sp.getFromDate());
@@ -80,88 +84,128 @@ public class ObservationRequestQueue {
 		b.putString(Request.RESOURCE_LIST_TYPE, Constants.RESOURCE_LIST_TYPE);
 		b.putString(Request.AGREE_TERMS, Constants.AGREE_TERMS_VALUE);
 		ArrayList<String> resources=new ArrayList<String>();
-	    String[] items = sp.getResources().split(",");
-	    for (String item : items){
-	        resources.add(item);
-	    }
-		
+		if(sp.getResources()!=null){
+			String[] items = sp.getResources().split(",");
+		    for (String item : items){
+		        resources.add(item);
+		    }
+		}
 		ArrayList<String> imageType=new ArrayList<String>();
-		String[] imageT = sp.getImageType().split(",");
-	    for (String item : imageT){
-	    	imageType.add(item);
-	    }
-	    
+		if(sp.getImageType()!=null){
+			String[] imageT = sp.getImageType().split(",");
+		    for (String item : imageT){
+		    	imageType.add(item);
+		    }
+		}
 		uploadImage(single,b, context, resources, imageType, sp);
 	}
 
-	private void uploadImage(final boolean single,final Bundle b,final Context context, ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationParams sp) {
+	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationParams sp) {
 		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-		if(imageStringPath!=null && imageStringPath.size()>0){
-			for(int i=0;i<imageStringPath.size();i++){
+		int countUri=0;
+		for(int i=0;i<imageStringPath.size();i++){
+			if(!imageStringPath.get(i).contains("http://")){
 				FileBody bab;
 				if(imageType.get(i)!=null)
 					bab= new FileBody(new File(imageStringPath.get(i)),imageType.get(i)); // image path and image type
 				else
 					bab= new FileBody(new File(imageStringPath.get(i)),"image/jpeg"); // image p	
 				reqEntity.addPart("resources", bab);
+				
+				++countUri;
 			}
-		}
-	
-		try {
-			reqEntity.addPart(Request.RESOURCE_TYPE, new StringBody("species.participation.Observation"));
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
 		}
 		
-		WebService.sendMultiPartRequest(context, Request.METHOD_POST, Request.PATH_UPLOAD_RESOURCE, new ResponseHandler() {
-			
-			@Override
-			public void onSuccess(String response) {
-				parseUploadResourceDetail(response,single, b, context, sp);
-				//ObservationParamsTable.deleteRowFromTable(context, sp);
-				//submitObservation(single, b, context, sp);
+		// if imagestring path has no Image url's.
+		if(countUri!=0){
+			try {
+				reqEntity.addPart(Request.RESOURCE_TYPE, new StringBody("species.participation.Observation"));
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
 			}
 			
-			@Override
-			public void onFailure(Throwable e, String content) {
-				Log.d("NetWorkState", content);
-				if(e instanceof UnknownHostException || e instanceof ConnectException){
-					mIsRunning = false;
-					return;
+			WebService.sendMultiPartRequest(context, Request.METHOD_POST, Request.PATH_UPLOAD_RESOURCE, new ResponseHandler() {
+				
+				@Override
+				public void onSuccess(String response) {
+					parseUploadResourceDetail(response,single, b, context, sp, imageStringPath);
 				}
-				sp.setStatus(StatusType.FAILURE);
-				sp.setMessage(content);
-				ObservationParamsTable.updateRowFromTable(context, sp);
-				//ObservationParamsTable.deleteRowFromTable(context, sp);
-				if(!single){
-					ObservationParams sp_new = ObservationParamsTable.getFirstRecord(context);
-					observationMethods(single, sp_new, context);
+				
+				@Override
+				public void onFailure(Throwable e, String content) {
+					Log.d("NetWorkState", content);
+					if(e instanceof UnknownHostException || e instanceof ConnectException){
+						mIsRunning = false;
+						return;
+					}
+					sp.setStatus(StatusType.FAILURE);
+					sp.setMessage(content);
+					ObservationParamsTable.updateRowFromTable(context, sp);
+					//ObservationParamsTable.deleteRowFromTable(context, sp);
+					if(!single){
+						ObservationParams sp_new = ObservationParamsTable.getFirstRecord(context);
+						observationMethods(single, sp_new, context);
+					}
 				}
+			}, reqEntity);
+		
+		}
+		else{ // if all are url's
+			for(int i=0;i<imageStringPath.size();i++){
+				b.putString("file_"+(i+1), imageStringPath.get(i));
+				b.putString("type_"+(i+1), Constants.IMAGE);
+				b.putString("license_"+(i+1), "CC_BY");
 			}
-		}, reqEntity);
+			submitObservationRequestFinally(single, b, context, sp);
+		}	
 	}
 
-	protected void parseUploadResourceDetail(String response, boolean single, Bundle b, Context context, ObservationParams sp) {
+	protected void parseUploadResourceDetail(String response, boolean single, Bundle b, Context context, ObservationParams sp, ArrayList<String> imageStringPath) {
 		try {
+			ArrayList<String> newImageStr=new ArrayList<String>();
+			
+			if(imageStringPath!=null && imageStringPath.size()>0){
+				for(int i=0;i<imageStringPath.size();i++){
+					if(imageStringPath.get(i).contains("http://")){
+						String path=imageStringPath.get(i).replace("http://pamba.strandls.com/biodiv/observations/", "");
+						newImageStr.add(path);
+					}
+				}
+			}
+
 			JSONObject jObj=new JSONObject(response);
 			JSONArray jArray=jObj.getJSONObject("observations").getJSONArray("resources");
 			if(jArray!=null && jArray.length()>0){
 				for(int i=0;i<jArray.length();i++){
-					b.putString("file_"+(i+1), jArray.getJSONObject(i).optString("fileName"));
-					b.putString("type_"+(i+1), Constants.IMAGE);
-					b.putString("license_"+(i+1), "CC_BY");
+					newImageStr.add(jArray.getJSONObject(i).optString("fileName"));
 				}
 			}
+			
+			for(int i=0;i<newImageStr.size();i++){
+				b.putString("file_"+(i+1), newImageStr.get(i));
+				b.putString("type_"+(i+1), Constants.IMAGE);
+				b.putString("license_"+(i+1), "CC_BY");
+			}
+			
 			//if(Preferences.DEBUG) Log.d("Checkout Params to b send", "****Bundle: "+b);
 			submitObservationRequestFinally(single, b, context, sp);
 		} catch (JSONException e) {
+			sp.setStatus(StatusType.FAILURE);
+			sp.setMessage("Unknown error occured..");
+			ObservationParamsTable.updateRowFromTable(context, sp);
 			e.printStackTrace();
 		}
 	}
 
 	protected void submitObservationRequestFinally(final boolean single,final Bundle b,final Context context,final ObservationParams sp) {
-		WebService.sendRequest(context, Request.METHOD_POST, Request.PATH_SAVE_OBSERVATION, b, new WebService.ResponseHandler() {
+		String path;
+		if(sp.getObv_id()==-1)
+			path=Request.PATH_SAVE_OBSERVATION;
+		else
+			path=Request.PATH_UPDATE_OBSERVATION;
+		
+		WebService.sendRequest(context, Request.METHOD_POST, path, b, new WebService.ResponseHandler() {
 			
 			@Override
 			public void onSuccess(String response) {
@@ -186,6 +230,9 @@ public class ObservationRequestQueue {
 					}
 					
 				} catch (JSONException e) {
+					sp.setStatus(StatusType.FAILURE);
+					sp.setMessage("Unknown error occured..");
+					ObservationParamsTable.updateRowFromTable(context, sp);
 					e.printStackTrace();
 				}
 				

@@ -24,7 +24,7 @@ public class Request {
 	public static final String PATH_UPLOAD_RESOURCE="/api/observation/upload_resource";
 	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
 	public static final String PATH_SHOW_SPECIES_DETAIL = "/api/species/show/";
-	
+	public static final String PATH_UPDATE_OBSERVATION = "/api/observation/update";
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
 	public static final String PARAM_PASSWORD = "password";

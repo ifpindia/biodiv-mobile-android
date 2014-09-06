@@ -3,7 +3,9 @@ package com.mobisys.android.ibp.database;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.table.TableUtils;
 import com.mobisys.android.ibp.Preferences;
 import com.mobisys.android.ibp.models.ObservationParams;
 import com.mobisys.android.ibp.models.ObservationParams.StatusType;
@@ -69,6 +71,17 @@ public class ObservationParamsTable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static int deleteAllOrders(Context context){
+		int count = -1;
+		try {
+			Dao<ObservationParams, Integer> dao = DatabaseHelper.getInstance(context).getSaveParamsDao();
+			TableUtils.clearTable(dao.getConnectionSource(), ObservationParams.class);
+		} catch (SQLException e) {
+			count=-1;
+		}
+		return count;
 	}
 	
 }

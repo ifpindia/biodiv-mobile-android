@@ -11,13 +11,11 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mobisys.android.ibp.models.ObservationInstance;
 import com.mobisys.android.ibp.models.Resource;
@@ -28,63 +26,58 @@ import com.viewpagerindicator.CirclePageIndicator;
 public class ObservationDetailActivity extends ActionBarActivity{
 
 	private ObservationInstance mObv;
-	//private Dialog mPG;
 	private String DATE_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'";
 	private String DATE_FORMAT1="MMM dd, yyyy";
+	private boolean isMyCollection=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.obv_detail);
+		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
 		getSupportActionBar().hide();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
 		initScreen();
-		//getObvDetail();
 	}
 
-	/*private void getObvDetail() {
-		Bundle b = new Bundle();
-		mPG= ProgressDialog.show(ObservationDetailActivity.this,getString(R.string.loading));
-		WebService.sendRequest(ObservationDetailActivity.this, Request.METHOD_GET,Request.PATH_GET_OBSERVTAION_DETAIL+mObv.getId(), b, new ResponseHandler() {
-			
-			@Override
-			public void onSuccess(String response) {
-				parseResponse(response);
-			}
-			
-			@Override
-			public void onFailure(Throwable e, String content) {
-				if(mPG!=null && mPG.isShowing()) mPG.dismiss();
-				AppUtil.showErrorDialog(content, ObservationDetailActivity.this);
-			}
-		});
-	}*/
-
-	/*private void parseResponse(String response) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		try {
-			final ObservationInstance oi=mapper.readValue(response, ObservationInstance.class);
-			if(mPG!=null && mPG.isShowing()) mPG.dismiss();
-			initScreen();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}*/
-
 	private void initScreen() {
+		if(isMyCollection){ 
+			findViewById(R.id.btn_edit).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent i=new Intent(ObservationDetailActivity.this, NewSightingActivity.class);
+					i.putExtra(ObservationInstance.ObsInstance, mObv);
+					startActivity(i);
+				}
+			});
+		}
+		else findViewById(R.id.btn_edit).setVisibility(View.GONE);
 		if(mObv.getMaxVotedReco()!=null){
 			if(mObv.getMaxVotedReco().getCommonName().length()>0){
+				findViewById(R.id.common_name_layout).setVisibility(View.VISIBLE);
 				((TextView)findViewById(R.id.title)).setText(mObv.getMaxVotedReco().getCommonName());
 				((TextView)findViewById(R.id.common_name)).setText(mObv.getMaxVotedReco().getCommonName());
 			}	
 			else{ 
-				((TextView)findViewById(R.id.common_name)).setText(R.string.unknown);
-				((TextView)findViewById(R.id.title)).setText(R.string.unknown);
+				if(mObv.getMaxVotedReco().getScientificName().length()==0){ //common name and sci name empty, 
+					findViewById(R.id.common_name_layout).setVisibility(View.VISIBLE);
+					findViewById(R.id.sci_name_layout).setVisibility(View.GONE);
+					((TextView)findViewById(R.id.common_name)).setText(R.string.unknown);
+					((TextView)findViewById(R.id.title)).setText(R.string.unknown);
+				}
+				else{  // common name empty but sci name present
+					findViewById(R.id.common_name_layout).setVisibility(View.GONE);
+					((TextView)findViewById(R.id.title)).setText(mObv.getMaxVotedReco().getScientificName());
+				}
 			}
+			
 			if(mObv.getMaxVotedReco().getSpeciesIdForSciRecord()!=null){
-				((TextView)findViewById(R.id.sci_name)).setText(Html.fromHtml("<u>"+mObv.getMaxVotedReco().getScientificName()+"</u>"));
-				((TextView)findViewById(R.id.sci_name)).setOnClickListener(new View.OnClickListener() {
+				findViewById(R.id.sci_name_layout).setVisibility(View.VISIBLE);
+				((TextView)findViewById(R.id.sci_name)).setText(mObv.getMaxVotedReco().getScientificName());
+				((TextView)findViewById(R.id.more_info)).setText(getString(R.string.more_info));
+				findViewById(R.id.sci_name_layout).setOnClickListener(new View.OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
@@ -95,9 +88,18 @@ public class ObservationDetailActivity extends ActionBarActivity{
 					}
 				});
 			}	
-			else
-				((TextView)findViewById(R.id.sci_name)).setText(mObv.getMaxVotedReco().getScientificName());
+			else{
+				if(mObv.getMaxVotedReco().getScientificName()!=null && mObv.getMaxVotedReco().getScientificName().length()>0){
+					findViewById(R.id.sci_name_layout).setVisibility(View.VISIBLE);
+					((TextView)findViewById(R.id.more_info)).setText("");
+					((TextView)findViewById(R.id.sci_name)).setText(mObv.getMaxVotedReco().getScientificName());
+				}
+				else{
+					findViewById(R.id.sci_name_layout).setVisibility(View.GONE);
+				}
+			}	
 		}
+		
 		((TextView)findViewById(R.id.place)).setText(mObv.getPlaceName());
 		if(mObv.getNotes()!=null && mObv.getNotes().length()>0)
 			((TextView)findViewById(R.id.notes)).setText(Html.fromHtml(mObv.getNotes()));

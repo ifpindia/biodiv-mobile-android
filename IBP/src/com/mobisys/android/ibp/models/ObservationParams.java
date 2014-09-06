@@ -19,6 +19,8 @@ public class ObservationParams implements Parcelable{
 	@DatabaseField(generatedId=true)
 	private long server_id;
 	@DatabaseField
+	private long obv_id=-1;
+	@DatabaseField
 	private long group_id;
 	@DatabaseField
 	private long habitat_id;
@@ -49,11 +51,12 @@ public class ObservationParams implements Parcelable{
 		readFromParcel(in);
 	}
 	
-	public ObservationParams(long server_id, long group_id, long habitat_id,
+	public ObservationParams(long server_id, long obv_id, long group_id, long habitat_id,
 			String fromDate, String placeName, String areas, String commonName,
 			String recoName, String resources, String image_type, StatusType status, String message, String notes) {
 		super();
 		this.server_id = server_id;
+		this.obv_id = obv_id;
 		this.group_id = group_id;
 		this.habitat_id = habitat_id;
 		this.fromDate = fromDate;
@@ -74,6 +77,14 @@ public class ObservationParams implements Parcelable{
 
 	public void setServerId(long server_id) {
 		this.server_id = server_id;
+	}
+
+	public long getObv_id() {
+		return obv_id;
+	}
+
+	public void setObv_id(long obv_id) {
+		this.obv_id = obv_id;
 	}
 
 	public long getGroupId() {
@@ -175,6 +186,7 @@ public class ObservationParams implements Parcelable{
 
 	private void readFromParcel(Parcel in) {
 		server_id=in.readLong();
+		obv_id=in.readLong();
 		group_id=in.readLong();
 		habitat_id=in.readLong();
 		fromDate=in.readString();
@@ -197,6 +209,7 @@ public class ObservationParams implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(server_id);
+		dest.writeLong(obv_id);
 		dest.writeLong(group_id);
 		dest.writeLong(habitat_id);
 		dest.writeString(fromDate);

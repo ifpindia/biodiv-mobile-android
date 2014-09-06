@@ -108,12 +108,15 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  			else holder.message.setText("");
  			
  			ArrayList<String> resources=new ArrayList<String>();
- 		    String[] items = getItem(position).getResources().split(",");
- 		    for (String item : items){
- 		        resources.add(item);
- 		    }
- 		   showImage(holder.image, resources.get(0)); 
- 			
+ 			if(getItem(position).getResources()!=null && getItem(position).getResources().length()>0){
+ 				String[] items = getItem(position).getResources().split(",");
+	 		    for (String item : items){
+	 		        resources.add(item);
+	 		    }
+	 		   showImage(holder.image, resources.get(0));
+ 			}
+ 			else 
+ 				holder.image.setBackgroundResource(R.drawable.user_stub);
  		   return row;
  		}
 	}

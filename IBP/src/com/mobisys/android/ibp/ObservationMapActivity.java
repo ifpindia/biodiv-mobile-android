@@ -1,13 +1,11 @@
 package com.mobisys.android.ibp;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +15,7 @@ import com.androidmapsextensions.GoogleMap;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.HttpRetriever;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
@@ -52,12 +51,17 @@ public class ObservationMapActivity extends ActionBarActivity{
 			
 			@Override
 			public void onClick(View v) {
-				Intent resultdata = new Intent();
-				resultdata.putExtra(Constants.ADDRESS, mStrAddress);
-				resultdata.putExtra(Constants.LNG, mLng);
-				resultdata.putExtra(Constants.LAT, mLat);
-				setResult(RESULT_OK,resultdata);
-				finish();
+				if(mStrAddress.contains("India") || mStrAddress.equals(getString(R.string.label_reverse_lookup_error))){
+					Intent resultdata = new Intent();
+					resultdata.putExtra(Constants.ADDRESS, mStrAddress);
+					resultdata.putExtra(Constants.LNG, mLng);
+					resultdata.putExtra(Constants.LAT, mLat);
+					setResult(RESULT_OK,resultdata);
+					finish();
+				}
+				else{
+					AppUtil.showDialog(getString(R.string.bound_error), ObservationMapActivity.this);
+				}
 			}
 		});
 	}
@@ -85,10 +89,10 @@ public class ObservationMapActivity extends ActionBarActivity{
    		   mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
        }
 		if(mCameraPos!=null){
-			DisplayMetrics displaymetrics = new DisplayMetrics();
+			/*DisplayMetrics displaymetrics = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 			
-			final int width = displaymetrics.widthPixels;
+			final int width = displaymetrics.widthPixels;*/
 		
 			mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 				
