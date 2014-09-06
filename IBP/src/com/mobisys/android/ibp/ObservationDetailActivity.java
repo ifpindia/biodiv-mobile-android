@@ -47,7 +47,7 @@ public class ObservationDetailActivity extends ActionBarActivity{
 				
 				@Override
 				public void onClick(View v) {
-					Intent i=new Intent(ObservationDetailActivity.this, NewSightingActivity.class);
+					Intent i=new Intent(ObservationDetailActivity.this, NewObservationActivity.class);
 					i.putExtra(ObservationInstance.ObsInstance, mObv);
 					startActivity(i);
 				}

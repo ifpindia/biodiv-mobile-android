@@ -181,7 +181,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				
 				@Override
 				public void onClick(View v) {
-					Intent i=new Intent(ObservationActivity.this, NewSightingActivity.class);
+					Intent i=new Intent(ObservationActivity.this, NewObservationActivity.class);
 					startActivity(i);
 					finish();
 				}
