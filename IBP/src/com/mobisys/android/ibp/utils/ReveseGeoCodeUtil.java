@@ -13,7 +13,6 @@ public class ReveseGeoCodeUtil {
 		public void onReveseGeoCodeSuccess(double lat, double lng, String address);
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	public static void doReverseGeoCoding(Context ctx, double lat, double lng,final HttpRetriever httpRetriver, final ReveseGeoCodeListener listener){
 		//((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
@@ -45,10 +44,10 @@ public class ReveseGeoCodeUtil {
 				
 				@Override
 				public void run() {
-						if(strAddress.length()>0)
-							listener.onReveseGeoCodeSuccess(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), strAddress);
-		            	else
-		            		listener.onReveseGeoCodeSuccess(0.0, 0.0, ctx.getResources().getString(R.string.label_reverse_lookup_error));
+					if(strAddress.length()>0)
+						listener.onReveseGeoCodeSuccess(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), strAddress);
+	            	else
+	            		listener.onReveseGeoCodeSuccess(0.0, 0.0, ctx.getResources().getString(R.string.label_reverse_lookup_error));
 				}
 			});
 	        return null;

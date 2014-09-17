@@ -60,7 +60,6 @@ public class CategoriesTable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 		return categories;
 	}
 }

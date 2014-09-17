@@ -156,7 +156,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 						((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
-						((ImageView)findViewById(R.id.species_image_1)).setImageURI(Uri.parse(uri));
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_1), Uri.parse(uri), NewObservationActivity.this, 100);
 						((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.edit_photo));
 					}	
 					else ((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.add_photo));
@@ -167,7 +167,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 						((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
-						((ImageView)findViewById(R.id.species_image_2)).setImageURI(Uri.parse(uri));
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_2), Uri.parse(uri), NewObservationActivity.this, 100);
 						((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.edit_photo));
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.add_photo));
@@ -178,7 +178,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 						((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
-						((ImageView)findViewById(R.id.species_image_3)).setImageURI(Uri.parse(uri));
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_3), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.edit_photo));
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.add_photo));
@@ -189,7 +189,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 						((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
-						((ImageView)findViewById(R.id.species_image_4)).setImageURI(Uri.parse(uri));
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_4), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.edit_photo));
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.add_photo));
@@ -200,12 +200,11 @@ public class NewObservationActivity extends BaseSlidingActivity{
 						((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
-						((ImageView)findViewById(R.id.species_image_5)).setImageURI(Uri.parse(uri));
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_5), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.edit_photo));
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.add_photo));
 				}
-				
 			}
 		}
 	}
@@ -365,7 +364,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				if(mAddress.equals(getResources().getString(R.string.label_reverse_lookup_error))) 
+				if(!AppUtil.isNetworkAvailable(NewObservationActivity.this)) 
 					showLocationAlertDialog();
 				else
 					validateParams();
@@ -450,6 +449,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		try {
 			JSONObject jObj=new JSONObject(response);
 			boolean success=jObj.optBoolean("success");
+			if(mPG!=null && mPG.isShowing()) mPG.dismiss();
 			if(success){
 				Log.d("NewObservationActivity", ""+jObj.optString("msg"));
 				Intent i=new Intent();
@@ -564,14 +564,16 @@ public class NewObservationActivity extends BaseSlidingActivity{
 
 	private void createSaveParamObject(/*ArrayList<String> imageStringPath, ArrayList<String> imageType*/) {
 		ObservationInstance sp=new ObservationInstance();
-		if(mObv!=null && mObv.getId()!=-1)
+		if(mObv!=null){
 			sp.setId(mObv.getId());
+			if(mObv.getServer_id()!=0)
+				sp.setServer_id(mObv.getServer_id());
+		}	
 		else
 			sp.setId(-1);
+		
 		sp.setGroup(mSelectedCategory);  //set object
-		sp.setGroupId(mSelectedCategory.getId());
 		sp.setHabitatId(Constants.HABITATE_ID_STAGING);
-		//sp.setFromDate(mSelectedDateStr);
 		sp.setFromDate(mSelectedDate);
 		if(!Preferences.NEW_DEBUG){
 			/*if(mAddress.equals(getResources().getString(R.string.label_reverse_lookup_error))) sp.setPlaceName(null);
@@ -600,8 +602,8 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		else
 			sp.setMaxVotedReco(new NameRecord(common_name, sci_name, null));
 		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
-		sp.setCommonName(common_name);
-		sp.setRecoName(sci_name);
+		//sp.setCommonName(common_name);
+		//sp.setRecoName(sci_name);
 		sp.setNotes(notes);
 		sp.setResource(mResourceList);  // image list
 		

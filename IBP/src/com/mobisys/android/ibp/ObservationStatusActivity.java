@@ -134,16 +134,14 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  			}
  			else holder.message.setText("");
  			
- 			ArrayList<String> resources=new ArrayList<String>();
- 			if(getItem(position).getResources()!=null && getItem(position).getResources().length()>0){
- 				String[] items = getItem(position).getResources().split(",");
-	 		    for (String item : items){
-	 		        resources.add(item);
-	 		    }
-	 		   if(resources.get(0).contains("http://")) 
-	 			   MImageLoader.displayImage(ObservationStatusActivity.this, resources.get(0).replace(".jpg", "_th1.jpg"), holder.image, R.drawable.user_stub);
-	 		   else
-	 			  showImage(holder.image, resources.get(0));
+ 			//ArrayList<String> resources=new ArrayList<String>();
+ 			if(getItem(position).getResource()!=null && getItem(position).getResource().size()>0){
+ 				if(getItem(position).getResource().get(0).getUrl()!=null){
+ 						//if(getItem(position).getResource().get(0).getUrl().contains("http://")) 
+	 			   MImageLoader.displayImage(ObservationStatusActivity.this, getItem(position).getResource().get(0).getUrl().replace(".jpg", "_th1.jpg"), holder.image, R.drawable.user_stub);
+ 				}  
+ 				else
+	 			  showImage(holder.image, getItem(position).getResource().get(0).getUri());
  			}
  			else 
  				holder.image.setBackgroundResource(R.drawable.user_stub);
@@ -168,12 +166,13 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void run() {
-				Uri uri=Uri.fromFile(new File(uriStr));
-				String path = AppUtil.getRealPathFromURI(uri, ObservationStatusActivity.this);
+				//Uri uri=Uri.fromFile(new File(uriStr));
+				//String path = AppUtil.getRealPathFromURI(uri, ObservationStatusActivity.this);
+				String imagepath=AppUtil.getRealPathFromURI(Uri.parse(uriStr), ObservationStatusActivity.this);
 				
-				File imageFile = new File(path);
+				File imageFile = new File(imagepath);
 				//Rotate if necessary
-				int rotate=AppUtil.getCameraPhotoOrientation(ObservationStatusActivity.this, uri, path);
+				int rotate=AppUtil.getCameraPhotoOrientation(ObservationStatusActivity.this, Uri.parse(uriStr), imagepath);
 				final Matrix matrix = new Matrix();
 				matrix.postRotate(rotate);
 				

@@ -3,6 +3,8 @@ package com.mobisys.android.ibp.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,6 +40,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 
 public class AppUtil {
 
@@ -199,6 +202,19 @@ public class AppUtil {
 		return Environment.getExternalStorageDirectory()+File.separator+"IBP"+File.separator+"ibp_"+prefix+".jpg";
 	}
 	
+    public static void setUriBitmap(ImageView iv, Uri uri, Context context,int size){
+		Bitmap bmp=null;
+		try {
+			bmp = AppUtil.getBitmapFromUri(uri, context, size);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(bmp!=null) iv.setImageBitmap(bmp);
+		else iv.setImageResource(R.drawable.user_stub);
+	}
+    
     public static Bitmap decodeFile(File f, int width, int height){
 	    try {
 	        //Decode image size
@@ -334,4 +350,36 @@ public class AppUtil {
 
 
 		};
+		
+		public static Bitmap getBitmapFromUri(Uri uri, Context context, int size) throws FileNotFoundException, IOException{
+	        InputStream input = context.getContentResolver().openInputStream(uri);
+
+	        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+	        onlyBoundsOptions.inJustDecodeBounds = true;
+	        onlyBoundsOptions.inDither=true;//optional
+	        onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+	        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+	        input.close();
+	        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1))
+	            return null;
+
+	        int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
+
+	        double ratio = (originalSize > size) ? (originalSize / size) : 1.0;
+
+	        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+	        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
+	        bitmapOptions.inDither=true;//optional
+	        bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+	        input = context.getContentResolver().openInputStream(uri);
+	        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+	        input.close();
+	        return bitmap;
+	    }
+		
+		private static int getPowerOfTwoForSampleRatio(double ratio){
+	        int k = Integer.highestOneBit((int)Math.floor(ratio));
+	        if(k==0) return 1;
+	        else return k;
+	    } 
 }

@@ -154,7 +154,7 @@ public class ObservationDetailActivity extends ActionBarActivity{
 		    if(resource.get(position).getIcon()!=null )
 		    	MImageLoader.displayImage(context, getImageUrl(resource.get(position).getIcon()), (ImageView)layout.findViewById(R.id.myimage), R.drawable.user_stub);
 		    else
-		    	((ImageView)layout.findViewById(R.id.myimage)).setImageURI(Uri.parse(resource.get(position).getUri()));
+		    	AppUtil.setUriBitmap((ImageView)layout.findViewById(R.id.myimage), Uri.parse(resource.get(position).getUri()), ObservationDetailActivity.this, 300);
 		    
 		    ((ImageView) layout.findViewById(R.id.myimage)).setOnClickListener(new View.OnClickListener() {
 				
@@ -192,10 +192,10 @@ public class ObservationDetailActivity extends ActionBarActivity{
 		settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_layout, null));
 		
-		if(resource.getIcon()!=null )
+		if(resource.getIcon()!=null)
 			MImageLoader.displayImage(context, resource.getUrl(), ((ImageView)settingsDialog.findViewById(R.id.image)), R.drawable.user_stub);
 		else
-			((ImageView)settingsDialog.findViewById(R.id.image)).setImageURI(Uri.parse(resource.getUri()));
+			AppUtil.setUriBitmap((ImageView)settingsDialog.findViewById(R.id.image), Uri.parse(resource.getUri()), ObservationDetailActivity.this,600);
 		
 		settingsDialog.show();
 	}

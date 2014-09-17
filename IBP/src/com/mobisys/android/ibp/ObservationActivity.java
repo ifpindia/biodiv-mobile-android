@@ -280,6 +280,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
         if (resultCode == RESULT_OK && requestCode == DELETE_OBSERVATION) {
             if(data!=null){
             	mObsList.clear();
+            	mOffset=0;
             	getNearByObservation();
             }
         }

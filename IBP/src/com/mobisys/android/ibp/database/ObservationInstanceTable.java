@@ -53,7 +53,10 @@ public class ObservationInstanceTable {
 		List<ObservationInstance> record = null;
 		try {
 			QueryBuilder<ObservationInstance, Integer> query = DatabaseHelper.getInstance(context).getSaveParamsDao().queryBuilder();
-			query.where().eq("id", sp.getId());//Obv id
+			if(sp.getId()==-1)
+				query.where().eq("server_id", sp.getServer_id()).and().eq("id", sp.getId());//Obv id
+			else
+				query.where().eq("id", sp.getId());//Obv id
 			record = DatabaseHelper.getInstance(context).getSaveParamsDao().query(query.prepare());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -102,20 +105,24 @@ public class ObservationInstanceTable {
 		try {
 			dao =DatabaseHelper.getInstance(context).getSaveParamsDao();
 			UpdateBuilder<ObservationInstance, Integer> query = dao.updateBuilder();
-			query.updateColumnValue("group_id", sp.getGroupId());
+			//query.updateColumnValue("group_id", sp.getGroupId());
+			query.updateColumnValue("group", sp.getGroup());
 			query.updateColumnValue("habitat_id", sp.getHabitatId());
 			query.updateColumnValue("fromDate", sp.getFromDate());
 			query.updateColumnValue("placeName", sp.getPlaceName());
 			query.updateColumnValue("areas", sp.getAreas());
-			query.updateColumnValue("commonName", sp.getCommonName());
-			query.updateColumnValue("recoName", sp.getRecoName());
-			query.updateColumnValue("resources", sp.getResources());
-			query.updateColumnValue("image_type", sp.getImageType());
+			query.updateColumnValue("maxVotedReco", sp.getMaxVotedReco());
+			//query.updateColumnValue("recoName", sp.getRecoName());
+			
+			query.updateColumnValue("resource", sp.getResource());
+			//query.updateColumnValue("image_type", sp.getImageType());
 			query.updateColumnValue("status", sp.getStatus());
 			query.updateColumnValue("message", sp.getMessage());
 			query.updateColumnValue("notes", sp.getNotes());
-			
-			query.where().eq("id", sp.getId());
+			if(sp.getId()==-1)
+				query.where().eq("server_id", sp.getServer_id()).and().eq("id", sp.getId());
+			else
+				query.where().eq("id", sp.getId());
 			int count=query.update();
 			Log.d("ObservationParamTable", "Updated "+count+" orders");
 		} catch (Exception e) {

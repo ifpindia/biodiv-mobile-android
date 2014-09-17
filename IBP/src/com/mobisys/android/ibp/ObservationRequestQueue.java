@@ -84,8 +84,8 @@ public class ObservationRequestQueue {
 		b.putString(Request.PLACE_NAME, sp.getPlaceName());
 		b.putString(Request.AREAS, sp.getAreas());
 		b.putString(Request.NOTES, sp.getNotes());
-		if(sp.getCommonName().length()>0) b.putString(Request.COMMON_NAME, sp.getMaxVotedReco().getCommonName());
-		if(sp.getRecoName().length()>0) b.putString(Request.SCI_NAME, sp.getMaxVotedReco().getScientificName());
+		if(sp.getMaxVotedReco().getCommonName().length()>0) b.putString(Request.COMMON_NAME, sp.getMaxVotedReco().getCommonName());
+		if(sp.getMaxVotedReco().getScientificName().length()>0) b.putString(Request.SCI_NAME, sp.getMaxVotedReco().getScientificName());
 		b.putString(Request.RESOURCE_LIST_TYPE, Constants.RESOURCE_LIST_TYPE);
 		b.putString(Request.AGREE_TERMS, Constants.AGREE_TERMS_VALUE);
 		
@@ -126,7 +126,7 @@ public class ObservationRequestQueue {
 				}	
 			}
 		}
-		uploadImage(single,b, context, imageStringPath, mImageType, sp);
+		uploadImage(single, b, context, imageStringPath, mImageType, sp);
 	}
 
 	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationInstance sp) {

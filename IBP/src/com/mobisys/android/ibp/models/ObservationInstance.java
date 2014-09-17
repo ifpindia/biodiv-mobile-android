@@ -96,19 +96,9 @@ public class ObservationInstance implements Parcelable{
 	@DatabaseField(dataType = DataType.SERIALIZABLE)
 	private ArrayList<Resource> resource;
 	@DatabaseField
-	private long group_id;
-	@DatabaseField
 	private long habitat_id;
 	@DatabaseField
 	private String areas;
-	@DatabaseField
-	private String commonName;
-	@DatabaseField
-	private String recoName;
-	@DatabaseField
-	private String resources;
-	@DatabaseField
-	private String image_type;
 	@DatabaseField (unknownEnumName = "SUCCESS")
 	private StatusType status;
 	@DatabaseField
@@ -123,8 +113,8 @@ public class ObservationInstance implements Parcelable{
 	public ObservationInstance(long server_id, long id, String placeName, String topology,Category group,
 			Habitat habitat, Date fromDate, Date toDate, Date createdOn,
 			Date lastRevised, Author author, String thumbnail, String notes,
-			String summary, int rating, NameRecord maxVotedReco, ArrayList<Resource> resource, long group_id, long habitat_id, String areas,
-			String commonName,String recoName, String resources, String image_type, StatusType status, String message) {
+			String summary, int rating, NameRecord maxVotedReco, ArrayList<Resource> resource, long habitat_id, String areas,
+			StatusType status, String message) {
 		super();
 		this.server_id = server_id;
 		this.id = id;
@@ -143,13 +133,8 @@ public class ObservationInstance implements Parcelable{
 		this.rating = rating;
 		this.maxVotedReco=maxVotedReco;
 		this.resource = resource;
-		this.group_id = group_id;
 		this.habitat_id = habitat_id;
 		this.areas = areas;
-		this.commonName = commonName;
-		this.recoName = recoName;
-		this.resources = resources;
-		this.image_type = image_type;
 		this.status = status;
 		this.message = message;
 	}
@@ -290,13 +275,13 @@ public class ObservationInstance implements Parcelable{
 		this.server_id = server_id;
 	}
 
-	public long getGroupId() {
+	/*public long getGroupId() {
 		return group_id;
 	}
 
 	public void setGroupId(long group_id) {
 		this.group_id = group_id;
-	}
+	}*/
 
 	public long getHabitatId() {
 		return habitat_id;
@@ -314,7 +299,7 @@ public class ObservationInstance implements Parcelable{
 		this.areas = areas;
 	}
 
-	public String getCommonName() {
+	/*public String getCommonName() {
 		return commonName;
 	}
 
@@ -344,7 +329,7 @@ public class ObservationInstance implements Parcelable{
 
 	public void setImageType(String image_type) {
 		this.image_type = image_type;
-	}
+	}*/
 
 	public StatusType getStatus() {
 		return status;
@@ -381,13 +366,13 @@ public class ObservationInstance implements Parcelable{
 		maxVotedReco=in.readParcelable(NameRecord.class.getClassLoader());
 		resource=new ArrayList<Resource>();
 		in.readList(resource, Resource.class.getClassLoader());
-		group_id=in.readLong();
+		//group_id=in.readLong();
 		habitat_id=in.readLong();
 		areas=in.readString();
-		commonName=in.readString();
+		/*commonName=in.readString();
 		recoName=in.readString();
 		resources=in.readString();
-		image_type=in.readString();
+		image_type=in.readString();*/
 		status=StatusType.valueOf(in.readString());
 		message=in.readString();
 	}
@@ -416,14 +401,15 @@ public class ObservationInstance implements Parcelable{
 		dest.writeInt(rating);
 		dest.writeParcelable(maxVotedReco, flags);
 		dest.writeList(resource);
-		dest.writeLong(group_id);
+		//dest.writeLong(group_id);
 		dest.writeLong(habitat_id);
 		dest.writeString(areas);
-		dest.writeString(commonName);
+		/*dest.writeString(commonName);
 		dest.writeString(recoName);
 		dest.writeString(resources);
-		dest.writeString(image_type);
-		if(status!=null) dest.writeString(status!=null?status.name():"");
+		dest.writeString(image_type);*/
+		if(status!=null) dest.writeString(status.name());
+		else dest.writeString("SUCCESS");
 		dest.writeString(message);
 	}
 
