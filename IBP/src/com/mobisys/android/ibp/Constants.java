@@ -27,4 +27,8 @@ public class Constants {
 	public static final String USER_ID = "user_id";
 	public static final String SPECIES_ID = "species_id";
 	public static final String SCI_NAME = "sci_name";
+	
+	public static final long HABITATE_ID_STAGING = 267838;
+	public static final long HABITATE_ID_PRODUCTION = 267835;
+	public static final String FROM_STATUS_SCREEN = "from_status_screen";
 }

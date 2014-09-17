@@ -3,22 +3,27 @@ package com.mobisys.android.ibp;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.mobisys.android.ibp.database.ObservationParamsTable;
-import com.mobisys.android.ibp.models.ObservationParams;
-import com.mobisys.android.ibp.models.ObservationParams.StatusType;
+import com.mobisys.android.ibp.database.ObservationInstanceTable;
+import com.mobisys.android.ibp.models.ObservationInstance;
+import com.mobisys.android.ibp.models.ObservationInstance.StatusType;
 import com.mobisys.android.ibp.utils.AppUtil;
+import com.mobisys.android.ibp.widget.MImageLoader;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -27,7 +32,7 @@ import android.widget.TextView;
 public class ObservationStatusActivity extends BaseSlidingActivity{
 	private ObservationListAdapter mAdapter;
 	private ListView mList;
-	private ArrayList<ObservationParams> oParams;
+	private ArrayList<ObservationInstance> oParams;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,10 +40,32 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
 		setContentView(R.layout.observation_status);
 		((TextView)findViewById(R.id.title)).setText(getString(R.string.observation_status));
 		((TextView)findViewById(R.id.title)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-		oParams=(ArrayList<ObservationParams>) ObservationParamsTable.getAllRecords(ObservationStatusActivity.this);
-		initScreen();
 	}
 
+	@Override
+	 protected void onResume(){
+		 registerReceiver(mBroadcastReceiver, new IntentFilter("com.mobisys.android.ibp.check_incomplete_obs"));
+		 oParams=(ArrayList<ObservationInstance>) ObservationInstanceTable.getAllRecords(ObservationStatusActivity.this);
+		 initScreen();
+	     super.onResume();
+	 }
+	 
+	 @Override
+	 protected void onPause(){
+		 unregisterReceiver(mBroadcastReceiver);
+	     super.onPause();
+	 }
+	
+	 public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(Preferences.DEBUG) Log.d("ObsActivityActivity", "******Broadcast received in ObsStatusActivity....");
+				oParams.clear();
+				oParams.addAll((ArrayList<ObservationInstance>) ObservationInstanceTable.getAllRecords(ObservationStatusActivity.this));
+				mAdapter.notifyDataSetChanged();
+			}	
+	 };
+	
 	private void initScreen() {
 		if(oParams!=null && oParams.size()>0){
 			findViewById(R.id.error_layout).setVisibility(View.GONE);
@@ -59,7 +86,7 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
 		});
 	}
 	
-	private class ObservationListAdapter extends ArrayAdapter<ObservationParams>{
+	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
  		
  		private LayoutInflater mInflater;
  		private class ViewHolder {
@@ -74,7 +101,7 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  			}
  		}
  
- 		public ObservationListAdapter(Context context, int textViewResourceId,ArrayList<ObservationParams> objects) {
+ 		public ObservationListAdapter(Context context, int textViewResourceId,ArrayList<ObservationInstance> objects) {
  			super(context, textViewResourceId, objects);
  			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
  		}
@@ -94,9 +121,9 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  				holder = (ViewHolder)row.getTag();
  			}
  			
- 			if(getItem(position).getCommonName()!=null){
- 				if(getItem(position).getCommonName().length()>0)
- 					holder.common_name.setText(getItem(position).getCommonName());
+ 			if(getItem(position).getMaxVotedReco().getCommonName()!=null){
+ 				if(getItem(position).getMaxVotedReco().getCommonName().length()>0)
+ 					holder.common_name.setText(getItem(position).getMaxVotedReco().getCommonName());
  				else 
  					holder.common_name.setText(R.string.unknown);
  			}
@@ -113,10 +140,25 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
 	 		    for (String item : items){
 	 		        resources.add(item);
 	 		    }
-	 		   showImage(holder.image, resources.get(0));
+	 		   if(resources.get(0).contains("http://")) 
+	 			   MImageLoader.displayImage(ObservationStatusActivity.this, resources.get(0).replace(".jpg", "_th1.jpg"), holder.image, R.drawable.user_stub);
+	 		   else
+	 			  showImage(holder.image, resources.get(0));
  			}
  			else 
  				holder.image.setBackgroundResource(R.drawable.user_stub);
+ 			
+ 			row.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent i=new Intent(ObservationStatusActivity.this, ObservationDetailActivity.class);
+					i.putExtra(ObservationInstance.ObsInstance, getItem(position));
+					i.putExtra(Constants.FROM_STATUS_SCREEN, true);
+					startActivity(i);
+				}
+			});
+
  		   return row;
  		}
 	}

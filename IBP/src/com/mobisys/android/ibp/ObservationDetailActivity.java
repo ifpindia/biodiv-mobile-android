@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mobisys.android.ibp.models.ObservationInstance;
+import com.mobisys.android.ibp.models.ObservationInstance.StatusType;
 import com.mobisys.android.ibp.models.Resource;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.widget.MImageLoader;
@@ -25,23 +27,26 @@ import com.viewpagerindicator.CirclePageIndicator;
 
 public class ObservationDetailActivity extends ActionBarActivity{
 
+	private static final int DELETE_OBSERVATION = 100;
+	
 	private ObservationInstance mObv;
-	private String DATE_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'";
+	//private String DATE_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'";
 	private String DATE_FORMAT1="MMM dd, yyyy";
-	private boolean isMyCollection=false;
+	private boolean isMyCollection=false, isFromStatusScreen=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.obv_detail);
 		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
+		isFromStatusScreen=getIntent().getBooleanExtra(Constants.FROM_STATUS_SCREEN, false);
 		getSupportActionBar().hide();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
 		initScreen();
 	}
 
 	private void initScreen() {
-		if(isMyCollection){ 
+		if(isMyCollection || (isFromStatusScreen && mObv.getStatus().equals(StatusType.INCOMPLETE))){ 
 			findViewById(R.id.btn_edit).setVisibility(View.VISIBLE);
 			findViewById(R.id.btn_edit).setOnClickListener(new View.OnClickListener() {
 				
@@ -49,7 +54,8 @@ public class ObservationDetailActivity extends ActionBarActivity{
 				public void onClick(View v) {
 					Intent i=new Intent(ObservationDetailActivity.this, NewObservationActivity.class);
 					i.putExtra(ObservationInstance.ObsInstance, mObv);
-					startActivity(i);
+					if(isFromStatusScreen) i.putExtra(Constants.FROM_STATUS_SCREEN, true);
+					startActivityForResult(i, DELETE_OBSERVATION);
 				}
 			});
 		}
@@ -107,11 +113,12 @@ public class ObservationDetailActivity extends ActionBarActivity{
 			((TextView)findViewById(R.id.label_notes)).setVisibility(View.GONE);
 			((TextView)findViewById(R.id.notes)).setVisibility(View.GONE);
 		}
-		((TextView)findViewById(R.id.submitted_by)).setText(mObv.getAuthor().getName());
+		if(mObv.getAuthor()!=null)
+			((TextView)findViewById(R.id.submitted_by)).setText(mObv.getAuthor().getName());
 		
-		String observed=AppUtil.getStringFromDate(AppUtil.getDateFromString(mObv.getFromDate(), DATE_FORMAT), DATE_FORMAT1);
-		String submitted=AppUtil.getStringFromDate(AppUtil.getDateFromString(mObv.getCreatedOn(), DATE_FORMAT), DATE_FORMAT1);
-		String updated=AppUtil.getStringFromDate(AppUtil.getDateFromString(mObv.getLastRevised(), DATE_FORMAT), DATE_FORMAT1);
+		String observed=AppUtil.getStringFromDate(mObv.getFromDate(), DATE_FORMAT1);
+		String submitted=AppUtil.getStringFromDate(mObv.getCreatedOn()!=null?mObv.getCreatedOn():mObv.getFromDate(), DATE_FORMAT1);
+		String updated=AppUtil.getStringFromDate(mObv.getLastRevised()!=null?mObv.getLastRevised():mObv.getFromDate(), DATE_FORMAT1);
 		
 		((TextView)findViewById(R.id.observed_on)).setText(observed);
 		((TextView)findViewById(R.id.submitted)).setText(submitted);
@@ -144,19 +151,24 @@ public class ObservationDetailActivity extends ActionBarActivity{
 		public Object instantiateItem(View collection,final int position) {
 		    LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		    View layout = inflater.inflate(R.layout.custom_pager, null);   
-		    
-		    MImageLoader.displayImage(context, getImageUrl(resource.get(position).getIcon()), (ImageView)layout.findViewById(R.id.myimage), R.drawable.user_stub);
+		    if(resource.get(position).getIcon()!=null )
+		    	MImageLoader.displayImage(context, getImageUrl(resource.get(position).getIcon()), (ImageView)layout.findViewById(R.id.myimage), R.drawable.user_stub);
+		    else
+		    	((ImageView)layout.findViewById(R.id.myimage)).setImageURI(Uri.parse(resource.get(position).getUri()));
 		    
 		    ((ImageView) layout.findViewById(R.id.myimage)).setOnClickListener(new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					showImageDialog(context, getImageUrl(resource.get(position).getIcon()));
+					if(resource.get(position).getIcon()!=null )
+						showImageDialog(context, resource.get(position));
+					else
+						showImageDialog(context, resource.get(position));
 				}
 			});
 		    
 		    ((ViewPager) collection).addView(layout, 0);
-		       return layout; 
+		    return layout; 
 		}	
 
 		@Override
@@ -175,12 +187,15 @@ public class ObservationDetailActivity extends ActionBarActivity{
 		}
 	}	
 
-	private void showImageDialog(Context context, String url) {
+	private void showImageDialog(Context context, Resource resource) {
 		Dialog settingsDialog = new Dialog(ObservationDetailActivity.this);
 		settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_layout, null));
 		
-		MImageLoader.displayImage(context, url, ((ImageView)settingsDialog.findViewById(R.id.image)), R.drawable.user_stub);
+		if(resource.getIcon()!=null )
+			MImageLoader.displayImage(context, resource.getUrl(), ((ImageView)settingsDialog.findViewById(R.id.image)), R.drawable.user_stub);
+		else
+			((ImageView)settingsDialog.findViewById(R.id.image)).setImageURI(Uri.parse(resource.getUri()));
 		
 		settingsDialog.show();
 	}
@@ -194,4 +209,16 @@ public class ObservationDetailActivity extends ActionBarActivity{
 	    }
 		return url;
 	}
+	
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == DELETE_OBSERVATION) {
+            if(data!=null){
+            	Intent i=new Intent();
+				setResult(RESULT_OK, i);
+				finish();
+            }
+        }
+    }
 }

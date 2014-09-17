@@ -8,7 +8,8 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.mobisys.android.ibp.models.Category;
-import com.mobisys.android.ibp.models.ObservationParams;
+import com.mobisys.android.ibp.models.ObservationInstance;
+import com.mobisys.android.ibp.models.Resource;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,7 +29,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 	public static final String CREATE_TABLE = "create table ";
 	public static final String PRIMARY_KEY = " (_id integer primary key autoincrement, ";
 	private Dao<Category, Integer> mCategoryDao;
-	private Dao<ObservationParams, Integer> mSaveParamsDao;
+	//private Dao<ObservationParams, Integer> mSaveParamsDao;
+	private Dao<ObservationInstance, Integer> mSaveParamsDao;
 	
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -49,9 +51,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
     	return mCategoryDao;
     }
     
-    public Dao<ObservationParams, Integer> getSaveParamsDao() throws java.sql.SQLException {
+    /*public Dao<ObservationParams, Integer> getSaveParamsDao() throws java.sql.SQLException {
     	if(mSaveParamsDao==null){
     		mSaveParamsDao = getDao(ObservationParams.class);
+    	}
+    	return mSaveParamsDao;
+    }*/
+    
+    public Dao<ObservationInstance, Integer> getSaveParamsDao() throws java.sql.SQLException {
+    	if(mSaveParamsDao==null){
+    		mSaveParamsDao = getDao(ObservationInstance.class);
     	}
     	return mSaveParamsDao;
     }
@@ -79,7 +88,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 	public void createTablesIfNotExists(){
 		try {
 			TableUtils.createTableIfNotExists(connectionSource, Category.class);
-			TableUtils.createTableIfNotExists(connectionSource, ObservationParams.class);
+			TableUtils.createTableIfNotExists(connectionSource, ObservationInstance.class);
+			TableUtils.createTableIfNotExists(connectionSource, Resource.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

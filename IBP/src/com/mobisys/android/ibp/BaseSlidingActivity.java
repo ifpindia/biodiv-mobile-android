@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivity;
 import com.mobisys.android.ibp.database.CategoriesTable;
-import com.mobisys.android.ibp.database.ObservationParamsTable;
+import com.mobisys.android.ibp.database.ObservationInstanceTable;
 import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
@@ -138,6 +138,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					startActivity(intent);
 				}
+				else AppUtil.showErrorDialog(getString(R.string.no_connection), BaseSlidingActivity.this);
 			}
 		});
 	}
@@ -226,7 +227,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.APP_TOKEN, null);
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.USER_ID, null);
 				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION, false);
-				ObservationParamsTable.deleteAllOrders(BaseSlidingActivity.this);
+				ObservationInstanceTable.deleteAllOrders(BaseSlidingActivity.this);
 				showLoginActivity();
 			}
 			

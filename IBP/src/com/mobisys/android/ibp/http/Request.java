@@ -25,6 +25,8 @@ public class Request {
 	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
 	public static final String PATH_SHOW_SPECIES_DETAIL = "/api/species/show/";
 	public static final String PATH_UPDATE_OBSERVATION = "/api/observation/update";
+	public static final String PATH_DELETE_OBSERVATION = "/api/observation/flagDeleted";
+	
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
 	public static final String PARAM_PASSWORD = "password";

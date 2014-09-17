@@ -1,19 +1,29 @@
 package com.mobisys.android.ibp.models;
 
-import android.net.Uri;
+import java.io.Serializable;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Resource implements Parcelable{
+@DatabaseTable(tableName="resource_table")
+public class Resource implements Parcelable, Serializable{
 
+	private static final long serialVersionUID = -7037426423175078702L;
+	@DatabaseField
 	private String url;
+	@DatabaseField
 	private String icon;
-	private Uri uri;
+	@DatabaseField
+	private String uri;
+	@DatabaseField
 	private boolean isDirty;
 	
 	public Resource(){}
 	
-	public Resource(String url, String icon, Uri uri, boolean isDirty) {
+	public Resource(String url, String icon, String uri, boolean isDirty) {
 		super();
 		this.url = url;
 		this.icon = icon;
@@ -41,11 +51,11 @@ public class Resource implements Parcelable{
 		this.icon = icon;
 	}
 
-	public Uri getUri() {
+	public String getUri() {
 		return uri;
 	}
 
-	public void setUri(Uri uri) {
+	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
@@ -65,7 +75,8 @@ public class Resource implements Parcelable{
 	private void readFromParcel(Parcel in) {
 		url=in.readString();
 		icon=in.readString();
-		uri = in.readParcelable(Uri.class.getClassLoader());
+		//uri = in.readParcelable(Uri.class.getClassLoader());
+		uri = in.readString();
 		isDirty = in.readInt()==1;
 	}
 	
@@ -73,7 +84,7 @@ public class Resource implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(url);
 		dest.writeString(icon);
-		dest.writeParcelable(uri, flags);
+		dest.writeString(uri);
 		dest.writeInt(isDirty?1:0);
 	}
 

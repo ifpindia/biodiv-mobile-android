@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="fb_app_id">681570278574753</string>
+	<string name="fb_app_id_pamba">681570278574753</string>
+	<string name="fb_app_id_production">320284831369968</string>
+	<string name="auto_complete_url">http://pamba.strandls.com/api/recommendation/suggest</string>
+	<string name="auto_complete_url_prod">http://indiabiodiversity.org/api/recommendation/suggest</string>
 	<string name="wait_fetch_location">Please wait while we fetch location..</string>
     <string name="app_name">IBP</string>
     <string name="email">Email</string>
@@ -77,4 +80,8 @@
 	<string name="edit">Edit</string>
 	<string name="edit_photo">Edit Photo</string>
 	<string name="edit_observation">Edit Observation</string>
+	<string name="delete">Delete</string>
+	<string name="msg_confirm_delete">Are you sure you want to delete this observation? If yes, click here.</string>
+	<string name="incomplete_obs">Incomplete observations</string>
+	<string name="msg_incomplete_obs">You have %d incomplete observations. Please press button below to submit observation.</string>
 </resources>

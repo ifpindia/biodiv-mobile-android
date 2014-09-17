@@ -42,6 +42,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private int mOffset=0;
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	private boolean userScrolled=false;
+	protected static final int DELETE_OBSERVATION = 200;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -191,7 +192,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	
 	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
  		
- 		private LayoutInflater mInflater;
+		private LayoutInflater mInflater;
  		private class ViewHolder {
  			public TextView common_name, latin_name;
  			public ImageView image;
@@ -248,7 +249,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					Intent i=new Intent(ObservationActivity.this, ObservationDetailActivity.class);
 					i.putExtra(ObservationInstance.ObsInstance, getItem(position));
 					i.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
-					startActivity(i);
+					startActivityForResult(i, DELETE_OBSERVATION);
 				}
 			});
  			
@@ -273,5 +274,14 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
             userScrolled = true;
         }   
 	}
-	
+
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == DELETE_OBSERVATION) {
+            if(data!=null){
+            	mObsList.clear();
+            	getNearByObservation();
+            }
+        }
+    }
 }

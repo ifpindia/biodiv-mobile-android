@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -16,14 +15,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import com.mobisys.android.ibp.database.ObservationParamsTable;
+import com.mobisys.android.ibp.database.ObservationInstanceTable;
+import com.mobisys.android.ibp.http.HttpUtils;
 import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
-import com.mobisys.android.ibp.models.ObservationParams;
-import com.mobisys.android.ibp.models.ObservationParams.StatusType;
+import com.mobisys.android.ibp.models.ObservationInstance;
+import com.mobisys.android.ibp.models.Resource;
+import com.mobisys.android.ibp.models.ObservationInstance.StatusType;
+import com.mobisys.android.ibp.utils.AppUtil;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -46,7 +50,7 @@ public class ObservationRequestQueue {
 	
 	public void executeAllSubmitRequests(Context context) {
 		if(!mIsRunning){
-			ObservationParams sp = ObservationParamsTable.getFirstRecord(context);
+			ObservationInstance sp = ObservationInstanceTable.getFirstRecord(context);
 			observationMethods(false, sp, context);
 		}
 	}
@@ -57,7 +61,7 @@ public class ObservationRequestQueue {
 		checkoutMethods(true, cp, context);
 	}*/
 	
-	private void observationMethods(boolean single, ObservationParams sp, Context context) {
+	private void observationMethods(boolean single, ObservationInstance sp, Context context) {
 		if(sp == null){
 			mIsRunning=false;
 			return;
@@ -68,39 +72,64 @@ public class ObservationRequestQueue {
 	}
 
 	
-	private void submitObservation(final boolean single, final ObservationParams sp, final Context context) {
+	private void submitObservation(final boolean single, final ObservationInstance sp, final Context context) {
 		Bundle b=new Bundle();	
-		if(sp.getObv_id()!=-1)
-			b.putString(Request.OBV_ID, String.valueOf(sp.getObv_id()));
+		if(sp.getId()!=-1)
+			b.putString(Request.OBV_ID, String.valueOf(sp.getId()));
 		
-		b.putString(Request.SPECIES_GROUP_ID, String.valueOf(sp.getGroupId()));
+		b.putString(Request.SPECIES_GROUP_ID, String.valueOf(sp.getGroup().getId()));
 		b.putString(Request.HABITAT_ID, String.valueOf(sp.getHabitatId()));
-		b.putString(Request.FROM_DATE, sp.getFromDate());
+		String date=AppUtil.getStringFromDate(sp.getFromDate(), Constants.DATE_FORMAT);
+		b.putString(Request.FROM_DATE, date);
 		b.putString(Request.PLACE_NAME, sp.getPlaceName());
 		b.putString(Request.AREAS, sp.getAreas());
 		b.putString(Request.NOTES, sp.getNotes());
-		if(sp.getCommonName().length()>0) b.putString(Request.COMMON_NAME, sp.getCommonName());
-		if(sp.getRecoName().length()>0) b.putString(Request.SCI_NAME, sp.getRecoName());
+		if(sp.getCommonName().length()>0) b.putString(Request.COMMON_NAME, sp.getMaxVotedReco().getCommonName());
+		if(sp.getRecoName().length()>0) b.putString(Request.SCI_NAME, sp.getMaxVotedReco().getScientificName());
 		b.putString(Request.RESOURCE_LIST_TYPE, Constants.RESOURCE_LIST_TYPE);
 		b.putString(Request.AGREE_TERMS, Constants.AGREE_TERMS_VALUE);
-		ArrayList<String> resources=new ArrayList<String>();
-		if(sp.getResources()!=null){
+		
+		ArrayList<String> imageStringPath=new ArrayList<String>();
+		ArrayList<String> mImageType=new ArrayList<String>();
+		ArrayList<Resource> mResourceList=new ArrayList<Resource>();
+		mResourceList.addAll(sp.getResource());
+		/*if(sp.getResources()!=null){
 			String[] items = sp.getResources().split(",");
 		    for (String item : items){
 		        resources.add(item);
 		    }
-		}
-		ArrayList<String> imageType=new ArrayList<String>();
-		if(sp.getImageType()!=null){
+		}*/
+		
+		/*if(sp.getImageType()!=null){
 			String[] imageT = sp.getImageType().split(",");
 		    for (String item : imageT){
 		    	imageType.add(item);
 		    }
+		}*/
+		
+		if(mResourceList!=null && mResourceList.size()>0){
+			for(int i=0;i<mResourceList.size();i++){
+				if(mResourceList.get(i).getUri()!=null && mResourceList.get(i).isDirty()){ //while edit add uri and url to imagepath
+					String imagepath=AppUtil.getRealPathFromURI(Uri.parse(mResourceList.get(i).getUri()), context);
+					if(Preferences.DEBUG) Log.d("ObsRequestQ", "***image path:"+imagepath);
+		    		imageStringPath.add(imagepath);
+		    		
+		    		String imageType=AppUtil.GetMimeType(context, Uri.parse(mResourceList.get(i).getUri()));
+		    		if(Preferences.DEBUG) Log.d("ObsRequestQ", "***image type: "+imageType);
+		    		mImageType.add(imageType);
+				}
+				else {
+					if(mResourceList.get(i).getUrl()!=null){
+						imageStringPath.add(mResourceList.get(i).getUrl());
+						mImageType.add("null");
+					}
+				}	
+			}
 		}
-		uploadImage(single,b, context, resources, imageType, sp);
+		uploadImage(single,b, context, imageStringPath, mImageType, sp);
 	}
 
-	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationParams sp) {
+	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationInstance sp) {
 		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
 		int countUri=0;
@@ -129,6 +158,8 @@ public class ObservationRequestQueue {
 				
 				@Override
 				public void onSuccess(String response) {
+					sp.setStatus(StatusType.PROCESSING);
+					ObservationInstanceTable.updateRowFromTable(context, sp);
 					parseUploadResourceDetail(response,single, b, context, sp, imageStringPath);
 				}
 				
@@ -141,10 +172,10 @@ public class ObservationRequestQueue {
 					}
 					sp.setStatus(StatusType.FAILURE);
 					sp.setMessage(content);
-					ObservationParamsTable.updateRowFromTable(context, sp);
+					ObservationInstanceTable.updateRowFromTable(context, sp);
 					//ObservationParamsTable.deleteRowFromTable(context, sp);
 					if(!single){
-						ObservationParams sp_new = ObservationParamsTable.getFirstRecord(context);
+						ObservationInstance sp_new = ObservationInstanceTable.getFirstRecord(context);
 						observationMethods(single, sp_new, context);
 					}
 				}
@@ -153,7 +184,7 @@ public class ObservationRequestQueue {
 		}
 		else{ // if all are url's
 			for(int i=0;i<imageStringPath.size();i++){
-				b.putString("file_"+(i+1), imageStringPath.get(i));
+				b.putString("file_"+(i+1), imageStringPath.get(i).replace("http://"+HttpUtils.HOST+"/biodiv/observations/", ""));
 				b.putString("type_"+(i+1), Constants.IMAGE);
 				b.putString("license_"+(i+1), "CC_BY");
 			}
@@ -161,14 +192,14 @@ public class ObservationRequestQueue {
 		}	
 	}
 
-	protected void parseUploadResourceDetail(String response, boolean single, Bundle b, Context context, ObservationParams sp, ArrayList<String> imageStringPath) {
+	protected void parseUploadResourceDetail(String response, boolean single, Bundle b, Context context, ObservationInstance sp, ArrayList<String> imageStringPath) {
 		try {
 			ArrayList<String> newImageStr=new ArrayList<String>();
 			
 			if(imageStringPath!=null && imageStringPath.size()>0){
 				for(int i=0;i<imageStringPath.size();i++){
 					if(imageStringPath.get(i).contains("http://")){
-						String path=imageStringPath.get(i).replace("http://pamba.strandls.com/biodiv/observations/", "");
+						String path=imageStringPath.get(i).replace("http://"+HttpUtils.HOST+"/biodiv/observations/", "");
 						newImageStr.add(path);
 					}
 				}
@@ -193,18 +224,20 @@ public class ObservationRequestQueue {
 		} catch (JSONException e) {
 			sp.setStatus(StatusType.FAILURE);
 			sp.setMessage("Unknown error occured..");
-			ObservationParamsTable.updateRowFromTable(context, sp);
+			ObservationInstanceTable.updateRowFromTable(context, sp);
 			e.printStackTrace();
 		}
 	}
 
-	protected void submitObservationRequestFinally(final boolean single,final Bundle b,final Context context,final ObservationParams sp) {
+	protected void submitObservationRequestFinally(final boolean single,final Bundle b,final Context context,final ObservationInstance sp) {
 		String path;
-		if(sp.getObv_id()==-1)
+		if(sp.getId()==-1)
 			path=Request.PATH_SAVE_OBSERVATION;
 		else
 			path=Request.PATH_UPDATE_OBSERVATION;
 		
+		sp.setStatus(StatusType.PROCESSING);
+		ObservationInstanceTable.updateRowFromTable(context, sp);
 		WebService.sendRequest(context, Request.METHOD_POST, path, b, new WebService.ResponseHandler() {
 			
 			@Override
@@ -215,7 +248,13 @@ public class ObservationRequestQueue {
 					boolean success=jObj.optBoolean("success");
 					if(success){
 						sp.setStatus(StatusType.SUCCESS);
-						ObservationParamsTable.updateRowFromTable(context, sp);
+						sp.setId(jObj.getJSONObject("observationInstance").optLong("id"));
+						ObservationInstanceTable.updateRowFromTable(context, sp);
+						if(Preferences.DEBUG) Log.d("ObsRequestQueue", "******Broadcast send from ObsRequestQueue....");
+						
+						//send broadcast to HomeActivity and ObsStatusActivity to change status or view
+						Intent i=new Intent("com.mobisys.android.ibp.check_incomplete_obs"); 
+				    	context.sendBroadcast(i);
 					}
 					else{
 						sp.setStatus(StatusType.FAILURE);
@@ -226,18 +265,18 @@ public class ObservationRequestQueue {
 						}
 						else sp.setMessage(fail);
 						
-						ObservationParamsTable.updateRowFromTable(context, sp);
+						ObservationInstanceTable.updateRowFromTable(context, sp);
 					}
 					
 				} catch (JSONException e) {
 					sp.setStatus(StatusType.FAILURE);
 					sp.setMessage("Unknown error occured..");
-					ObservationParamsTable.updateRowFromTable(context, sp);
+					ObservationInstanceTable.updateRowFromTable(context, sp);
 					e.printStackTrace();
 				}
 				
 				if(!single){
-					ObservationParams cp_new = ObservationParamsTable.getFirstRecord(context);
+					ObservationInstance cp_new = ObservationInstanceTable.getFirstRecord(context);
 					observationMethods(single, cp_new, context);
 				}
 			}
@@ -251,9 +290,9 @@ public class ObservationRequestQueue {
 				}
 				sp.setStatus(StatusType.FAILURE);
 				sp.setMessage(content);
-				ObservationParamsTable.updateRowFromTable(context, sp);
+				ObservationInstanceTable.updateRowFromTable(context, sp);
 				if(!single){
-					ObservationParams cp_new = ObservationParamsTable.getFirstRecord(context);
+					ObservationInstance cp_new = ObservationInstanceTable.getFirstRecord(context);
 					observationMethods(single, cp_new, context);
 				}
 			}

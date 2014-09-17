@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.mobisys.android.ibp.database.CategoriesTable;
+import com.mobisys.android.ibp.database.ObservationInstanceTable;
 import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
@@ -20,20 +21,23 @@ import com.mobisys.android.ibp.utils.ProgressDialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class HomeActivity extends BaseSlidingActivity{
 
 	boolean mLocationFetching=false;
-	//private double mLat, mLng;
-	ArrayList<Category> mCategoryList;
+	private ArrayList<Category> mCategoryList;
 	private Dialog mPg;
 	
 	@Override
@@ -43,7 +47,28 @@ public class HomeActivity extends BaseSlidingActivity{
 		initActionTitle(getString(R.string.home));
 		initScreen();
 	}
-
+	
+	 @Override
+	 protected void onResume(){
+		 registerReceiver(mBroadcastReceiver, new IntentFilter("com.mobisys.android.ibp.check_incomplete_obs"));
+		 checkInCompleteObservations();
+	     super.onResume();
+	 }
+	 
+	 @Override
+	 protected void onPause(){
+		 unregisterReceiver(mBroadcastReceiver);
+	     super.onPause();
+	 }
+	
+	 public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(Preferences.DEBUG) Log.d("HomeActivity", "******Broadcast received in HomeActivity....");
+				checkInCompleteObservations();
+			}	
+	 };
+	 
 	private void initScreen() {
 		getCurrentLocation();
 		mCategoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(HomeActivity.this);
@@ -74,6 +99,33 @@ public class HomeActivity extends BaseSlidingActivity{
 				finish();
 			}
 		});
+		
+		findViewById(R.id.btn_incomplete_observations).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i=new Intent(HomeActivity.this, ObservationStatusActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				finish();
+			}
+		});
+	}
+
+	private void checkInCompleteObservations() {
+		long incomplete_observations=ObservationInstanceTable.getNoOfIncompleteObservations(HomeActivity.this);
+		((TextView)findViewById(R.id.msg_incomplete_obs)).setText(String.format(getString(R.string.msg_incomplete_obs), incomplete_observations));
+		
+		if(incomplete_observations>0){
+			findViewById(R.id.msg_incomplete_obs).setVisibility(View.VISIBLE);
+			findViewById(R.id.view01).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_incomplete_observations).setVisibility(View.VISIBLE);
+		}
+		else{
+			findViewById(R.id.msg_incomplete_obs).setVisibility(View.GONE);
+			findViewById(R.id.view01).setVisibility(View.GONE);
+			findViewById(R.id.btn_incomplete_observations).setVisibility(View.GONE);
+		}
 	}
 
 	protected void showCategoryDialog() {

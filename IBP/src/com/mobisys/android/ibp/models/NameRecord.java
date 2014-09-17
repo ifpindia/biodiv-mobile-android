@@ -1,12 +1,22 @@
 package com.mobisys.android.ibp.models;
 
+import java.io.Serializable;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class NameRecord implements Parcelable{
-
+@DatabaseTable(tableName="namerecord_table")
+public class NameRecord implements Parcelable, Serializable{
+	private static final long serialVersionUID = -7298899393767031107L;
+	
+	@DatabaseField
 	private String common_name;
+	@DatabaseField
 	private String scientific_name;
+	@DatabaseField
 	private String speciesId; //sciRec species id
 	
 	public NameRecord(){}

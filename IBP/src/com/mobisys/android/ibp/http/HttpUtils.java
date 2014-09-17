@@ -22,7 +22,7 @@ public class HttpUtils {
 
 	public static final int PORT = -1;
 	public static final String HOST = "pamba.strandls.com";  //production  if port 3000 then staging
-	//public static final String HOST = "192.168.1.99"; //local host  
+	//public static final String HOST = "indiabiodiversity.org"; //local host  
 	
 	public static URI getUri(String host, String path, String query, int port, boolean https) {
 		if (Preferences.DEBUG) Log.d(TAG, "Parameters: "+query);

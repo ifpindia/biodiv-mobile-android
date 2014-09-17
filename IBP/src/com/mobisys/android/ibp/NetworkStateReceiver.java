@@ -2,7 +2,7 @@ package com.mobisys.android.ibp;
 
 import java.sql.SQLException;
 
-import com.mobisys.android.ibp.database.ObservationParamsTable;
+import com.mobisys.android.ibp.database.ObservationInstanceTable;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,7 +25,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
 	        } else if(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
 	        	if(Preferences.DEBUG) Log.d("NetWork Receiver","*****There's no network connectivity");
 	            try {
-	            	if(Preferences.DEBUG) Log.d("NetWork Receiver", "No. of records in database"+ObservationParamsTable.getNoOfRowsInTable(context));
+	            	if(Preferences.DEBUG) Log.d("NetWork Receiver", "No. of records in database"+ObservationInstanceTable.getNoOfRowsInTable(context));
 	    		} catch (SQLException e1) {
 	    			e1.printStackTrace();
 	    		}

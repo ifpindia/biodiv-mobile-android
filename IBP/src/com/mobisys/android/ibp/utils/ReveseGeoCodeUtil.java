@@ -48,7 +48,7 @@ public class ReveseGeoCodeUtil {
 						if(strAddress.length()>0)
 							listener.onReveseGeoCodeSuccess(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), strAddress);
 		            	else
-		            		listener.onReveseGeoCodeSuccess(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), ctx.getResources().getString(R.string.label_reverse_lookup_error));
+		            		listener.onReveseGeoCodeSuccess(0.0, 0.0, ctx.getResources().getString(R.string.label_reverse_lookup_error));
 				}
 			});
 	        return null;

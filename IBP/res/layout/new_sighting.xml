@@ -260,7 +260,7 @@
 		        android:background="@android:color/transparent"
 		        android:paddingLeft="8dp"
 		        xmlns:app="http://schemas.android.com/apk/res-auto" 
-		    	app:url="http://pamba.strandls.com/api/recommendation/suggest"
+		    	app:url="@string/auto_complete_url"
 		    	app:google_places_api_key=""
 		    	app:input_key="term"/>
 		   <View android:id="@+id/rule03"
@@ -278,7 +278,7 @@
 		        android:background="@android:color/transparent"
 		        android:paddingLeft="8dp"
 		        xmlns:app="http://schemas.android.com/apk/res-auto" 
-		    	app:url="http://pamba.strandls.com/api/recommendation/suggest"
+		    	app:url="@string/auto_complete_url"
 		    	app:google_places_api_key=""
 		    	app:input_key="term"/>
 		   <View android:id="@+id/rule05"
@@ -299,16 +299,35 @@
 		        android:gravity="top"
 		        android:hint="@string/additional_comments"/>              
 	    </LinearLayout>
-		<Button android:id="@+id/btn_submit"
+	    <LinearLayout android:id="@+id/btn_layout"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_marginTop="12dp"
 	        android:layout_marginLeft="8dp"
 	        android:layout_marginRight="8dp"
-	        android:gravity="center"
-	        android:text="@string/submit"
-	        android:textColor="@android:color/white"
-	        android:background="@drawable/app_btn"/>
-		        
+	        android:weightSum="2.0"
+	        android:orientation="horizontal">
+			<Button android:id="@+id/btn_submit"
+		        android:layout_width="0dp"
+		        android:layout_height="fill_parent"
+		        android:layout_weight="0.9"
+		        android:gravity="center"
+		        android:text="@string/submit"
+		        android:textColor="@android:color/white"
+		        android:background="@drawable/app_btn"/>
+			<View android:id="@+id/view00"
+		        android:layout_width="0dp"
+		        android:layout_height="fill_parent"
+		        android:layout_weight="0.2"
+		        android:background="@android:color/transparent"/>
+			<Button android:id="@+id/btn_delete"
+		        android:layout_width="0dp"
+		        android:layout_height="fill_parent"
+		        android:layout_weight="0.9"
+		        android:gravity="center"
+		        android:text="@string/delete"
+		        android:textColor="@android:color/white"
+		        android:background="@drawable/app_btn"/>
+		 </LinearLayout>       
 	</LinearLayout>
 </ScrollView>

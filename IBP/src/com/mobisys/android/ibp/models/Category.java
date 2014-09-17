@@ -1,5 +1,7 @@
 package com.mobisys.android.ibp.models;
 
+import java.io.Serializable;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -10,7 +12,8 @@ import android.os.Parcelable;
 
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
 @DatabaseTable(tableName="Category")
-public class Category implements Parcelable{
+public class Category implements Parcelable, Serializable{
+	private static final long serialVersionUID = -5311032025964282639L;
 	
 	@DatabaseField(id=true)
 	private long id;
