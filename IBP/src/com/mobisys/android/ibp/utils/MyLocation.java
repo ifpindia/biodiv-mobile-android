@@ -21,21 +21,22 @@ public class MyLocation {
 	public static final String GET_LOCATION = "get_location";
 	public static final String LOCATION = "location";
 	
-    Timer timer1;
-    LocationManager lm;
-    boolean gps_enabled=false;
-    boolean network_enabled=false;
-    Context mContext;
-    Intent mBroadcast;
-    LocalBroadcastManager mBroadcastManager;
-    LocationResult mLocationResult;
+	private static final int ONE_MINUTE = 60 * 1000;
+    
+	private Timer timer1;
+    private LocationManager lm;
+    private boolean gps_enabled=false;
+    private boolean network_enabled=false;
+    private Context mContext;
+    private LocationResult mLocationResult;
+    private long mLocationRequestedAt;
+    private Location mCurrentLocation;
+    private boolean mLocationFound = false;
     
     public MyLocation(Context context, LocationResult locationResult){
     	mContext=context;
-    	mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
-    	mBroadcast = new Intent();
-    	mBroadcast.setAction(MyLocation.GET_LOCATION);
     	mLocationResult=locationResult;
+    	mCurrentLocation = getSavedLocation(mContext);
     }
     
     public boolean getLocation(long time_milis)
@@ -49,10 +50,12 @@ public class MyLocation {
         if(!gps_enabled && !network_enabled)
             return false;
 
-        if(gps_enabled)
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
         if(network_enabled)
             lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
+        if(gps_enabled)
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
+        
+        mLocationRequestedAt = System.currentTimeMillis();
         timer1=new Timer();
         timer1.schedule(new UpdateLocation(), time_milis);
         return true;
@@ -60,20 +63,7 @@ public class MyLocation {
 
     LocationListener locationListenerGps = new LocationListener() {
         public void onLocationChanged(Location location) {
-            timer1.cancel();
-            lm.removeUpdates(locationListenerGps);
-            lm.removeUpdates(locationListenerNetwork);
-            if(location!=null){
-            	if(Preferences.DEBUG)Log.d("Mylocation","**********lat: "+location.getLatitude()+" lng:"+location.getLongitude());
-            	SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LAT, String.valueOf(location.getLatitude()));
-        		SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LNG, String.valueOf(location.getLongitude()));
-            }
-            else{
-            	location = getLastKnownLocation();
-            	if(location==null) location=getStoredLocation(mContext);
-            }
-            if(mLocationResult!=null) mLocationResult.gotLocation(location);
-            //sendBroadcast(location);
+        	handleNewLocation(location);
         }
         public void onProviderDisabled(String provider) {}
         public void onProviderEnabled(String provider) {}
@@ -82,21 +72,7 @@ public class MyLocation {
 
     LocationListener locationListenerNetwork = new LocationListener() {
         public void onLocationChanged(Location location) {
-            timer1.cancel();
-            lm.removeUpdates(locationListenerNetwork);
-            lm.removeUpdates(locationListenerGps);
-            
-            if(location!=null){
-            	if(Preferences.DEBUG)Log.d("Mylocation","**********lat: "+location.getLatitude()+" lng:"+location.getLongitude());
-            	SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LAT, String.valueOf(location.getLatitude()));
-        		SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LNG, String.valueOf(location.getLongitude()));
-            }
-            else{
-            	location = getLastKnownLocation();
-            	if(location==null) location=getStoredLocation(mContext);
-            }
-            if(mLocationResult!=null) mLocationResult.gotLocation(location);
-            //sendBroadcast(location);
+        	handleNewLocation(location);
         }
         public void onProviderDisabled(String provider) {}
         public void onProviderEnabled(String provider) {}
@@ -116,49 +92,144 @@ public class MyLocation {
             }
         }
         
+        if(l==null) l=getSavedLocation(mContext);
         return l;
     }
     
+    public void stopGetLocation(){
+    	timer1.cancel();
+        lm.removeUpdates(locationListenerNetwork);
+        lm.removeUpdates(locationListenerGps);
+    }
+    
+    private void handleNewLocation(Location location){
+    	if(location == null){
+        	location = getLastKnownLocation();
+    	}
+    	
+    	if(isBetterLocation(location, mCurrentLocation)){
+    		if(Preferences.DEBUG)Log.d("Mylocation","Found location ==> lat: "+location.getLatitude()+" lng:"+location.getLongitude());
+    		mLocationFound = true;
+    		mCurrentLocation=location;
+    		saveLocation(mContext, location);
+    		if(mLocationResult!=null) mLocationResult.gotLocation(location);
+    	}
+    	
+    	if (locationIsGood(mCurrentLocation)) {
+    		stopGetLocation();
+        }
+
+        if (locationRequestIsOld() && locationIsGoodEnough(mCurrentLocation)) {
+        	stopGetLocation();
+        }
+    }
+
     class UpdateLocation extends TimerTask {
         @Override
         public void run() {
         	Activity activity = (Activity) mContext;
         	activity.runOnUiThread(new Runnable(){
 				public void run() {
-		            lm.removeUpdates(locationListenerNetwork);
-		            lm.removeUpdates(locationListenerGps);
-					Location location=getLastKnownLocation();
-					
-					if(location!=null){
-		            	if(Preferences.DEBUG)Log.d("Mylocation","**********lat: "+location.getLatitude()+" lng:"+location.getLongitude());
-		            	SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LAT, String.valueOf(location.getLatitude()));
-		        		SharedPreferencesUtil.putSharedPreferencesString(mContext, Constants.LNG, String.valueOf(location.getLongitude()));
-		            }
-					else{
-						location=getStoredLocation(mContext);
+					stopGetLocation();
+					if(!mLocationFound){
+						Location location=getLastKnownLocation();
+						
+						if(location!=null){
+			            	if(Preferences.DEBUG)Log.d("Mylocation","Time out ==> lat: "+location.getLatitude()+" lng:"+location.getLongitude());
+			            	saveLocation(mContext, location);
+			            }
+						
+						if(mLocationResult!=null) mLocationResult.gotLocation(location);
 					}
-					if(mLocationResult!=null) mLocationResult.gotLocation(location);
-					//sendBroadcast(location);
 				}
 			});	
         }
     }
 
-    public static Location getStoredLocation(Context context){
-    	Location location = new Location("");
-    	double lat = Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LAT, "0.0"));
-    	double lng = Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LNG, "0.0"));
-    	location.setLatitude(lat);
-    	location.setLongitude(lng);
-    	return location;
-    }
-   /* private void sendBroadcast(Location location){
-    	if(location!=null)
-    		mBroadcast.putExtra(MyLocation.LOCATION, location);
-        mBroadcastManager.sendBroadcast(mBroadcast);
-    }*/
+	public static void saveLocation(Context context, Location location) {
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.ALTITUDE, String.valueOf(location.getAltitude()));
+		SharedPreferencesUtil.putSharedPreferencesLong(context, Constants.TIME, location.getTime());
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.PROVIDER, location.getProvider());
+		SharedPreferencesUtil.putSharedPreferencesFloat(context, Constants.BEARING, location.getBearing());
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LAT, String.valueOf(location.getLatitude()));
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LNG, String.valueOf(location.getLongitude()));
+		SharedPreferencesUtil.putSharedPreferencesFloat(context, Constants.ACCURACY, location.getAccuracy());
+		SharedPreferencesUtil.putSharedPreferencesFloat(context, Constants.SPEED, location.getSpeed());
+	}
+	
+	public static Location getSavedLocation(Context context){
+		String provider = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.PROVIDER, null);
+		if(provider!=null){
+			Location location = new Location(provider);
+			double altitude = Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.ALTITUDE, null));
+			double lat = Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LAT, null));
+			double lng = Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LNG, null));
+			long time = SharedPreferencesUtil.getSharedPreferencesLong(context, Constants.TIME, 0);
+			float bearing = SharedPreferencesUtil.getSharedPreferencesFloat(context, Constants.BEARING, 0);
+			float accuracy = SharedPreferencesUtil.getSharedPreferencesFloat(context, Constants.ACCURACY, 0);
+			float speed = SharedPreferencesUtil.getSharedPreferencesFloat(context, Constants.SPEED, 0);
+			location.setAltitude(altitude);
+			location.setLatitude(lat);
+			location.setLongitude(lng);
+			location.setBearing(bearing);
+			location.setAccuracy(accuracy);
+			location.setTime(time);
+			location.setSpeed(speed);
+			return location;
+		}
+		
+		return null;
+	}
     
     public static interface LocationResult{
         public void gotLocation(Location location);
+    }
+    
+	public static double getLatitude(Context context){
+    	return Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LAT, "0.0"));
+	}
+	
+	public static void saveLatitude(Context context, double latitude){
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LAT, String.valueOf(latitude));
+	}
+	
+	public static double getLongitude(Context context){
+		return Double.parseDouble(SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LNG, "0.0"));
+	}
+	
+	public static void saveLongitude(Context context, double longitude){
+		SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LNG, String.valueOf(longitude));
+	}
+
+	private boolean locationRequestIsOld() {
+        long delta = System.currentTimeMillis() - mLocationRequestedAt;
+        return delta > ONE_MINUTE;
+    }
+
+    private boolean isBetterLocation(Location newLocation, Location currentLocation) {
+        if (currentLocation == null) {
+            return true;
+        }
+        if (newLocation.hasAccuracy() && !currentLocation.hasAccuracy()) {
+            return true;
+        }
+        if (!newLocation.hasAccuracy() && currentLocation.hasAccuracy()) {
+            return false;
+        }
+        return newLocation.getAccuracy() < currentLocation.getAccuracy();
+    }
+
+    private boolean locationIsGood(Location location) {
+        if (!locationIsGoodEnough(location)) { return false; }
+        if (location.getAccuracy() <= 10) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean locationIsGoodEnough(Location location) {
+        if (location == null || !location.hasAccuracy()) { return false; }
+        if (location.getAccuracy() <= 500) { return true; }
+        return false;
     }
 }

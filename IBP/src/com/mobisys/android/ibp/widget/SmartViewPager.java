@@ -6,8 +6,6 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.widget.ListView;
-import android.widget.ScrollView;
 
 public class SmartViewPager extends ViewPager {
 

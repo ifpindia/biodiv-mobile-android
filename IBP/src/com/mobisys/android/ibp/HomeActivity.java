@@ -94,9 +94,7 @@ public class HomeActivity extends BaseSlidingActivity{
 			@Override
 			public void onClick(View v) {
 				Intent i=new Intent(HomeActivity.this, NewObservationActivity.class);
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(i);
-				finish();
 			}
 		});
 		
@@ -105,9 +103,7 @@ public class HomeActivity extends BaseSlidingActivity{
 			@Override
 			public void onClick(View v) {
 				Intent i=new Intent(HomeActivity.this, ObservationStatusActivity.class);
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(i);
-				finish();
 			}
 		});
 	}

@@ -1,5 +1,6 @@
 package com.mobisys.android.ibp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,13 +18,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.HttpRetriever;
+import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
-import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
+@SuppressLint("HandlerLeak")
 public class SelectLocationActivity extends ActionBarActivity{
 
 	private double mLng,mLat;
+	private boolean mIsReverseGeocodingSuccess;
 	private GoogleMap mMap;
 	private CameraPosition mCameraPos;
 	private TextView mAddress;
@@ -51,7 +54,8 @@ public class SelectLocationActivity extends ActionBarActivity{
 			
 			@Override
 			public void onClick(View v) {
-				if(mStrAddress.contains("India") || mStrAddress.equals(getString(R.string.label_reverse_lookup_error))){
+				if(mStrAddress.contains("India") || !mIsReverseGeocodingSuccess){
+					Log.d("SelectLocation", "Address: "+mStrAddress+" Latitude: "+mLat+" Longitude:"+mLng);
 					Intent resultdata = new Intent();
 					resultdata.putExtra(Constants.ADDRESS, mStrAddress);
 					resultdata.putExtra(Constants.LNG, mLng);
@@ -68,6 +72,7 @@ public class SelectLocationActivity extends ActionBarActivity{
 
 	private void setUpMapIfNeeded(Context ctx) {
 		if (mMap == null) {
+			
 	        // Try to obtain the map from the SupportMapFragment.
 	        mMap = ((com.androidmapsextensions.SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getExtendedMap();
 	        // Check if we were successful in obtaining the map.
@@ -83,8 +88,8 @@ public class SelectLocationActivity extends ActionBarActivity{
 			mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();	
        }
        else{
-    	   mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(SelectLocationActivity.this, Constants.LAT, "0"));
-   		   mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(SelectLocationActivity.this, Constants.LNG, "0"));
+    	   mLat=MyLocation.getLatitude(this);
+   		   mLng=MyLocation.getLongitude(this);
    		   LatLng lat_lng = new LatLng(mLat,mLng);
    		   mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
        }
@@ -128,7 +133,8 @@ public class SelectLocationActivity extends ActionBarActivity{
         ReveseGeoCodeUtil.doReverseGeoCoding(SelectLocationActivity.this, latitude, longitude, mHttpRetriever, new ReveseGeoCodeListener() {
 			
 			@Override
-			public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
+			public void onReveseGeoCodeSuccess(boolean success, double lat, double lng, String address) {
+				mIsReverseGeocodingSuccess=success;
 				mLat=lat;
 				mLng=lng;
 				mStrAddress=address;

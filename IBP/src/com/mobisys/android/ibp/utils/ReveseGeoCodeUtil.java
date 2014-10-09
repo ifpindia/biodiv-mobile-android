@@ -10,7 +10,7 @@ import com.mobisys.android.ibp.R;
 
 public class ReveseGeoCodeUtil {
 	public static interface ReveseGeoCodeListener {
-		public void onReveseGeoCodeSuccess(double lat, double lng, String address);
+		public void onReveseGeoCodeSuccess(boolean success, double lat, double lng, String address);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -40,14 +40,18 @@ public class ReveseGeoCodeUtil {
 	    	
            String addressText = AppUtil.getAddressFromGPSData(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), httpRetriver);
            final String strAddress = addressText==null?"":addressText;
+           final double lat = Double.valueOf(ht.get("lat"));
+           final double lng = Double.valueOf(ht.get("lng"));
             ((Activity)ctx).runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
 					if(strAddress.length()>0)
-						listener.onReveseGeoCodeSuccess(Double.valueOf(ht.get("lat")), Double.valueOf(ht.get("lng")), strAddress);
-	            	else
-	            		listener.onReveseGeoCodeSuccess(0.0, 0.0, ctx.getResources().getString(R.string.label_reverse_lookup_error));
+						listener.onReveseGeoCodeSuccess(true, lat, lng, strAddress);
+	            	else {
+	            		String defaultAddress = String.format(ctx.getResources().getString(R.string.reverse_lookup_error_address), lat, lng);
+	            		listener.onReveseGeoCodeSuccess(false, lat, lng, defaultAddress);
+	            	}
 				}
 			});
 	        return null;

@@ -34,12 +34,12 @@
 	  	    android:layout_height="wrap_content"
 	  	    android:singleLine="true"
 	  	    android:ellipsize="end"
-	  	    android:textColor="@android:color/white"
+	  	    android:textColor="@color/brown_color"
 	  	    android:textSize="14sp"/>
 	  	<TextView android:id="@+id/error_message"
 	  	    android:layout_width="wrap_content"
 	  	    android:layout_height="wrap_content"
-	  	    android:textColor="@android:color/white"
+	  	    android:textColor="#FF0000"
 	  	    android:textSize="12sp"/>
 	</LinearLayout>
 	<ImageButton android:id="@+id/arrow"
@@ -48,6 +48,6 @@
         android:visibility="visible"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/arrow_green"
+        android:src="@drawable/right_arrow"
         android:background="@android:color/transparent"/>
 </RelativeLayout>

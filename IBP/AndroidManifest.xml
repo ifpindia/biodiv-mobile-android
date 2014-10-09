@@ -27,12 +27,12 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.AppCompat.Light" >
         <meta-data android:name="com.facebook.sdk.ApplicationId" 
             android:value="@string/fb_app_id_pamba"/>
         
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="AIzaSyBY9fIF3DVHyXCoZpz9i184WZAwwUI3oMg"/>
+		    android:value="AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s"/>
         
         <meta-data
 		    android:name="com.google.android.gms.version"
@@ -45,7 +45,8 @@
         </activity>
         <activity
             android:name="com.mobisys.android.ibp.HomeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light" >
         </activity>
         <activity
             android:name="com.mobisys.android.ibp.SelectLocationActivity"
@@ -87,6 +88,11 @@
         <activity
             android:name="com.mobisys.android.ibp.MyCollectionMapActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.kbeanie.imagechooser.api.ImageChooserActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Transparent">
         </activity>
          <activity
             android:name="com.mobisys.android.ibp.SpeciesInfoWebViewActivity"

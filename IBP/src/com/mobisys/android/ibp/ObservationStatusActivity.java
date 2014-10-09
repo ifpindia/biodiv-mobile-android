@@ -114,7 +114,7 @@ public class ObservationStatusActivity extends BaseSlidingActivity{
  				row = mInflater.inflate(R.layout.row_observation_status_list_item, parent,false);
  				holder = new ViewHolder(row);
  				row.setTag(holder);
- 				Drawable selector=AppUtil.getListSelectorNew(ObservationStatusActivity.this);
+ 				Drawable selector=AppUtil.getPressedStateDrawable(ObservationStatusActivity.this);
 				row.setBackgroundDrawable(selector);
  			}
  			else{

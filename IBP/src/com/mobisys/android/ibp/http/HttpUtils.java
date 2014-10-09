@@ -21,8 +21,13 @@ public class HttpUtils {
 	public static final String HTTPS = "https";
 
 	public static final int PORT = -1;
-	public static final String HOST = "pamba.strandls.com";  //production  if port 3000 then staging
-	//public static final String HOST = "indiabiodiversity.org"; //local host  
+	public static final String STAGE_HOST = "pamba.strandls.com";
+	public static final String PROD_HOST = "indiabiodiversity.org"; //local host  
+	
+	public static String stageOrProdBaseURL(){
+		if(Preferences.IS_STAGING) return STAGE_HOST;
+		else return PROD_HOST;
+	}
 	
 	public static URI getUri(String host, String path, String query, int port, boolean https) {
 		if (Preferences.DEBUG) Log.d(TAG, "Parameters: "+query);
@@ -83,13 +88,13 @@ public class HttpUtils {
 			// Construct the URI
 			if (query.length() > 0) {
 				uri = new URI(
-						HTTP, null, HOST, PORT, path, query, null);	
+						HTTP, null, stageOrProdBaseURL(), PORT, path, query, null);	
 				
 				if (Preferences.DEBUG) Log.d(TAG, "URI: "+uri.toString());
 			}
 			else{
 				uri = new URI(
-						HTTP, null, HOST, PORT, path, null, null);	
+						HTTP, null, stageOrProdBaseURL(), PORT, path, null, null);	
 				
 				if (Preferences.DEBUG) Log.d(TAG, "URI: "+uri.toString());
 			}
