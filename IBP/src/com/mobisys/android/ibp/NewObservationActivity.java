@@ -708,7 +708,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 	private void displayExifData(Uri uri) {
 		try{
 			ExifInterface exif = new ExifInterface(AppUtil.getRealPathFromURI(uri, getApplicationContext()));
-			Log.d("New Sigting","*****image date: "+exif.getAttribute(ExifInterface.TAG_DATETIME));
 			String exif_date=exif.getAttribute(ExifInterface.TAG_DATETIME);
 			if(exif_date!=null){
 				SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
@@ -728,11 +727,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			 String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
 			 String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
 			
-			 Log.d("New Sigting","*****latitude: "+LATITUDE);
-			 Log.d("New Sigting","*****latitude ref: "+LATITUDE_REF);
-			 Log.d("New Sigting","*****lng: "+LONGITUDE);
-			 Log.d("New Sigting","*****lng ref: "+LONGITUDE_REF);
-			 
 			 double latitude=0.0,longitude=0.0; 
 			 if((LATITUDE !=null) && (LATITUDE_REF !=null)&& (LONGITUDE != null)&& (LONGITUDE_REF !=null)){			 
 				  if(LATITUDE_REF.equals("N")){
@@ -760,7 +754,8 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		if(latitude!=0.0 && longitude!=0.0){
 			//mLat = latitude;
 			//mLng = longitude;
-			((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
+			String defaultAddress = String.format(NewObservationActivity.this.getResources().getString(R.string.reverse_lookup_error_address), latitude, longitude);
+			((TextView)findViewById(R.id.address)).setText(defaultAddress);
 			ReveseGeoCodeUtil.doReverseGeoCoding(NewObservationActivity.this, latitude,longitude, mHttpRetriever, new ReveseGeoCodeListener() {
 				
 				@Override

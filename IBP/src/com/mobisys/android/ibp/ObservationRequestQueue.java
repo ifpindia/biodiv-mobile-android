@@ -132,6 +132,7 @@ public class ObservationRequestQueue {
 	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationInstance sp) {
 		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
+		if(b!=null) Log.d("ObservationRequestQueue", "Params: "+b.toString());
 		int countUri=0;
 		for(int i=0;i<imageStringPath.size();i++){
 			if(!imageStringPath.get(i).contains("http://")){
