@@ -32,8 +32,8 @@
             android:value="@string/fb_app_id_pamba"/>
         
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s"/>
-        
+		    android:value="AIzaSyBF39us82IoS8f8C-p20NyEzIH6DcR5IrA"/>
+        	<!--priyank mac:  AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s-->
         <meta-data
 		    android:name="com.google.android.gms.version"
 		    android:value="@integer/google_play_services_version" />
