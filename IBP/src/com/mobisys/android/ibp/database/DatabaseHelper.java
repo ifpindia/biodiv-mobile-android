@@ -28,6 +28,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 	public static final String TYPE_REAL = " real";
 	public static final String CREATE_TABLE = "create table ";
 	public static final String PRIMARY_KEY = " (_id integer primary key autoincrement, ";
+	
 	private Dao<Category, Integer> mCategoryDao;
 	//private Dao<ObservationParams, Integer> mSaveParamsDao;
 	private Dao<ObservationInstance, Integer> mSaveParamsDao;

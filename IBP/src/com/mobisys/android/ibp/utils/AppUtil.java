@@ -48,12 +48,12 @@ public class AppUtil {
     public static int mMonth;
     public static int mDay;
     public static final String GOOGLE_GEOCODER = "http://maps.googleapis.com/maps/api/geocode/json?latlng=";
-	
+
 	public static interface DateListener {
 		public void onSelectedDate(Date date);
 		public void onCancelClicked();
 	}
-	
+
 	public static String getAddressFromGPSData(double lat, double longi, HttpRetriever agent) {
 		String request = GOOGLE_GEOCODER + lat + ","
 				+ longi + "&sensor=true";
@@ -75,11 +75,11 @@ public class AppUtil {
 
 		return formattedAddress;
 	}
-	
+
 	public static int getDipValue(int param, Context context){
     	return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, param, context.getResources().getDisplayMetrics());
     }
-	
+
 	public static String parseErrorResponse(Context context, String content, Throwable e){
 		try {
 			JSONObject jobj=new JSONObject(content);
@@ -91,23 +91,23 @@ public class AppUtil {
 			return "Error occured ";
 		}
 	}
-	
+
 	public static boolean isNetworkAvailable(Context context) {
 	    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
-	
+
 	public static boolean emailValidator(String email){
 	    Pattern pattern;
 	    Matcher matcher;
-	    final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	    final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 	    pattern = Pattern.compile(EMAIL_PATTERN);
 	    matcher = pattern.matcher(email);
 	    return matcher.matches();
 	}
-	
-	
+
+
 	public static void showErrorDialog(String msg, Context context) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(R.string.error);
@@ -152,7 +152,7 @@ public class AppUtil {
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
 
-        
+
        final  DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
             // when dialog box is closed, below method will be called.
             public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
@@ -165,9 +165,9 @@ public class AppUtil {
                     Log.d("AppUtil","selected date: "+mDay+"/"+(mMonth+1)+"/"+mYear);
             }
         };
-        
+
         final DatePickerDialog datePickerDialog = new DatePickerDialog(context, datePickerListener,mYear, mMonth, mDay);
-        
+
         datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -193,15 +193,15 @@ public class AppUtil {
         datePickerDialog.setCancelable(true);
         datePickerDialog.show();
 	}
-	
+
 	public static String getDir(){
 		return Environment.getExternalStorageDirectory()+File.separator+"IBP";
 	}
-    
+
     public static String getImagePath(String prefix){
 		return Environment.getExternalStorageDirectory()+File.separator+"IBP"+File.separator+"ibp_"+prefix+".jpg";
 	}
-	
+
     public static void setUriBitmap(ImageView iv, Uri uri, Context context,int size){
 		Bitmap bmp=null;
 		try {
@@ -214,7 +214,7 @@ public class AppUtil {
 		if(bmp!=null) iv.setImageBitmap(bmp);
 		else iv.setImageResource(R.drawable.user_stub);
 	}
-    
+
     public static Bitmap decodeFile(File f, int width, int height){
 	    try {
 	        //Decode image size
@@ -237,18 +237,18 @@ public class AppUtil {
 	    } catch (FileNotFoundException e) {}
 	    return null;
 	}
- 
+
     public static String getRealPathFromURI(Uri contentURI, Context mContext) {
 	    Cursor cursor = mContext.getContentResolver().query(contentURI, null, null, null, null);
-	    if (cursor == null) { 
+	    if (cursor == null) {
 	        return contentURI.getPath();
-	    } else { 
-	        cursor.moveToFirst(); 
-	        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA); 
-	        return cursor.getString(idx); 
+	    } else {
+	        cursor.moveToFirst();
+	        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+	        return cursor.getString(idx);
 	    }
 	}
-    
+
     public static int getCameraPhotoOrientation(Context context, Uri imageUri, String imagePath){
 	     int rotate = 0;
 	     try {
@@ -289,25 +289,25 @@ public class AppUtil {
 
 	    return strMimeType;
 	}
-	
+
 	public static Date getDateFromString(String str, String date_format){
-		SimpleDateFormat  format = new SimpleDateFormat(date_format);  
-		try {  
-		    Date date = format.parse(str);  
-		    System.out.println(date);  
+		SimpleDateFormat  format = new SimpleDateFormat(date_format);
+		try {
+		    Date date = format.parse(str);
+		    System.out.println(date);
 		    return date;
-		} catch (ParseException e) {  
-		    e.printStackTrace();  
+		} catch (ParseException e) {
+		    e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public static String getStringFromDate(Date date, String date_format){
-		SimpleDateFormat  dateformat = new SimpleDateFormat(date_format);  
+		SimpleDateFormat  dateformat = new SimpleDateFormat(date_format);
 		String datetime = dateformat.format(date);
 		return datetime;
 	}
-	
+
 	public static Drawable getListSelectorNew(Context context){
 		StateListDrawable states = new StateListDrawable();
 		states.addState(new int[] {android.R.attr.state_pressed},
@@ -323,7 +323,7 @@ public class AppUtil {
 	public static String getSpeciesUrl(String speciesId) {
 		return "http://"+HttpUtils.HOST+Request.PATH_SHOW_SPECIES_DETAIL+speciesId;
 	}
-	
+
 	@SuppressLint("UseValueOf")
 	public static Float convertToDegree(String stringDMS){
 		 Float result = null;
@@ -350,7 +350,7 @@ public class AppUtil {
 
 
 		};
-		
+
 		public static Bitmap getBitmapFromUri(Uri uri, Context context, int size) throws FileNotFoundException, IOException{
 	        InputStream input = context.getContentResolver().openInputStream(uri);
 
@@ -376,10 +376,10 @@ public class AppUtil {
 	        input.close();
 	        return bitmap;
 	    }
-		
+
 		private static int getPowerOfTwoForSampleRatio(double ratio){
 	        int k = Integer.highestOneBit((int)Math.floor(ratio));
 	        if(k==0) return 1;
 	        else return k;
-	    } 
+	    }
 }
