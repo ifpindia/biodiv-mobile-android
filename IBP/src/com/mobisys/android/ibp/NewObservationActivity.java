@@ -1,6 +1,5 @@
 package com.mobisys.android.ibp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -8,23 +7,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -36,9 +30,9 @@ import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.kbeanie.imagechooser.api.ImageChooserActivity;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParserInterface;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
 import com.mobisys.android.ibp.database.CategoriesTable;
@@ -55,18 +49,18 @@ import com.mobisys.android.ibp.models.Resource;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.AppUtil.DateListener;
 import com.mobisys.android.ibp.utils.HttpRetriever;
+import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
-import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 import com.mobisys.android.ibp.widget.MImageLoader;
 
 public class NewObservationActivity extends BaseSlidingActivity{
 
+	private static final int IMAGE_CHOOSER = 100;
+	
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
-	private Button mSelectedButton;
-	private Uri mFileUri;
 	private ArrayList<Resource> mResourceList;
 	private double mLat=0, mLng=0;
 	private HttpRetriever mHttpRetriever;
@@ -76,18 +70,16 @@ public class NewObservationActivity extends BaseSlidingActivity{
 	private String mAddress;
 	private com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView mCommNameAutoText, mSciNameAutoText;
 	private String DATE_FORMAT1="yyyy:MM:dd hh:mm:ss";
-	//private String DATE_FORMAT_FROM_SERVER="yyyy-MM-dd'T'HH:mm:ss'Z'";
 	private ObservationInstance mObv;
 	private Dialog mPG;
-	private boolean isFromStatusScreen=false;
+	private MyLocation mMyLocation;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.new_sighting);
+		setContentView(R.layout.new_observation);
 		mHttpRetriever = new HttpRetriever();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
-		isFromStatusScreen=getIntent().getBooleanExtra(Constants.FROM_STATUS_SCREEN, false);
 		initActionTitle(getString(R.string.new_observation));
 		initScreen();
 		if(mObv!=null){
@@ -95,6 +87,190 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			initEditScreen();
 		} else {
 			mResourceList = new ArrayList<Resource>();
+		}
+	}
+
+	@SuppressLint("SimpleDateFormat")
+	private void initScreen() {
+		mCommNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_common_name);
+		mCommNameAutoText.setAutoCompleteUrl(Request.AUTO_COMPLETE_URL);
+		mCommNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
+			
+			@Override
+			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
+				return AppUtil.parseAutocompleteResponse(response);
+			}
+		});
+
+		mSciNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_sci_name);
+		mSciNameAutoText.setAutoCompleteUrl(Request.AUTO_COMPLETE_URL);
+		mSciNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
+			
+			@Override
+			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
+				return AppUtil.parseAutocompleteResponse(response);
+			}
+		});
+		
+		((CheckBox)findViewById(R.id.chk_help_identify)).setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+			    if(!isChecked){
+			    	findViewById(R.id.edit_common_name).setVisibility(View.VISIBLE);
+			    	findViewById(R.id.edit_sci_name).setVisibility(View.VISIBLE);
+			    	findViewById(R.id.rule03).setVisibility(View.VISIBLE);
+			    	findViewById(R.id.rule05).setVisibility(View.VISIBLE);
+			    }else{
+			    	findViewById(R.id.rule03).setVisibility(View.GONE);
+			    	findViewById(R.id.rule05).setVisibility(View.GONE);
+			    	findViewById(R.id.edit_common_name).setVisibility(View.GONE);
+			    	findViewById(R.id.edit_sci_name).setVisibility(View.GONE);
+			    }
+		}});
+		
+		findViewById(R.id.category_layout).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showCategoryDialogNew();
+			}
+		});
+		
+		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
+		mSelectedDateStr=sdf.format(new Date());
+		mSelectedDate=new Date();
+		((TextView)findViewById(R.id.date_sighted)).setText(mSelectedDateStr);
+		
+		findViewById(R.id.date_layout).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showDate();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_add_photo_1)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 0;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_1);
+				showImageChooserActivity();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_add_photo_2)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 1;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_2);
+				showImageChooserActivity();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_add_photo_3)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 2;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_3);
+				showImageChooserActivity();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_add_photo_4)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 3;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_4);
+				showImageChooserActivity();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_add_photo_5)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 4;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_5);
+				showImageChooserActivity();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_gps)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showEditLocationOptions();
+			}
+		});
+		findViewById(R.id.btn_stop).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				enableDisableLocationProgress(false);
+				if(mMyLocation!=null) mMyLocation.stopGetLocation();
+			}
+		});
+		
+		//if(mObv==null || isFromStatusScreen){
+		if(mObv==null) {
+			LinearLayout btn_layout=((LinearLayout)findViewById(R.id.btn_layout));
+			btn_layout.setWeightSum(1);
+			
+			Button btn_edit=(Button)findViewById(R.id.btn_submit);
+			LinearLayout.LayoutParams p0 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), AppUtil.getDipValue(40,NewObservationActivity.this));
+			p0.weight = 1.0f;
+			btn_edit.setLayoutParams(p0);
+			
+			View view=(View)findViewById(R.id.view00);
+			LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), LinearLayout.LayoutParams.MATCH_PARENT);
+			p1.weight = 0.0f;
+			view.setLayoutParams(p1);
+			
+			Button btn=(Button)findViewById(R.id.btn_delete);
+			LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), LinearLayout.LayoutParams.MATCH_PARENT);
+			p2.weight = 0.0f;
+			btn.setLayoutParams(p2);
+		}
+		else
+			((Button)findViewById(R.id.btn_submit)).setText(getString(R.string.edit));
+		
+		((Button)findViewById(R.id.btn_delete)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showConfirmDeleteObservationDialog();
+			}
+		});
+		
+		((Button)findViewById(R.id.btn_submit)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				validateParams();
+			}
+		});
+
+		if(mObv==null){
+			mLat=MyLocation.getLatitude(this);
+			mLng=MyLocation.getLongitude(this);
+			reverseGeocodeLocation(mLat, mLng);
+		}	
+		else{
+			//split lat lng from topology string
+			if(mObv.getTopology()!=null){
+				String topology=mObv.getTopology();
+				String t1=topology.replace("POINT (", "");
+				String arr[]=t1.split(" ");
+				mLng=Double.valueOf(arr[0]);
+				mLat=Double.valueOf(arr[1].replace(")", ""));
+			}
+			else{
+				mLng=0.0;
+				mLat=0.0;
+			}
 		}
 	}
 
@@ -208,201 +384,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			}
 		}
 	}
-
-	private void initScreen() {
-		mCommNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_common_name);
-		mCommNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
-			
-			@Override
-			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
-				return getStringArray(response);
-			}
-		});
-
-		mSciNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_sci_name);
-		mSciNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
-			
-			@Override
-			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(String response) {
-				return getStringArray(response);
-			}
-		});
-		
-		((CheckBox)findViewById(R.id.chk_help_identify)).setOnCheckedChangeListener(new OnCheckedChangeListener(){
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
-			    if(!isChecked){
-			    	findViewById(R.id.edit_common_name).setVisibility(View.VISIBLE);
-			    	findViewById(R.id.edit_sci_name).setVisibility(View.VISIBLE);
-			    	findViewById(R.id.rule03).setVisibility(View.VISIBLE);
-			    	findViewById(R.id.rule05).setVisibility(View.VISIBLE);
-			    }else{
-			    	findViewById(R.id.rule03).setVisibility(View.GONE);
-			    	findViewById(R.id.rule05).setVisibility(View.GONE);
-			    	findViewById(R.id.edit_common_name).setVisibility(View.GONE);
-			    	findViewById(R.id.edit_sci_name).setVisibility(View.GONE);
-			    }
-		}});
-		
-		findViewById(R.id.category_layout).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				showCategoryDialogNew();
-			}
-		});
-		
-		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-		mSelectedDateStr=sdf.format(new Date());
-		mSelectedDate=new Date();
-		((TextView)findViewById(R.id.date_sighted)).setText(mSelectedDateStr);
-		
-		findViewById(R.id.date_layout).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				showDate();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_add_photo_1)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mSelectedImagePos = 0;
-				mSelectedImageView=(ImageView)findViewById(R.id.species_image_1);
-				mSelectedButton=(Button)v;
-				showSelectDialog();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_add_photo_2)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mSelectedImagePos = 1;
-				mSelectedImageView=(ImageView)findViewById(R.id.species_image_2);
-				mSelectedButton=(Button)v;
-				showSelectDialog();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_add_photo_3)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mSelectedImagePos = 2;
-				mSelectedImageView=(ImageView)findViewById(R.id.species_image_3);
-				mSelectedButton=(Button)v;
-				showSelectDialog();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_add_photo_4)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mSelectedImagePos = 3;
-				mSelectedImageView=(ImageView)findViewById(R.id.species_image_4);
-				mSelectedButton=(Button)v;
-				showSelectDialog();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_add_photo_5)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mSelectedImagePos = 4;
-				mSelectedImageView=(ImageView)findViewById(R.id.species_image_5);
-				mSelectedButton=(Button)v;
-				showSelectDialog();
-			}
-		});
-		
-		((RelativeLayout)findViewById(R.id.address_layout)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent i=new Intent(NewObservationActivity.this, SelectLocationActivity.class);
-				i.putExtra(Constants.LAT, mLat);
-				i.putExtra(Constants.LNG, mLng);
-				startActivityForResult(i, Constants.LOCATION_ADDRESS);
-			}
-		});
-		
-		if(mObv==null || isFromStatusScreen){
-			LinearLayout btn_layout=((LinearLayout)findViewById(R.id.btn_layout));
-			btn_layout.setWeightSum(1);
-			
-			Button btn_edit=(Button)findViewById(R.id.btn_submit);
-			LinearLayout.LayoutParams p0 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), AppUtil.getDipValue(40,NewObservationActivity.this));
-			p0.weight = 1.0f;
-			btn_edit.setLayoutParams(p0);
-			
-			View view=(View)findViewById(R.id.view00);
-			LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), LinearLayout.LayoutParams.MATCH_PARENT);
-			p1.weight = 0.0f;
-			view.setLayoutParams(p1);
-			
-			Button btn=(Button)findViewById(R.id.btn_delete);
-			LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(AppUtil.getDipValue(0,NewObservationActivity.this), LinearLayout.LayoutParams.MATCH_PARENT);
-			p2.weight = 0.0f;
-			btn.setLayoutParams(p2);
-		}
-		else
-			((Button)findViewById(R.id.btn_submit)).setText(getString(R.string.edit));
-		
-		((Button)findViewById(R.id.btn_delete)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				showConfirmDeleteObservationDialog();
-			}
-		});
-		
-		((Button)findViewById(R.id.btn_submit)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(!AppUtil.isNetworkAvailable(NewObservationActivity.this)) 
-					showLocationAlertDialog();
-				else
-					validateParams();
-			}
-		});
-
-		if(mObv==null){
-			mLat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewObservationActivity.this, Constants.LAT, String.valueOf(0)));
-			mLng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(NewObservationActivity.this, Constants.LNG, String.valueOf(0)));
-			if(mLat!=0.0 && mLng!=0.0){
-				((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
-				ReveseGeoCodeUtil.doReverseGeoCoding(NewObservationActivity.this, mLat,mLng, mHttpRetriever, new ReveseGeoCodeListener() {
-					
-					@Override
-					public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
-						((TextView)findViewById(R.id.address)).setText(address);
-						mLat=lat;
-						mLng=lng;
-						mAddress=address;
-					}
-				});
-			}
-		}	
-		else{
-			//split lat lng from topology string
-			if(mObv.getTopology()!=null){
-				String topology=mObv.getTopology();
-				String t1=topology.replace("POINT (", "");
-				String arr[]=t1.split(" ");
-				mLng=Double.valueOf(arr[0]);
-				mLat=Double.valueOf(arr[1].replace(")", ""));
-			}
-			else{
-				mLng=0.0;
-				mLat=0.0;
-			}
-		}
-	}
 	
 	private void showConfirmDeleteObservationDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
@@ -466,52 +447,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		}
 	}
 
-	private void showLocationAlertDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
-		builder.setTitle(getString(R.string.alert));
-		builder.setMessage(getString(R.string.alert_internet));
-		
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				validateParams();
-				dialog.dismiss();
-			}
-		});
-		
-		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				dialog.dismiss();
-			}
-		});
-		
-		builder.show();
-	}
-
-	private ArrayList<DisplayStringInterface> getStringArray(String response) {
-		ArrayList<DisplayStringInterface> array=new ArrayList<DisplayStringInterface>();
-		try {
-			JSONArray jsonArray=new JSONArray(response);
-			if(jsonArray!=null){
-				for(int i=0;i<jsonArray.length();i++){
-					final String str=jsonArray.getJSONObject(i).optString("label");
-					array.add(new DisplayStringInterface() {
-						
-						@Override
-						public String getDisplayString() {
-							
-							return str;
-						}
-					});
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return array;
-	}
-
 	protected void validateParams() {
-
 		if((mResourceList==null||mResourceList.size()==0) && mObv==null){
 			AppUtil.showDialog("You must submit atleast one photo.", NewObservationActivity.this);
 			return;
@@ -533,36 +469,10 @@ public class NewObservationActivity extends BaseSlidingActivity{
 				return;
 			} 
 		} 
-		resizeImagesAndStoreDatatoDB();
+		createSaveParamObject();
 	}
 
-	private void resizeImagesAndStoreDatatoDB() {
-		/*final ArrayList<String> imageStringPath=new ArrayList<String>();
-		final ArrayList<String> mImageType=new ArrayList<String>();
-			
-		if(mResourceList!=null && mResourceList.size()>0){
-			for(int i=0;i<mResourceList.size();i++){
-				if(mResourceList.get(i).getUri()!=null && mResourceList.get(i).isDirty()){ //while edit add uri and url to imagepath
-					String imagepath=AppUtil.getRealPathFromURI(Uri.parse(mResourceList.get(i).getUri()), NewObservationActivity.this);
-					if(Preferences.DEBUG) Log.d("NewSightingActivity", "***image path for server "+imagepath);
-		    		imageStringPath.add(imagepath);
-		    		
-		    		String imageType=AppUtil.GetMimeType(NewObservationActivity.this, Uri.parse(mResourceList.get(i).getUri()));
-		    		if(Preferences.DEBUG) Log.d("AddPlacesActivity", "***image type for server "+imageType);
-		    		mImageType.add(imageType);
-				}
-				else {
-					if(mResourceList.get(i).getUrl()!=null){
-						imageStringPath.add(mResourceList.get(i).getUrl());
-						mImageType.add("null");
-					}
-				}	
-			}
-		}*/
-		createSaveParamObject(/*imageStringPath, mImageType*/);
-	}
-
-	private void createSaveParamObject(/*ArrayList<String> imageStringPath, ArrayList<String> imageType*/) {
+	private void createSaveParamObject() {
 		ObservationInstance sp=new ObservationInstance();
 		if(mObv!=null){
 			sp.setId(mObv.getId());
@@ -575,14 +485,12 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		sp.setGroup(mSelectedCategory);  //set object
 		sp.setHabitatId(Constants.HABITATE_ID_STAGING);
 		sp.setFromDate(mSelectedDate);
-		if(!Preferences.NEW_DEBUG){
-			/*if(mAddress.equals(getResources().getString(R.string.label_reverse_lookup_error))) sp.setPlaceName(null);
-			else*/ 
+		if(!Preferences.LOCATION_DEBUG){
 			sp.setPlaceName(mAddress);
 		}
 		else sp.setPlaceName(Constants.DEFAULT_ADDRESS);
 		
-		if(Preferences.NEW_DEBUG){ 
+		if(Preferences.LOCATION_DEBUG){ 
 			sp.setAreas("Point("+Constants.DEFAULT_LNG+" "+Constants.DEFAULT_LAT+")");
 			sp.setStatus(StatusType.PENDING);
 		}
@@ -602,19 +510,8 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		else
 			sp.setMaxVotedReco(new NameRecord(common_name, sci_name, null));
 		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
-		//sp.setCommonName(common_name);
-		//sp.setRecoName(sci_name);
 		sp.setNotes(notes);
 		sp.setResource(mResourceList);  // image list
-		
-		/*if(imageStringPath!=null && imageStringPath.size()>0){
-			String resources = imageStringPath.toString().replace("[", "").replace("]", "").replace(", ", ",");
-			sp.setResources(resources);
-		}
-		if(imageType!=null && imageType.size()>0){
-			String imageType2=imageType.toString().replace("[", "").replace("]", "").replace(", ", ",");
-			sp.setImageType(imageType2);
-		}*/
 		
 		if(mObv!=null){
 			ArrayList<ObservationInstance> obvList= (ArrayList<ObservationInstance>) ObservationInstanceTable.getAllRecords(NewObservationActivity.this);
@@ -630,8 +527,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		else
 			ObservationInstanceTable.createEntryInTable(NewObservationActivity.this, sp);
 		
-		/*ArrayList<ObservationInstance> spList=(ArrayList<ObservationInstance>) ObservationInstanceTable.getAllRecords(NewObservationActivity.this);
-		Log.d("Total","Db record: "+spList.size());		*/
 		ObservationRequestQueue.getInstance().executeAllSubmitRequests(NewObservationActivity.this);
 		if(AppUtil.isNetworkAvailable(NewObservationActivity.this)) Toast.makeText(NewObservationActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
 		else Toast.makeText(NewObservationActivity.this, R.string.observation_msg_without_internet, Toast.LENGTH_SHORT).show();
@@ -639,44 +534,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		Intent i = new Intent(NewObservationActivity.this, HomeActivity.class);
 		startActivity(i);
 		finish();
-	}
-
-	private void showSelectDialog() {
-		final CharSequence[] methods = {getString(R.string.gallery), getString(R.string.camera)};
-		 
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
-        builder.setTitle(getString(R.string.select_from));
-        builder.setItems(methods, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch(item){
-                case 0://Gallery
-                	Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            		photoPickerIntent.setType("image/*");
-            		startActivityForResult(photoPickerIntent, Constants.GALLERY_PHOTO);
-                	break;
-                case 1://Camera
-                	startCameraActivity();
-                	break;
-                }
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-	}
-	
-	private void startCameraActivity() {
-		File dir = new File(AppUtil.getDir());
-		if(!dir.exists()) dir.mkdirs();
-		String filename=String.valueOf(System.currentTimeMillis());
-		
-		File file = new File(AppUtil.getImagePath(filename));
-		mFileUri = Uri.fromFile(file);
-		Log.d("On camera click","*** Uri: "+mFileUri.toString());
-		MyApplication myApplication = (MyApplication)getApplication();
-		myApplication.setPictUri(mFileUri);
-		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
-		startActivityForResult(intent, Constants.CAMERA_PHOTO);
 	}
 
 	private void showDate() {
@@ -731,95 +588,126 @@ public class NewObservationActivity extends BaseSlidingActivity{
         alert.show();  
 	}
 	
+	private void showImageChooserActivity() {
+		Intent intent = new Intent(this, ImageChooserActivity.class);
+		startActivityForResult(intent,IMAGE_CHOOSER);
+	}
+	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == RESULT_OK && requestCode == Constants.CAMERA_PHOTO){
-			MyApplication myApplication = (MyApplication)getApplication();
-            mFileUri=myApplication.getPicUri();
-            Log.d("OnActivityResult","*** Uri: "+mFileUri.toString());
-			Bitmap bmp = convertUriToBitmap(mFileUri, 800, 800);
-        	mFileUri = getImageUri(this, bmp);
-        	
-        	displayExifData(mFileUri); //display date and location from location
-        	
-    		
-        	if(mSelectedImagePos<mResourceList.size()){
-        		mResourceList.get(mSelectedImagePos).setDirty(true);
-        		mResourceList.get(mSelectedImagePos).setUri(mFileUri.toString());
-			}
-        	else{
-				Resource r=new Resource();
-				r.setDirty(true);
-				r.setUri(mFileUri.toString());
-				mResourceList.add(r);
-			}
-        	
-        	//mImageUrls.add(mFileUri);
-    		String path = AppUtil.getRealPathFromURI(mFileUri, NewObservationActivity.this);
-    		//This is just for display image in ImageView
-    		File imageFile = new File(path);
-    		//Rotate if necessary
-    		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, mFileUri, path);
-    		Matrix matrix = new Matrix();
-    		matrix.postRotate(rotate);
-    		
-    		sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, mFileUri));
-    		
-    		//handle Out of memory error
-    		Bitmap bmpDisplay=AppUtil.decodeFile(imageFile,100,100);
-    		
-    		//Rotate BMP
-    		Bitmap rotatedBitmap = Bitmap.createBitmap(bmpDisplay, 0, 0, bmpDisplay.getWidth(), bmpDisplay.getHeight(), matrix, true);
-    		mSelectedImageView.setImageBitmap(rotatedBitmap);
-    		mSelectedButton.setText(getString(R.string.add_photo));
-        }
-		else if(resultCode == RESULT_OK && requestCode == Constants.GALLERY_PHOTO){
-			Uri selectedImage = data.getData();
-			
-			displayExifData(selectedImage); //display date and location from location
-						
-    		//Put Uri into arraylist
-    		
-			if(mSelectedImagePos<mResourceList.size()){
-        		mResourceList.get(mSelectedImagePos).setDirty(true);
-        		mResourceList.get(mSelectedImagePos).setUri(selectedImage.toString());
-			}
-        	else{
-				Resource r=new Resource();
-				r.setDirty(true);
-				r.setUri(selectedImage.toString());
-				mResourceList.add(r);
-			}
-			
-			
-    		File imageFile = new File(AppUtil.getRealPathFromURI(selectedImage, getApplicationContext()));
-    		//Rotate if necessary
-    		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
-    		Matrix matrix = new Matrix();
-    		matrix.postRotate(rotate);
-    		
-    		//handle Out of memory error
-    		Bitmap bmp=AppUtil.decodeFile(imageFile,100,100);
-    		
-    		//Rotate BMP
-    		Bitmap rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-    		//mSelectedImageView.setBackgroundDrawable(new ColorDrawable(0));
-            mSelectedImageView.setImageBitmap(rotatedBitmap);      
-		}
+    	if(requestCode == IMAGE_CHOOSER){
+    		if(resultCode == RESULT_OK) {
+        		String path = data.getStringExtra(ImageChooserActivity.INTENT_IMAGE_PATH);
+        		Uri selectedImage = Uri.fromFile(new File(path));
+
+        		onImageSelected(selectedImage);
+        		MImageLoader.displayImage(this, selectedImage.toString(), mSelectedImageView, R.drawable.user_stub);
+    		} else {
+        		if(data!=null){
+            		String reason = data.getStringExtra(ImageChooserActivity.INTENT_ERROR_MESSAGE);
+            		AppUtil.showErrorDialog(reason, this);
+        		}
+    		}
+    	}
 		else if(resultCode == RESULT_OK && requestCode == Constants.LOCATION_ADDRESS){
 			String address=data.getStringExtra(Constants.ADDRESS);
             mLat=data.getDoubleExtra(Constants.LAT, 0);
             mLng=data.getDoubleExtra(Constants.LNG, 0);
             mAddress=address;
+            Log.d("NewObservation", "Address: "+mAddress+" Latitude: "+mLat+" Longitude:"+mLng);
             ((TextView)findViewById(R.id.address)).setText(address);
 		}
     }
+	
+	private void onImageSelected(Uri imageUri){
+		//Put Uri into arraylist
+		if(mSelectedImagePos<mResourceList.size()){
+    		mResourceList.get(mSelectedImagePos).setDirty(true);
+    		mResourceList.get(mSelectedImagePos).setUri(imageUri.toString());
+		}
+    	else{
+			Resource r=new Resource();
+			r.setDirty(true);
+			r.setUri(imageUri.toString());
+			mResourceList.add(r);
+		}
+		
+		showImportMetaDataDialog(imageUri);
+	}
+	
+	private void showEditLocationOptions(){
+		String[] options = {getString(R.string.get_current_location), getString(R.string.edit_location)};
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewObservationActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, options);
+		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
+        builder.setTitle(R.string.edit_location);
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if(which==0){
+					enableDisableLocationProgress(true);
+					getCurrentLocation();
+				} else if(which == 1){
+					Intent i=new Intent(NewObservationActivity.this, SelectLocationActivity.class);
+					i.putExtra(Constants.LAT, mLat);
+					i.putExtra(Constants.LNG, mLng);
+					startActivityForResult(i, Constants.LOCATION_ADDRESS);
+				}
+			}
+		});
+	
+        AlertDialog alert = builder.create();
+        alert.show();
+	}
+	
+	private void getCurrentLocation(){
+		mMyLocation = new MyLocation(this, new MyLocation.LocationResult() {
+			
+			@Override
+			public void gotLocation(Location location) {
+				reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
+			}
+		});
+		mMyLocation.getLocation(30000);
+	}
+	
+	private void showImportMetaDataDialog(final Uri imageUri){
+		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
+        builder.setTitle(R.string.import_metadata);
+        builder.setMessage(getString(R.string.msg_import_metadata));
+	
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				displayExifData(imageUri);
+			}
+		});
+        builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+        AlertDialog alert = builder.create();
+        alert.show();
+	}
+	
+	private void enableDisableLocationProgress(boolean enable) {
+		if(enable){
+			findViewById(R.id.btn_gps).setVisibility(View.GONE);
+			findViewById(R.id.search_location_progress).setVisibility(View.VISIBLE);
+		} else {
+			findViewById(R.id.btn_gps).setVisibility(View.VISIBLE);
+			findViewById(R.id.search_location_progress).setVisibility(View.GONE);
+		}
+	}
 	
 	@SuppressLint("SimpleDateFormat")
 	private void displayExifData(Uri uri) {
 		try{
 			ExifInterface exif = new ExifInterface(AppUtil.getRealPathFromURI(uri, getApplicationContext()));
-			Log.d("New Sigting","*****image date: "+exif.getAttribute(ExifInterface.TAG_DATETIME));
 			String exif_date=exif.getAttribute(ExifInterface.TAG_DATETIME);
 			if(exif_date!=null){
 				SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
@@ -839,11 +727,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			 String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
 			 String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
 			
-			 Log.d("New Sigting","*****latitude: "+LATITUDE);
-			 Log.d("New Sigting","*****latitude ref: "+LATITUDE_REF);
-			 Log.d("New Sigting","*****lng: "+LONGITUDE);
-			 Log.d("New Sigting","*****lng ref: "+LONGITUDE_REF);
-			 
 			 double latitude=0.0,longitude=0.0; 
 			 if((LATITUDE !=null) && (LATITUDE_REF !=null)&& (LONGITUDE != null)&& (LONGITUDE_REF !=null)){			 
 				  if(LATITUDE_REF.equals("N")){
@@ -860,55 +743,30 @@ public class NewObservationActivity extends BaseSlidingActivity{
 					  longitude = 0 - AppUtil.convertToDegree(LONGITUDE);
 				  }
 			}
-			if(latitude!=0.0 && longitude!=0.0){
-				((TextView)findViewById(R.id.address)).setText(getResources().getString(R.string.loading));
-				ReveseGeoCodeUtil.doReverseGeoCoding(NewObservationActivity.this, latitude,longitude, mHttpRetriever, new ReveseGeoCodeListener() {
-					
-					@Override
-					public void onReveseGeoCodeSuccess(double lat, double lng, String address) {
-						((TextView)findViewById(R.id.address)).setText(address);
-						mLat=lat;
-						mLng=lng;
-						mAddress=address;
-					}
-				});
-			} 
+			 
+			reverseGeocodeLocation(latitude, longitude);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
-
-	//Bitmap to uri
-	public Uri getImageUri(Context inContext, Bitmap inImage) {
-		  ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		  inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-		  String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, String.valueOf(System.currentTimeMillis()), null);
-		  return Uri.parse(path);
-	}
 	
-	public Bitmap convertUriToBitmap(Uri selectedImage,int width, int height){
-		File imageFile = new File(AppUtil.getRealPathFromURI(selectedImage, getApplicationContext()));
-		//Rotate if necessary
-		int rotate=AppUtil.getCameraPhotoOrientation(NewObservationActivity.this, selectedImage, AppUtil.getRealPathFromURI(selectedImage,getApplicationContext()));
-		Matrix matrix = new Matrix();
-		matrix.postRotate(rotate);
-		
-		//handle Out of memory error
-		Bitmap bmp=AppUtil.decodeFile(imageFile, width, height);
-		
-		//Rotate BMP
-		Bitmap rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-		return rotatedBitmap;
+	private void reverseGeocodeLocation(double latitude, double longitude){
+		if(latitude!=0.0 && longitude!=0.0){
+			//mLat = latitude;
+			//mLng = longitude;
+			String defaultAddress = String.format(NewObservationActivity.this.getResources().getString(R.string.reverse_lookup_error_address), latitude, longitude);
+			((TextView)findViewById(R.id.address)).setText(defaultAddress);
+			ReveseGeoCodeUtil.doReverseGeoCoding(NewObservationActivity.this, latitude,longitude, mHttpRetriever, new ReveseGeoCodeListener() {
+				
+				@Override
+				public void onReveseGeoCodeSuccess(boolean success, double lat, double lng, String address) {
+					enableDisableLocationProgress(false);
+					((TextView)findViewById(R.id.address)).setText(address);
+					mLat=lat;
+					mLng=lng;
+					mAddress=address;
+				}
+			});
+		} 
 	}
-
-	/*@Override
-	public void onSelectedLocation(String selectedLocation) {
-		
-	}
-
-	@Override
-	public void onFetchLatLngForSelectedLoc(double lat, double lng) {
-		
-	}*/
-
-}	
+}

@@ -73,7 +73,7 @@ public class ObservationRequestQueue {
 
 	
 	private void submitObservation(final boolean single, final ObservationInstance sp, final Context context) {
-		Bundle b=new Bundle();	
+		Bundle b=new Bundle();
 		if(sp.getId()!=-1)
 			b.putString(Request.OBV_ID, String.valueOf(sp.getId()));
 		
@@ -132,6 +132,7 @@ public class ObservationRequestQueue {
 	private void uploadImage(final boolean single,final Bundle b,final Context context,final ArrayList<String> imageStringPath, ArrayList<String> imageType,final ObservationInstance sp) {
 		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
+		if(b!=null) Log.d("ObservationRequestQueue", "Params: "+b.toString());
 		int countUri=0;
 		for(int i=0;i<imageStringPath.size();i++){
 			if(!imageStringPath.get(i).contains("http://")){
@@ -184,7 +185,7 @@ public class ObservationRequestQueue {
 		}
 		else{ // if all are url's
 			for(int i=0;i<imageStringPath.size();i++){
-				b.putString("file_"+(i+1), imageStringPath.get(i).replace("http://"+HttpUtils.HOST+"/biodiv/observations/", ""));
+				b.putString("file_"+(i+1), imageStringPath.get(i).replace("http://"+HttpUtils.stageOrProdBaseURL()+"/biodiv/observations/", ""));
 				b.putString("type_"+(i+1), Constants.IMAGE);
 				b.putString("license_"+(i+1), "CC_BY");
 			}
@@ -199,7 +200,7 @@ public class ObservationRequestQueue {
 			if(imageStringPath!=null && imageStringPath.size()>0){
 				for(int i=0;i<imageStringPath.size();i++){
 					if(imageStringPath.get(i).contains("http://")){
-						String path=imageStringPath.get(i).replace("http://"+HttpUtils.HOST+"/biodiv/observations/", "");
+						String path=imageStringPath.get(i).replace("http://"+HttpUtils.stageOrProdBaseURL()+"/biodiv/observations/", "");
 						newImageStr.add(path);
 					}
 				}

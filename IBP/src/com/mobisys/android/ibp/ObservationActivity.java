@@ -11,10 +11,12 @@ import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Observation;
 import com.mobisys.android.ibp.models.ObservationInstance;
 import com.mobisys.android.ibp.utils.AppUtil;
+import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 import com.mobisys.android.ibp.widget.MImageLoader;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -58,9 +60,9 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
 		if(!isMyCollection){
 			initActionTitle(getString(R.string.observations));
-			double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LAT, Constants.DEFAULT_LAT));
-			double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this,Constants.LNG, Constants.DEFAULT_LNG));
-			if(Preferences.NEW_DEBUG){
+			double lat=MyLocation.getLatitude(this);
+			double lng=MyLocation.getLongitude(this);
+			if(Preferences.LOCATION_DEBUG){
 				b.putString(Constants.LAT, Constants.DEFAULT_LAT);
 				b.putString(Constants.LNG, Constants.DEFAULT_LNG);
 			}
@@ -190,6 +192,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	private class ObservationListAdapter extends ArrayAdapter<ObservationInstance>{
  		
 		private LayoutInflater mInflater;
@@ -209,7 +212,8 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
  		}
  
- 		@Override
+ 		@SuppressWarnings("deprecation")
+		@Override
  		public View getView(final int position, View convertView, ViewGroup parent) {
  			View row = convertView;
  			ViewHolder holder = null;
@@ -217,8 +221,10 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
  				row = mInflater.inflate(R.layout.row_observation_list_item, null);
  				holder = new ViewHolder(row);
  				row.setTag(holder);
- 				Drawable selector=AppUtil.getListSelectorNew(ObservationActivity.this);
-				row.setBackgroundDrawable(selector);
+ 				Drawable selector=AppUtil.getPressedStateDrawable(ObservationActivity.this);
+ 				row.setBackgroundDrawable(selector);
+ 				//Drawable selector=AppUtil.getListSelectorNew(ObservationActivity.this);
+				//row.setBackgroundDrawable(selector);
  			}
  			else{
  				holder = (ViewHolder)row.getTag();

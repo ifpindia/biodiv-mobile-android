@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -16,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
 import com.mobisys.android.ibp.R;
 import com.mobisys.android.ibp.http.HttpUtils;
 import com.mobisys.android.ibp.http.Request;
@@ -290,6 +292,7 @@ public class AppUtil {
 	    return strMimeType;
 	}
 
+	@SuppressLint("SimpleDateFormat")
 	public static Date getDateFromString(String str, String date_format){
 		SimpleDateFormat  format = new SimpleDateFormat(date_format);
 		try {
@@ -301,7 +304,8 @@ public class AppUtil {
 		}
 		return null;
 	}
-
+	
+	@SuppressLint("SimpleDateFormat")
 	public static String getStringFromDate(Date date, String date_format){
 		SimpleDateFormat  dateformat = new SimpleDateFormat(date_format);
 		String datetime = dateformat.format(date);
@@ -321,7 +325,7 @@ public class AppUtil {
 	}
 
 	public static String getSpeciesUrl(String speciesId) {
-		return "http://"+HttpUtils.HOST+Request.PATH_SHOW_SPECIES_DETAIL+speciesId;
+		return "http://"+HttpUtils.stageOrProdBaseURL()+Request.PATH_SHOW_SPECIES_DETAIL+speciesId;
 	}
 
 	@SuppressLint("UseValueOf")
@@ -376,10 +380,32 @@ public class AppUtil {
 	        input.close();
 	        return bitmap;
 	    }
-
 		private static int getPowerOfTwoForSampleRatio(double ratio){
 	        int k = Integer.highestOneBit((int)Math.floor(ratio));
 	        if(k==0) return 1;
 	        else return k;
 	    }
+		
+	public static ArrayList<DisplayStringInterface> parseAutocompleteResponse(String response) {
+		ArrayList<DisplayStringInterface> array=new ArrayList<DisplayStringInterface>();
+		try {
+			JSONArray jsonArray=new JSONArray(response);
+			if(jsonArray!=null){
+				for(int i=0;i<jsonArray.length();i++){
+					final String str=jsonArray.getJSONObject(i).optString("label");
+					array.add(new DisplayStringInterface() {
+						
+						@Override
+						public String getDisplayString() {
+							
+							return str;
+						}
+					});
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return array;
+	}
 }

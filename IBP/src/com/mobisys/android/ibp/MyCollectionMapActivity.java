@@ -13,10 +13,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.mobisys.android.ibp.models.ObservationInstance;
-import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
+import com.mobisys.android.ibp.utils.MyLocation;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,8 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+@SuppressLint("InflateParams")
 public class MyCollectionMapActivity extends ActionBarActivity{
 	
 	private ArrayList<ObservationInstance> mObsList;
@@ -61,10 +62,10 @@ public class MyCollectionMapActivity extends ActionBarActivity{
 	}
 	
 	private void setUpMap(final Context ctx) {
-		double lat=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(MyCollectionMapActivity.this, Constants.LAT, "0"));
-		double lng=Double.valueOf(SharedPreferencesUtil.getSharedPreferencesString(MyCollectionMapActivity.this, Constants.LNG, "0"));
+		double lat=MyLocation.getLatitude(MyCollectionMapActivity.this);
+		double lng=MyLocation.getLongitude(MyCollectionMapActivity.this);
 		LatLng lat_lng ;
-		if(Preferences.NEW_DEBUG){
+		if(Preferences.LOCATION_DEBUG){
 			lat_lng = new LatLng(Double.valueOf(Constants.DEFAULT_LAT),Double.valueOf(Constants.DEFAULT_LNG));
 		}
 		else{

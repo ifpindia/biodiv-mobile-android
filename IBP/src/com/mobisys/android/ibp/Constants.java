@@ -7,6 +7,12 @@ public class Constants {
 	public static final String APP_TOKEN = "token";
 	public static final String LAT = "lat";
 	public static final String LNG = "long";
+	public static final String ACCURACY = "accuracy";
+	public static final String ALTITUDE = "altitude";
+	public static final String BEARING = "bearing";
+	public static final String PROVIDER = "provider";
+	public static final String SPEED = "speed";
+	public static final String TIME = "time";
 	public static final String DEFAULT_LAT ="18.4638392";
 	public static final String DEFAULT_LNG ="73.86471";
 	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
@@ -31,4 +37,9 @@ public class Constants {
 	public static final long HABITATE_ID_STAGING = 267838;
 	public static final long HABITATE_ID_PRODUCTION = 267835;
 	public static final String FROM_STATUS_SCREEN = "from_status_screen";
+	
+	public static final long stagingOrProdHabitatId(){
+		if(Preferences.IS_STAGING) return HABITATE_ID_STAGING;
+		else return HABITATE_ID_PRODUCTION;
+	}
 }

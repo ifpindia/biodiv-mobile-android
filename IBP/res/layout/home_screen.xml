@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/storage_bg"
-    android:paddingBottom="10dp">
+    android:background="@color/bg_color">
     <RelativeLayout android:layout_width="match_parent"
     	android:layout_height="match_parent"
     	android:layout_above="@+id/view01"
@@ -31,17 +30,19 @@
         android:background="@color/list_item_name_text_color"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"
-        android:layout_above="@+id/msg_incomplete_obs"/>
+        android:layout_above="@+id/msg_incomplete_obs"
+        android:visibility="gone"/>
 	<TextView android:id="@+id/msg_incomplete_obs"
 	     android:layout_width="fill_parent"
 	     android:layout_height="wrap_content"
 	     android:gravity="center_horizontal"
 	     android:layout_above="@+id/btn_incomplete_observations"
 	     android:text="@string/msg_incomplete_obs"
-	     android:textColor="@android:color/white"
+	     android:textColor="@color/list_item_name_text_color"
 	     android:layout_marginLeft="8dp"
 	     android:layout_marginRight="8dp"
-	     android:layout_marginBottom="8dp"/>
+	     android:layout_marginBottom="8dp"
+	     android:visibility="gone"/>
     <Button android:id="@+id/btn_incomplete_observations"
 	     android:layout_width="fill_parent"
 	     android:layout_height="wrap_content"
@@ -51,5 +52,11 @@
 	     android:layout_marginLeft="8dp"
 	     android:layout_marginRight="8dp"
 	     android:layout_marginTop="10dp"
-	     android:background="@drawable/app_btn"/>
+	     android:background="@drawable/app_btn"
+	     android:visibility="gone"/>
+    <ImageView android:id="@+id/image_biodiversity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom_animal"/>
 </RelativeLayout>

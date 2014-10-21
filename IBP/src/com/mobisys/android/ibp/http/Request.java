@@ -26,6 +26,7 @@ public class Request {
 	public static final String PATH_SHOW_SPECIES_DETAIL = "/api/species/show/";
 	public static final String PATH_UPDATE_OBSERVATION = "/api/observation/update";
 	public static final String PATH_DELETE_OBSERVATION = "/api/observation/flagDeleted";
+	public static final String PATH_AUTO_COMPLETE = "/api/recommendation/suggest";
 	
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
@@ -56,5 +57,5 @@ public class Request {
 
 	public static final String OBV_ID = "id";
 
-	
+	public static final String AUTO_COMPLETE_URL = "http://"+HttpUtils.stageOrProdBaseURL()+PATH_AUTO_COMPLETE;
 }

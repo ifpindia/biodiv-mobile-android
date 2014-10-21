@@ -104,6 +104,10 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		this.f = f;
 	}
 
+	public void setAutoCompleteUrl(String url){
+		this.mAutocompleteUrl = url;
+	}
+	
 	private OnTouchListener l;
 	private OnFocusChangeListener f;
 

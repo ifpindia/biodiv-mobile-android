@@ -34,7 +34,7 @@
 	  	    android:layout_height="wrap_content"
 	  	    android:singleLine="true"
 	  	    android:ellipsize="end"
-	  	    android:textColor="@android:color/white"
+	  	    android:textColor="@color/brown_color"
 	  	    android:layout_marginTop="6dp"
 	  	    android:textSize="15sp"
 	  	    android:visibility="gone"/>
@@ -53,6 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/arrow_green"
+        android:src="@drawable/right_arrow"
         android:background="@android:color/transparent"/>
 </RelativeLayout>
