@@ -84,7 +84,17 @@ public class HomeActivity extends BaseSlidingActivity{
 			public void onClick(View v) {
 				if(!mLocationFetching) showCategoryDialog();
 				else if(mLocationFetching){
-					Toast.makeText(getApplicationContext(), getString(R.string.wait_fetch_location), Toast.LENGTH_SHORT).show();
+					//Toast.makeText(getApplicationContext(), getString(R.string.wait_fetch_location), Toast.LENGTH_SHORT).show();
+					final ArrayList<String> categoryListStr=new ArrayList<String>();
+					if(mCategoryList!=null && mCategoryList.size()>0){
+						for(int i=0;i<mCategoryList.size();i++){
+							categoryListStr.add(mCategoryList.get(i).getName());
+						}
+					}
+					Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
+					i.putExtra(Constants.GROUP_ID, mCategoryList.get(0).getId());
+					i.putExtra(Constants.LOCATION_NOT_FETCHED, true);
+					startActivity(i);
 				}
 			}
 		});

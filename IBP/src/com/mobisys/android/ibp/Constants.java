@@ -37,6 +37,7 @@ public class Constants {
 	public static final long HABITATE_ID_STAGING = 267838;
 	public static final long HABITATE_ID_PRODUCTION = 267835;
 	public static final String FROM_STATUS_SCREEN = "from_status_screen";
+	public static final String LOCATION_NOT_FETCHED = "location_not_fetched";
 	
 	public static final long stagingOrProdHabitatId(){
 		if(Preferences.IS_STAGING) return HABITATE_ID_STAGING;

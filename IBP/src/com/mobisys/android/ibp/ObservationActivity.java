@@ -45,6 +45,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	private boolean userScrolled=false;
 	protected static final int DELETE_OBSERVATION = 200;
+	private boolean isLocationNotFetched=true;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,16 +63,19 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 			initActionTitle(getString(R.string.observations));
 			double lat=MyLocation.getLatitude(this);
 			double lng=MyLocation.getLongitude(this);
-			if(Preferences.LOCATION_DEBUG){
-				b.putString(Constants.LAT, Constants.DEFAULT_LAT);
-				b.putString(Constants.LNG, Constants.DEFAULT_LNG);
+			//if location not fetched, display observations without lat lng
+			if(!isLocationNotFetched){
+				if(Preferences.LOCATION_DEBUG){
+					b.putString(Constants.LAT, Constants.DEFAULT_LAT);
+					b.putString(Constants.LNG, Constants.DEFAULT_LNG);
+				}
+				else{
+					b.putString(Constants.LAT, String.valueOf(lat));
+					b.putString(Constants.LNG, String.valueOf(lng));
+				}
+				b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
+				b.putString(Request.MAXRADIUS, String.valueOf(1000));
 			}
-			else{
-				b.putString(Constants.LAT, String.valueOf(lat));
-				b.putString(Constants.LNG, String.valueOf(lng));
-			}
-			b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
-			b.putString(Request.MAXRADIUS, String.valueOf(1000));
 			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
 			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
 		}

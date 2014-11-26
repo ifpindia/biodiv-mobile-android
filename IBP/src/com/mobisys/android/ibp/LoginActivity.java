@@ -1,5 +1,7 @@
 package com.mobisys.android.ibp;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.json.JSONException;
@@ -16,6 +18,7 @@ import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +29,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,14 +58,14 @@ public class LoginActivity extends ActionBarActivity {
         initScreen();
     }
     
-   /* private void generateHashCode(){
+/*    private void generateHashCode(){
     	try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                Log.d("Your Tag", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                Log.d("*********Your Tag", Base64.encodeToString(md.digest(), Base64.DEFAULT));
                 }
         } catch (NameNotFoundException e) {
 
