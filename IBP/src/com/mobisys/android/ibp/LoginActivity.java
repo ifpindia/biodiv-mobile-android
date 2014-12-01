@@ -1,49 +1,69 @@
 package com.mobisys.android.ibp;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
 import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
-
-import android.support.v7.app.ActionBarActivity;
-import android.util.Base64;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+/*import android.util.Base64;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;*/
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 	private Dialog mPg;
 	private UiLifecycleHelper uiHelper;
 	private boolean mFBSessionOpening = false;
 	private com.facebook.widget.LoginButton mFbButton;
+	private GoogleApiClient mGoogleApiClient;
 	
-	
+	private static final int RC_SIGN_IN = 0;
+    private boolean mIntentInProgress;
+//    private boolean mSignInClicked;
+    private ConnectionResult mConnectionResult;
+    private boolean mSignInClicked;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +75,13 @@ public class LoginActivity extends ActionBarActivity {
 		mFbButton= (com.facebook.widget.LoginButton) findViewById(R.id.btn_fb);
 		//mFbButton.setReadPermissions(Arrays.asList("basic_info", "email"));
 		//generateHashCode();
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+        .addConnectionCallbacks(this)
+        .addOnConnectionFailedListener(this)
+        .addApi(Plus.API)
+        .addScope(Plus.SCOPE_PLUS_LOGIN)
+        .build();
+		
         initScreen();
     }
     
@@ -124,7 +151,8 @@ public class LoginActivity extends ActionBarActivity {
 	private final Handler mHandler = new Handler() {
 	    @Override
 	    public void handleMessage(Message msg) {
-	    	loginWithFb();
+	    	String fb_access_token=SharedPreferencesUtil.getSharedPreferencesString(LoginActivity.this, Constants.FB_ACCESS_TOKEN, null);
+	    	loginWithFb(true, fb_access_token);
 	    }
 	};
 	
@@ -134,12 +162,21 @@ public class LoginActivity extends ActionBarActivity {
 	    uiHelper.onSaveInstanceState(outState);
 	}
 	
-    protected void loginWithFb() {
+    protected void loginWithFb(boolean isFbLogin, String access_token) {
     	mPg= ProgressDialog.show(LoginActivity.this,getString(R.string.loading));
     	Bundle b=new Bundle();
-    	String fb_access_token=SharedPreferencesUtil.getSharedPreferencesString(LoginActivity.this, Constants.FB_ACCESS_TOKEN, null);
-		b.putString(Request.PARAM_FB_ACCESS_TOKEN, fb_access_token);
-		WebService.sendRequest(LoginActivity.this, Request.METHOD_GET, Request.PATH_FB_LOGIN, b, new ResponseHandler() {
+    	
+		b.putString(Request.PARAM_FB_ACCESS_TOKEN, access_token);
+		
+		String path;
+		if(isFbLogin)
+			path=Request.PATH_FB_LOGIN;
+		else{
+			path=Request.PATH_GOOGLE_LOGIN;
+			b.putString("token_type", "Bearer");
+			b.putString("expires_in", String.valueOf(3600));
+		}	
+		WebService.sendRequest(LoginActivity.this, Request.METHOD_GET, path, b, new ResponseHandler() {
 			
 			@Override
 			public void onSuccess(String response) {
@@ -201,9 +238,23 @@ public class LoginActivity extends ActionBarActivity {
 		uiHelper.onDestroy();
 	}
     
+	
+	
 	@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		uiHelper.onActivityResult(requestCode, resultCode, data);
+		 if (requestCode == RC_SIGN_IN) {
+	            if (resultCode != RESULT_OK) {
+	                mSignInClicked = false;
+	            }
+	 
+	            mIntentInProgress = false;
+	 
+	            if (!mGoogleApiClient.isConnecting()) {
+	                mGoogleApiClient.connect();
+	            }
+	        }
+		else
+			uiHelper.onActivityResult(requestCode, resultCode, data);
     }
 
 	
@@ -232,9 +283,23 @@ public class LoginActivity extends ActionBarActivity {
 			}
 		});
     	
+    	findViewById(R.id.btn_sign_in).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				signInWithGplus();
+			}
+		});
     }
     
-    private void validateLogin() {
+    protected void signInWithGplus() {
+    	if (!mGoogleApiClient.isConnecting()) {
+            mSignInClicked = true;
+            resolveSignInError();
+        }
+	}
+
+	private void validateLogin() {
     	String email=((EditText)findViewById(R.id.edit_username)).getText().toString();
 		String password=((EditText)findViewById(R.id.edit_password)).getText().toString();
 		if(!AppUtil.emailValidator(email)){
@@ -364,4 +429,96 @@ public class LoginActivity extends ActionBarActivity {
     	Intent intent = new Intent(this, RegisterActivity.class);
     	startActivity(intent);
     }
+
+	protected void onStart() {
+	    super.onStart();
+	    //mGoogleApiClient.connect();
+	  }
+
+	  protected void onStop() {
+	    super.onStop();
+
+	    if (mGoogleApiClient.isConnected()) {
+	      mGoogleApiClient.disconnect();
+	    }
+	  }
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		if (!result.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).show();
+            return;
+        }
+ 
+        if (!mIntentInProgress) {
+            // Store the ConnectionResult for later usage
+            mConnectionResult = result;
+ 
+            if (mSignInClicked) {
+                // The user has already clicked 'sign-in' so we attempt to
+                // resolve all
+                // errors until the user is signed in, or they cancel.
+                resolveSignInError();
+            }
+        }
+	}
+
+	public void onConnectionSuspended(int cause) {
+		  mGoogleApiClient.connect();
+		}
+	
+	@Override
+	public void onConnected(Bundle arg0) {
+		mSignInClicked = false;
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					/*final String accessToken=GoogleAuthUtil.getToken(LoginActivity.this, Plus.AccountApi.getAccountName(mGoogleApiClient),
+					        "oauth2:" + Scopes.PLUS_LOGIN);*/
+					
+					final String accessToken = GoogleAuthUtil.getToken(LoginActivity.this, Plus.AccountApi.getAccountName(mGoogleApiClient) + "", "oauth2:" + Scopes.PLUS_LOGIN + 
+                            " https://www.googleapis.com/auth/userinfo.email");
+					Log.d("", "G+ login successful");
+					Log.d("", "Access token:"+accessToken);
+					
+					runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							//Toast.makeText(LoginActivity.this, "Google!", Toast.LENGTH_LONG).show();
+							loginWithFb(false, accessToken);
+						}
+					});
+				} catch (UserRecoverableAuthException e) {
+					startActivityForResult(e.getIntent(), 50);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (GoogleAuthException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
+	private void resolveSignInError() {
+		if(mConnectionResult!=null){
+	        if (mConnectionResult.hasResolution()) {
+	            try {
+	                mIntentInProgress = true;
+	                mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+	            } catch (SendIntentException e) {
+	                mIntentInProgress = false;
+	                mGoogleApiClient.connect();
+	            }
+	        }
+		}
+		else{
+			mIntentInProgress = false;
+            mGoogleApiClient.connect();
+		}
+    }
+	
 }

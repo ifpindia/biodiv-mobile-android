@@ -17,6 +17,7 @@ public class Request {
 	public static final String PATH_LOGIN = "/api/login";
 	public static final String PATH_FORGOT_PASSWORD = "/api/register/forgotPassword";
 	public static final String PATH_FB_LOGIN="/api/oauth/callback/facebook";
+	public static final String PATH_GOOGLE_LOGIN = "/api/oauth/callback/google";
 	public static final String PATH_LOGOUT = "/api/logout";
 	public static final String PATH_SPECIES_CATEGORIES = "/speciesGroup/list";
 	public static final String PATH_GET_OBSERVATIONS = "/observation/listJSON";
@@ -58,4 +59,5 @@ public class Request {
 	public static final String OBV_ID = "id";
 
 	public static final String AUTO_COMPLETE_URL = "http://"+HttpUtils.stageOrProdBaseURL()+PATH_AUTO_COMPLETE;
+
 }

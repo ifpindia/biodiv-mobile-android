@@ -45,7 +45,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	private boolean userScrolled=false;
 	protected static final int DELETE_OBSERVATION = 200;
-	private boolean isLocationNotFetched=true;
+	private boolean isLocationNotFetched=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					b.putString(Constants.LNG, String.valueOf(lng));
 				}
 				b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
-				b.putString(Request.MAXRADIUS, String.valueOf(1000));
+				b.putString(Request.MAXRADIUS, String.valueOf(50000));
 			}
 			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
 			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));

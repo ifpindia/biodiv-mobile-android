@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class HomeActivity extends BaseSlidingActivity{
 

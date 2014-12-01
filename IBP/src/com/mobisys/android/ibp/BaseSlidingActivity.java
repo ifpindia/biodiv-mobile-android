@@ -3,6 +3,7 @@ package com.mobisys.android.ibp;
 
 import java.util.ArrayList;
 
+import com.facebook.Session;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivity;
 import com.mobisys.android.ibp.database.CategoriesTable;
 import com.mobisys.android.ibp.database.ObservationInstanceTable;
@@ -228,6 +229,22 @@ public class BaseSlidingActivity extends SlidingActivity{
 				SharedPreferencesUtil.putSharedPreferencesString(BaseSlidingActivity.this, Constants.USER_ID, null);
 				SharedPreferencesUtil.putSharedPreferencesBoolean(BaseSlidingActivity.this, Constants.IS_MY_COLLECTION, false);
 				ObservationInstanceTable.deleteAllOrders(BaseSlidingActivity.this);
+				Session session = Session.getActiveSession();
+			    if (session != null) {
+
+			        if (!session.isClosed()) {
+			            session.closeAndClearTokenInformation();
+			            //clear your preferences if saved
+			        }
+			    } else {
+
+			        session = new Session(BaseSlidingActivity.this);
+			        Session.setActiveSession(session);
+
+			        session.closeAndClearTokenInformation();
+			            //clear your preferences if saved
+
+			    }
 				showLoginActivity();
 			}
 			
