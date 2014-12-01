@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color">
+	<ListView android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+		android:divider="@color/list_item_name_text_color"
+        android:dividerHeight="1dp"
+        android:cacheColorHint="@android:color/transparent"/>
+	<LinearLayout android:id="@+id/error_layout"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_centerInParent="true"
+	    android:orientation="vertical"
+	    android:visibility="gone">
+		<TextView android:id="@+id/message"
+		    android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_marginLeft="8dp"
+	        android:layout_marginRight="8dp"
+	        android:textSize="17sp"
+        	android:gravity="center_horizontal"
+        	android:text="@string/no_obs_msg"
+        	android:textColor="@color/list_item_name_text_color"/>
+		<Button android:id="@+id/btn_new_obs"
+	        android:layout_width="fill_parent"
+	        android:layout_height="40dp"
+	        android:layout_marginTop="12dp"
+	        android:layout_marginLeft="8dp"
+	        android:layout_marginRight="8dp"
+	        android:text="@string/new_observation"
+	        android:textColor="@color/bg_color"
+	        android:background="@drawable/app_btn"/>	   
+	</LinearLayout>    
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main_color">#452715</color>
+    <color name="transparent_black">#80000000</color>
+    <color name="bg_color">#e7e5b4</color>
+    <color name="brown_color">#452715</color>
+    <color name="orange_color">#4D301E</color>
+    <color name="blue_color">#0089B7</color>
+    <color name="header_title_text_color">#dcdc5b</color>
+    <color name="questa_brown_color">#cca077</color>
+    <color name="light_gray_bg">#dddddd</color>
+    <color name="green_color">#549316</color>
+     <color name="list_item_name_text_color">#452715</color>
+     <color name="frame_brown_color">#beb092</color>
+</resources>
