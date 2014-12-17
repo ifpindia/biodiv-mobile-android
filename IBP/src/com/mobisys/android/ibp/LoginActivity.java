@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -43,13 +42,6 @@ import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
-/*import android.util.Base64;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;*/
 
 public class LoginActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 	private Dialog mPg;

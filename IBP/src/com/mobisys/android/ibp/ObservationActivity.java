@@ -76,6 +76,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
 				b.putString(Request.MAXRADIUS, String.valueOf(50000));
 			}
+			
 			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
 			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
 		}

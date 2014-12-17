@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mobisys.android.ibp"
-    android:versionCode="4"
-    android:versionName="1.0.3" >
+    android:versionCode="5"
+    android:versionName="1.0.4" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -32,7 +32,7 @@
             android:value="@string/fb_app_id_production"/>
         
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="AIzaSyBF39us82IoS8f8C-p20NyEzIH6DcR5IrA"/>
+		    android:value="@string/map_api_key"/>
         	<!--priyank mac:  AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s-->
         <meta-data
 		    android:name="com.google.android.gms.version"

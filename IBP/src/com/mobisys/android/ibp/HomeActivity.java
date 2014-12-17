@@ -171,7 +171,7 @@ public class HomeActivity extends BaseSlidingActivity{
 					
 				}			
 			}
-		}).getLocation(10000);
+		}).getLocation(60000);
 	}
 
 	private void getSpeciesCategories() {

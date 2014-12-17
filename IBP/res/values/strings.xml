@@ -60,7 +60,7 @@
 	<string name="label_reverse_lookup_error">Cannot fetch address</string>
 	<string name="reverse_lookup_error_address" formatted="false">Latitude: %f, Longitude:%f</string> 
 	<string name="map_api_key_vikas">AIzaSyAJArV-YV1Z-xtXzGY1s6BTq0NJY1Ho8YE</string>
-	<string name="map_api_key_office_pc">AIzaSyCk7EQFubDH1jCVRQAX_myIJSHIF34yNrc</string>
+	<string name="map_api_key">AIzaSyBF39us82IoS8f8C-p20NyEzIH6DcR5IrA</string>
 	<string name="observation_msg">Your observation will be submitted shortly!</string> 
 	<string name="observation_msg_without_internet">Your observation will be submitted when you are next online.</string> 
 	<string name="view_on_map">View on Map</string> 
@@ -86,6 +86,7 @@
 	<string name="incomplete_obs">Incomplete observations</string>
 	<string name="msg_incomplete_obs">You have %d incomplete observations. Please press button below to submit observation.</string>
 	<string name="get_current_location">Get current Location</string>
+	<string name="cannot_get_current_location">Cannot get current Location..</string>
 	<string name="edit_location">Edit Location</string>
 	<string name="msg_import_metadata">Do you want to set the date, time and Location of this observation from photo\'s metadata</string>
 	<string name="import_metadata">Import Metadata</string>

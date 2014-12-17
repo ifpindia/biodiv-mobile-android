@@ -665,10 +665,14 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void gotLocation(Location location) {
-				reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
+				if(location!=null) reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
+				else{
+					enableDisableLocationProgress(false);
+					Toast.makeText(NewObservationActivity.this, getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
-		mMyLocation.getLocation(30000);
+		mMyLocation.getLocation(60000);
 	}
 	
 	private void showImportMetaDataDialog(final Uri imageUri){
