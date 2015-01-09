@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
+import com.mobisys.android.ibp.Constants;
 import com.mobisys.android.ibp.R;
 import com.mobisys.android.ibp.http.HttpUtils;
 import com.mobisys.android.ibp.http.Request;
@@ -33,6 +34,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -351,40 +353,39 @@ public class AppUtil {
 		    result = new Float(FloatD + (FloatM/60) + (FloatS/3600));
 
 		 return result;
+	};
 
+	public static Bitmap getBitmapFromUri(Uri uri, Context context, int size) throws FileNotFoundException, IOException{
+        InputStream input = context.getContentResolver().openInputStream(uri);
 
-		};
+        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+        onlyBoundsOptions.inJustDecodeBounds = true;
+        onlyBoundsOptions.inDither=true;//optional
+        onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+        input.close();
+        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1))
+            return null;
 
-		public static Bitmap getBitmapFromUri(Uri uri, Context context, int size) throws FileNotFoundException, IOException{
-	        InputStream input = context.getContentResolver().openInputStream(uri);
+        int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
 
-	        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
-	        onlyBoundsOptions.inJustDecodeBounds = true;
-	        onlyBoundsOptions.inDither=true;//optional
-	        onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
-	        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
-	        input.close();
-	        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1))
-	            return null;
+        double ratio = (originalSize > size) ? (originalSize / size) : 1.0;
 
-	        int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
-
-	        double ratio = (originalSize > size) ? (originalSize / size) : 1.0;
-
-	        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-	        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
-	        bitmapOptions.inDither=true;//optional
-	        bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
-	        input = context.getContentResolver().openInputStream(uri);
-	        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
-	        input.close();
-	        return bitmap;
-	    }
-		private static int getPowerOfTwoForSampleRatio(double ratio){
-	        int k = Integer.highestOneBit((int)Math.floor(ratio));
-	        if(k==0) return 1;
-	        else return k;
-	    }
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
+        bitmapOptions.inDither=true;//optional
+        bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+        input = context.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+        input.close();
+        return bitmap;
+    }
+		
+	private static int getPowerOfTwoForSampleRatio(double ratio){
+        int k = Integer.highestOneBit((int)Math.floor(ratio));
+        if(k==0) return 1;
+        else return k;
+    }
 		
 	public static ArrayList<DisplayStringInterface> parseAutocompleteResponse(String response) {
 		ArrayList<DisplayStringInterface> array=new ArrayList<DisplayStringInterface>();
@@ -407,5 +408,27 @@ public class AppUtil {
 			e.printStackTrace();
 		}
 		return array;
+	}
+	
+	public static void saveCurrentLocation(Context context, Location location){
+		if(location!=null){
+			SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LAT, String.valueOf(location.getLatitude()));
+			SharedPreferencesUtil.putSharedPreferencesString(context, Constants.LNG, String.valueOf(location.getLongitude()));
+		}
+	}
+	
+	public static Location getCurrentLocation(Context context){
+		String latStr = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LAT, null);
+		String lngStr = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LNG, null);
+		Location location = new Location("");
+		if(latStr!=null && lngStr!=null){
+			location.setLatitude(Double.parseDouble(latStr));
+			location.setLongitude(Double.parseDouble(lngStr));
+		} else {
+			location.setLatitude(Double.parseDouble(Constants.LAT));
+			location.setLongitude(Double.parseDouble(Constants.LNG));
+		}
+		
+		return location;
 	}
 }

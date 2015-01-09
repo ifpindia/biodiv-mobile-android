@@ -86,7 +86,7 @@
 	<string name="incomplete_obs">Incomplete observations</string>
 	<string name="msg_incomplete_obs">You have %d incomplete observations. Please press button below to submit observation.</string>
 	<string name="get_current_location">Get current Location</string>
-	<string name="cannot_get_current_location">Cannot get current Location..</string>
+	<string name="cannot_get_current_location">Cannot get current Location. Using last known location.</string>
 	<string name="edit_location">Edit Location</string>
 	<string name="msg_import_metadata">Do you want to set the date, time and Location of this observation from photo\'s metadata</string>
 	<string name="import_metadata">Import Metadata</string>

@@ -8,6 +8,13 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.mobisys.android.ibp.database.CategoriesTable;
 import com.mobisys.android.ibp.database.ObservationInstanceTable;
 import com.mobisys.android.ibp.http.Request;
@@ -15,7 +22,6 @@ import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Category;
 import com.mobisys.android.ibp.utils.AppUtil;
-import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 
 
@@ -28,16 +34,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class HomeActivity extends BaseSlidingActivity{
+public class HomeActivity extends BaseSlidingActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 
-	boolean mLocationFetching=false;
+	boolean mLocationFetched=false;
 	private ArrayList<Category> mCategoryList;
 	private Dialog mPg;
+	private LocationRequest mLocationRequest;
+	private GoogleApiClient mGoogleApiClient;
+	private boolean mBrowseObservationPressed = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,7 @@ public class HomeActivity extends BaseSlidingActivity{
 		setContentView(R.layout.home_screen);
 		initActionTitle(getString(R.string.home));
 		initScreen();
+		buildGoogleApiClient();
 	}
 	
 	 @Override
@@ -60,16 +72,31 @@ public class HomeActivity extends BaseSlidingActivity{
 	     super.onPause();
 	 }
 	
+	 @Override
+	 public void onDestroy(){
+		 super.onDestroy();
+	 }
+	 
+	 @Override
+	 protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+	 }
+	 
+	 @Override
+	 protected void onStop() {
+        super.onStop();
+        stopLocationUpdates();
+        if(mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
+	 }
 	 public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if(Preferences.DEBUG) Log.d("HomeActivity", "******Broadcast received in HomeActivity....");
 				checkInCompleteObservations();
 			}	
 	 };
 	 
 	private void initScreen() {
-		getCurrentLocation();
 		mCategoryList=(ArrayList<Category>) CategoriesTable.getAllCategories(HomeActivity.this);
 		Log.d("HomeActivity", "DB No. of Categories: at start"+mCategoryList.size());
 		if(AppUtil.isNetworkAvailable(HomeActivity.this)){
@@ -81,7 +108,9 @@ public class HomeActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(View v) {
-				if(!mLocationFetching) showCategoryDialog();
+				if(!mLocationFetched) shallWeShowLastLocationDialog();
+				else showCategoryDialog();
+				/*if(!mLocationFetching) showCategoryDialog();
 				else if(mLocationFetching){
 					//Toast.makeText(getApplicationContext(), getString(R.string.wait_fetch_location), Toast.LENGTH_SHORT).show();
 					final ArrayList<String> categoryListStr=new ArrayList<String>();
@@ -94,7 +123,7 @@ public class HomeActivity extends BaseSlidingActivity{
 					i.putExtra(Constants.GROUP_ID, mCategoryList.get(0).getId());
 					i.putExtra(Constants.LOCATION_NOT_FETCHED, true);
 					startActivity(i);
-				}
+				}*/
 			}
 		});
 		
@@ -147,7 +176,6 @@ public class HomeActivity extends BaseSlidingActivity{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Log.d("HomeActivity", "category selected: "+categoryListStr.get(which));
 				Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
 				i.putExtra(Constants.GROUP_ID, mCategoryList.get(which).getId());
 				startActivity(i);
@@ -156,22 +184,6 @@ public class HomeActivity extends BaseSlidingActivity{
 	
         AlertDialog alert = builder.create();
         alert.show();  
-	}
-
-	private void getCurrentLocation(){
-		mLocationFetching = true;
-		new MyLocation(this, new MyLocation.LocationResult() {
-			
-			@Override
-			public void gotLocation(Location location) {
-				if(location!=null){
-					mLocationFetching=false;
-					//mLat = location.getLatitude();
-					//mLng = location.getLongitude();
-					
-				}			
-			}
-		}).getLocation(60000);
 	}
 
 	private void getSpeciesCategories() {
@@ -196,7 +208,6 @@ public class HomeActivity extends BaseSlidingActivity{
 			mapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mCategoryList=mapper.readValue(response, new TypeReference<ArrayList<Category>>(){});
 			if(mPg!=null && mPg.isShowing()) mPg.dismiss();
-			Log.d("HomeActivity", "After Parse: No. of Categories: "+mCategoryList.size());
 			if(mCategoryList!=null && mCategoryList.size()>0){
 				for(int i=0;i<mCategoryList.size();i++)
 					CategoriesTable.createOrUpdateCategory(HomeActivity.this, mCategoryList.get(i));
@@ -210,4 +221,85 @@ public class HomeActivity extends BaseSlidingActivity{
 		}
 	}
 
+	private void createLocationRequest() {
+	    mLocationRequest = new LocationRequest();
+	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	}
+	
+	protected void startLocationUpdates() {
+	    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
+	}
+	
+	protected void stopLocationUpdates() {
+	    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
+	}
+
+	protected synchronized void buildGoogleApiClient() {
+	    mGoogleApiClient = new GoogleApiClient.Builder(this)
+	        .addConnectionCallbacks(this)
+	        .addOnConnectionFailedListener(this)
+	        .addApi(LocationServices.API)
+	        .build();
+	}
+	
+	private LocationListener mLocationListener = new LocationListener() {
+		
+		@Override
+		public void onLocationChanged(Location location) {
+			mLocationFetched=true;
+			stopLocationUpdates();
+			AppUtil.saveCurrentLocation(HomeActivity.this, location);
+			if(mBrowseObservationPressed) showCategoryDialog();
+		}
+	};
+	
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+		if(location!=null) AppUtil.saveCurrentLocation(this, location);
+		createLocationRequest();
+		startLocationUpdates();
+		new Handler().postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(!mLocationFetched){
+					mLocationFetched=true;
+					Toast.makeText(getApplicationContext(), getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
+				}
+			}
+		}, 30*1000);
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		
+	}
+
+	private void shallWeShowLastLocationDialog(){
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+		alertDialog.setMessage("Please wait while we fetch current location. Otherwise, you can view observations near your last known location?");
+		alertDialog.setTitle("Location not fetched");
+		alertDialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int arg1) {
+				dialog.dismiss();
+				showCategoryDialog();
+			}
+		});
+		alertDialog.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int arg1) {
+				dialog.dismiss();
+				mBrowseObservationPressed = true;
+			}
+		});
+		alertDialog.show();
+	}
 }

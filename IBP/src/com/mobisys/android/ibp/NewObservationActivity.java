@@ -32,6 +32,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.kbeanie.imagechooser.api.ImageChooserActivity;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParserInterface;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
@@ -49,16 +56,17 @@ import com.mobisys.android.ibp.models.Resource;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.AppUtil.DateListener;
 import com.mobisys.android.ibp.utils.HttpRetriever;
-import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 import com.mobisys.android.ibp.widget.MImageLoader;
 
-public class NewObservationActivity extends BaseSlidingActivity{
+public class NewObservationActivity extends BaseSlidingActivity implements ConnectionCallbacks, OnConnectionFailedListener{
 
 	private static final int IMAGE_CHOOSER = 100;
 	
+	private GoogleApiClient mGoogleApiClient;
+	private LocationRequest mLocationRequest;
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
 	private ArrayList<Resource> mResourceList;
@@ -72,7 +80,6 @@ public class NewObservationActivity extends BaseSlidingActivity{
 	private String DATE_FORMAT1="yyyy:MM:dd hh:mm:ss";
 	private ObservationInstance mObv;
 	private Dialog mPG;
-	private MyLocation mMyLocation;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +87,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		setContentView(R.layout.new_observation);
 		mHttpRetriever = new HttpRetriever();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
+		buildGoogleApiClient();
 		initActionTitle(getString(R.string.new_observation));
 		initScreen();
 		if(mObv!=null){
@@ -90,6 +98,18 @@ public class NewObservationActivity extends BaseSlidingActivity{
 		}
 	}
 
+	 @Override
+	 protected void onStart() {
+       super.onStart();
+       mGoogleApiClient.connect();
+	 }
+	 
+	 @Override
+	 protected void onStop() {
+       super.onStop();
+       if(mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
+	 }
+	 
 	@SuppressLint("SimpleDateFormat")
 	private void initScreen() {
 		mCommNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_common_name);
@@ -210,7 +230,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			@Override
 			public void onClick(View arg0) {
 				enableDisableLocationProgress(false);
-				if(mMyLocation!=null) mMyLocation.stopGetLocation();
+				stopLocationUpdates();
 			}
 		});
 		
@@ -253,9 +273,10 @@ public class NewObservationActivity extends BaseSlidingActivity{
 			}
 		});
 
+		Location location = AppUtil.getCurrentLocation(this);
 		if(mObv==null){
-			mLat=MyLocation.getLatitude(this);
-			mLng=MyLocation.getLongitude(this);
+			mLat=location.getLatitude();
+			mLng=location.getLongitude();
 			reverseGeocodeLocation(mLat, mLng);
 		}	
 		else{
@@ -661,18 +682,7 @@ public class NewObservationActivity extends BaseSlidingActivity{
 	}
 	
 	private void getCurrentLocation(){
-		mMyLocation = new MyLocation(this, new MyLocation.LocationResult() {
-			
-			@Override
-			public void gotLocation(Location location) {
-				if(location!=null) reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
-				else{
-					enableDisableLocationProgress(false);
-					Toast.makeText(NewObservationActivity.this, getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-		mMyLocation.getLocation(60000);
+		startLocationUpdates();
 	}
 	
 	private void showImportMetaDataDialog(final Uri imageUri){
@@ -772,5 +782,53 @@ public class NewObservationActivity extends BaseSlidingActivity{
 				}
 			});
 		} 
+	}
+
+	private void createLocationRequest() {
+	    mLocationRequest = new LocationRequest();
+	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	}
+	
+	private void startLocationUpdates() {
+	    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
+	}
+	
+	private void stopLocationUpdates() {
+	    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
+	}
+	
+	private LocationListener mLocationListener = new LocationListener() {
+		
+		@Override
+		public void onLocationChanged(Location location) {
+			stopLocationUpdates();
+			AppUtil.saveCurrentLocation(NewObservationActivity.this, location);
+			if(location!=null) reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
+			else{
+				enableDisableLocationProgress(false);
+				Toast.makeText(NewObservationActivity.this, getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
+			}
+		}
+	};
+	
+	private synchronized void buildGoogleApiClient() {
+	    mGoogleApiClient = new GoogleApiClient.Builder(this)
+	        .addConnectionCallbacks(this)
+	        .addOnConnectionFailedListener(this)
+	        .addApi(LocationServices.API)
+	        .build();
+	}
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		createLocationRequest();
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
 	}
 }

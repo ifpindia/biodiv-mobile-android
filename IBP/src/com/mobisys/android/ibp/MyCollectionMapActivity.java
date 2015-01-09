@@ -13,13 +13,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.mobisys.android.ibp.models.ObservationInstance;
-import com.mobisys.android.ibp.utils.MyLocation;
+import com.mobisys.android.ibp.utils.AppUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -62,14 +63,13 @@ public class MyCollectionMapActivity extends ActionBarActivity{
 	}
 	
 	private void setUpMap(final Context ctx) {
-		double lat=MyLocation.getLatitude(MyCollectionMapActivity.this);
-		double lng=MyLocation.getLongitude(MyCollectionMapActivity.this);
 		LatLng lat_lng ;
 		if(Preferences.LOCATION_DEBUG){
 			lat_lng = new LatLng(Double.valueOf(Constants.DEFAULT_LAT),Double.valueOf(Constants.DEFAULT_LNG));
 		}
 		else{
-			lat_lng = new LatLng(lat,lng);
+			Location location = AppUtil.getCurrentLocation(this);
+			lat_lng = new LatLng(location.getLatitude(),location.getLongitude());
 		}
 		
 		mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
@@ -116,8 +116,6 @@ public class MyCollectionMapActivity extends ActionBarActivity{
 	
 	private void showObservationInfoWindow(final View infoView,final ObservationInstance oi) {
 		if(oi!=null){
-			//Log.d("Image", "*****Image url"+sighting.getImages().get(0).getThumb());						
-		    //MImageLoader.displayImage(CollectionMapActivity.this,"http://"+HttpUtils.HOST+":"+HttpUtils.PORT+sighting.getImages().get(0).getThumb(),((ImageView)infoView.findViewById(R.id.sighting_image)),R.drawable.user_stub);
 		    Picasso.with(MyCollectionMapActivity.this).load(oi.getThumbnail()).into((ImageView)infoView.findViewById(R.id.image), new Callback() {
 				
 				@Override

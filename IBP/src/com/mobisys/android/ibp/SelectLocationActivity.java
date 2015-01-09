@@ -3,6 +3,7 @@ package com.mobisys.android.ibp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +19,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.HttpRetriever;
-import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 
@@ -40,8 +40,9 @@ public class SelectLocationActivity extends ActionBarActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.sighting_map_screen);
 		getSupportActionBar().hide();
-		mLat=getIntent().getDoubleExtra(Constants.LAT,0);
-		mLng=getIntent().getDoubleExtra(Constants.LNG, 0);
+		Location location = AppUtil.getCurrentLocation(this);
+		mLat = location.getLatitude();
+		mLng = location.getLongitude();
 		initScreen();
 	}
 
@@ -72,7 +73,6 @@ public class SelectLocationActivity extends ActionBarActivity{
 
 	private void setUpMapIfNeeded(Context ctx) {
 		if (mMap == null) {
-			
 	        // Try to obtain the map from the SupportMapFragment.
 	        mMap = ((com.androidmapsextensions.SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getExtendedMap();
 	        // Check if we were successful in obtaining the map.
@@ -86,14 +86,12 @@ public class SelectLocationActivity extends ActionBarActivity{
        if(mLat!=0 && mLng!=0){
 			LatLng lat_lng = new LatLng(mLat,mLng);
 			mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();	
-       }
-       else{
-    	   mLat=MyLocation.getLatitude(this);
-   		   mLng=MyLocation.getLongitude(this);
+       } else {
    		   LatLng lat_lng = new LatLng(mLat,mLng);
    		   mCameraPos = (new CameraPosition.Builder()).target(lat_lng).zoom(13).build();
        }
-		if(mCameraPos!=null){
+       
+       if(mCameraPos!=null){
 			mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 				
 				@Override

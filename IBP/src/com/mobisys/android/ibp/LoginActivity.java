@@ -104,7 +104,7 @@ public class LoginActivity extends ActionBarActivity implements ConnectionCallba
 			onSessionStateChange(session, session.getState(), null);
 		}
 		else
-			mFbButton.setReadPermissions(Arrays.asList("basic_info", "email"));
+			mFbButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
 		
 		uiHelper.onResume();
 	}

@@ -11,7 +11,6 @@ import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Observation;
 import com.mobisys.android.ibp.models.ObservationInstance;
 import com.mobisys.android.ibp.utils.AppUtil;
-import com.mobisys.android.ibp.utils.MyLocation;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 import com.mobisys.android.ibp.widget.MImageLoader;
@@ -21,6 +20,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,7 +45,6 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	private boolean userScrolled=false;
 	protected static final int DELETE_OBSERVATION = 200;
-	private boolean isLocationNotFetched=false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,30 +60,25 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
 		if(!isMyCollection){
 			initActionTitle(getString(R.string.observations));
-			double lat=MyLocation.getLatitude(this);
-			double lng=MyLocation.getLongitude(this);
-			//if location not fetched, display observations without lat lng
-			if(!isLocationNotFetched){
-				if(Preferences.LOCATION_DEBUG){
-					b.putString(Constants.LAT, Constants.DEFAULT_LAT);
-					b.putString(Constants.LNG, Constants.DEFAULT_LNG);
-				}
-				else{
-					b.putString(Constants.LAT, String.valueOf(lat));
-					b.putString(Constants.LNG, String.valueOf(lng));
-				}
-				b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
-				b.putString(Request.MAXRADIUS, String.valueOf(50000));
+			Location location = AppUtil.getCurrentLocation(this);
+			if(Preferences.LOCATION_DEBUG){
+				b.putString(Constants.LAT, Constants.LAT);
+				b.putString(Constants.LNG, Constants.LNG);
+			} else {
+				b.putString(Constants.LAT, String.valueOf(location.getLatitude()));
+				b.putString(Constants.LNG, String.valueOf(location.getLongitude()));
 			}
+			b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
+			b.putString(Request.MAXRADIUS, String.valueOf(50000));
 			if(selected_group_id!=-1) b.putString(Request.GROUP_ID, String.valueOf(selected_group_id));
 			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
-		}
-		else{
+		} else {
 			initActionTitle(getString(R.string.my_collection));
 			String id=SharedPreferencesUtil.getSharedPreferencesString(ObservationActivity.this, Constants.USER_ID,null);
 			b.putString(Request.USER, String.valueOf(id));
 			b.putString(Request.PARAM_OFFSET, String.valueOf(mOffset*24));
 		}
+		
 		if(!mMoreLoading)
 			mPG= ProgressDialog.show(ObservationActivity.this,getString(R.string.loading));
 		else
@@ -178,8 +172,7 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					startActivity(i);
 				}
 			});
-		}
-		else{
+		} else {
 			mList.setVisibility(View.GONE);
 			findViewById(R.id.error_layout).setVisibility(View.VISIBLE);
 			findViewById(R.id.btn_show_map).setVisibility(View.GONE);
