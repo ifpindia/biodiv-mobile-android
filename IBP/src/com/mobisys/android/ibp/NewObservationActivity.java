@@ -44,6 +44,7 @@ import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.A
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
 import com.mobisys.android.ibp.database.CategoriesTable;
 import com.mobisys.android.ibp.database.ObservationInstanceTable;
+import com.mobisys.android.ibp.http.HttpUtils;
 import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
@@ -114,6 +115,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 	private void initScreen() {
 		mCommNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_common_name);
 		mCommNameAutoText.setAutoCompleteUrl(Request.AUTO_COMPLETE_URL);
+		mCommNameAutoText.setHeader(HttpUtils.getHeaderBundle(this));
 		mCommNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
 			
 			@Override
@@ -124,6 +126,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 
 		mSciNameAutoText = (com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.edit_sci_name);
 		mSciNameAutoText.setAutoCompleteUrl(Request.AUTO_COMPLETE_URL);
+		mSciNameAutoText.setHeader(HttpUtils.getHeaderBundle(this));
 		mSciNameAutoText.setParser(new AutoCompleteResponseParserInterface() {
 			
 			@Override
@@ -429,10 +432,10 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 
 	private void deleteObservation() {
 		mPG= ProgressDialog.show(NewObservationActivity.this,getString(R.string.loading));
-		Bundle b=new Bundle();
-		b.putString(Request.OBV_ID, String.valueOf(mObv.getId()));
-		
-		WebService.sendRequest(NewObservationActivity.this, Request.METHOD_POST, Request.PATH_DELETE_OBSERVATION, b, new ResponseHandler() {
+		//Bundle b=new Bundle();
+		//b.putString(Request.OBV_ID, String.valueOf(mObv.getId()));
+		String path = String.format(Request.PATH_DELETE_OBSERVATION, mObv.getId());
+		WebService.sendRequest(NewObservationActivity.this, Request.METHOD_DELETE, path, null, new ResponseHandler() {
 			
 			@Override
 			public void onSuccess(String response) {

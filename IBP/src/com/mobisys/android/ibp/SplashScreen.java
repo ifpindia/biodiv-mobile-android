@@ -3,6 +3,7 @@ package com.mobisys.android.ibp;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 import android.app.Activity;
@@ -56,7 +57,7 @@ public class SplashScreen extends Activity{
 	}
 
 	protected void startApp() {
-	    String token=SharedPreferencesUtil.getSharedPreferencesString(SplashScreen.this, Constants.APP_TOKEN, null);
+	    String token=SharedPreferencesUtil.getSharedPreferencesString(SplashScreen.this, Request.HEADER_AUTH_KEY, null);
 		if(token==null){
 			Intent i=new Intent(SplashScreen.this, LoginActivity.class);
 			startActivity(i);

@@ -3,6 +3,8 @@ package com.mobisys.android.ibp.http;
 public class Request {
 
 	public static final String HEADER_AUTH_KEY = "X-Auth-Token";
+	public static final String HEADER_APP_KEY = "X-AppKey";
+	public static final String HEADER_ACCEPT = "Accept";
 	
 	//Method - get, post or put
 	public static final String METHOD = "method";
@@ -19,14 +21,16 @@ public class Request {
 	public static final String PATH_FB_LOGIN="/api/oauth/callback/facebook";
 	public static final String PATH_GOOGLE_LOGIN = "/api/oauth/callback/google";
 	public static final String PATH_LOGOUT = "/api/logout";
-	public static final String PATH_SPECIES_CATEGORIES = "/speciesGroup/list";
-	public static final String PATH_GET_OBSERVATIONS = "/observation/listJSON";
-	public static final String PATH_SAVE_OBSERVATION = "/api/observation/save";
+	public static final String PATH_SPECIES_CATEGORIES = "/speciesGroup";
+	public static final String PATH_GET_OBSERVATIONS = "/observation";
+	//public static final String PATH_SAVE_OBSERVATION = "/api/observation/save";
+	public static final String PATH_SAVE_OBSERVATION = "/api/observation";
 	public static final String PATH_UPLOAD_RESOURCE="/api/observation/upload_resource";
 	public static final String PATH_GET_OBSERVTAION_DETAIL = "/api/observation/show/";
-	public static final String PATH_SHOW_SPECIES_DETAIL = "/api/species/show/";
-	public static final String PATH_UPDATE_OBSERVATION = "/api/observation/update";
-	public static final String PATH_DELETE_OBSERVATION = "/api/observation/flagDeleted";
+	public static final String PATH_SHOW_SPECIES_DETAIL = "/species/show/";
+	public static final String PATH_UPDATE_OBSERVATION = "/api/observation/%d";
+	//public static final String PATH_DELETE_OBSERVATION = "/api/observation/flagDeleted";
+	public static final String PATH_DELETE_OBSERVATION = "/api/observation/%d/flagDeleted";
 	public static final String PATH_AUTO_COMPLETE = "/api/recommendation/suggest";
 	
 	//PARAMS

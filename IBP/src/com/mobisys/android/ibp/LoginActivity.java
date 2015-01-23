@@ -332,7 +332,7 @@ public class LoginActivity extends ActionBarActivity implements ConnectionCallba
 				String token=jobj.optString("token");
 				String id=jobj.optString("id");
 				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.USER_ID, id);
-				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Constants.APP_TOKEN, token);
+				SharedPreferencesUtil.putSharedPreferencesString(LoginActivity.this, Request.HEADER_AUTH_KEY, token);
 				showHomeActivity();
 				if(mPg!=null && mPg.isShowing()) mPg.dismiss();
 			} catch (JSONException e) {
