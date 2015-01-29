@@ -4,11 +4,14 @@ import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.loopj.android.http.RequestParams;
+import com.mobisys.android.ibp.Constants;
 import com.mobisys.android.ibp.Preferences;
+import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 /**
  * @author mahavir (vir.jain)
@@ -27,6 +30,15 @@ public class HttpUtils {
 	public static String stageOrProdBaseURL(){
 		if(Preferences.IS_STAGING) return STAGE_HOST;
 		else return PROD_HOST;
+	}
+	
+	public static Bundle getHeaderBundle(Context context){
+		Bundle bundle = new Bundle();
+		bundle.putString(Request.HEADER_ACCEPT, Constants.APPLICATION_JSON);
+		bundle.putString(Request.HEADER_APP_KEY, Constants.APP_KEY);
+		String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
+		bundle.putString(Request.HEADER_AUTH_KEY, user_key);
+		return bundle;
 	}
 	
 	public static URI getUri(String host, String path, String query, int port, boolean https) {

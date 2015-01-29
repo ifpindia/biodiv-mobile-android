@@ -45,6 +45,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 	private Listener listener;
 	private AutoCompleteResponseParserInterface mParser;
 	private String mInputKey=null;
+	private Bundle mHeaders;
 	
 	public interface Listener {
 		void didClearText();
@@ -106,6 +107,10 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 
 	public void setAutoCompleteUrl(String url){
 		this.mAutocompleteUrl = url;
+	}
+	
+	public void setHeader(Bundle headers){
+		this.mHeaders = headers;
 	}
 	
 	private OnTouchListener l;
@@ -198,7 +203,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 			Hashtable<String, String> ht=params[0];
 			final String myQuery=ht.get("query");
 			String url = appendInput(myQuery);
-			String response = HttpConnector.getResponse(url);
+			String response = HttpConnector.getResponse(url, mHeaders);
 			return mParser.parseAutoCompleteResponse(response);
 		}
 

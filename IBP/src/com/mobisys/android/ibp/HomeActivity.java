@@ -7,6 +7,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -204,6 +206,8 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 	
 	protected void parseSpeciesCategories(String response) {
 		try {
+			JSONObject jsonObject = new JSONObject(response);
+			response = jsonObject.getJSONArray("instanceList").toString();
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mCategoryList=mapper.readValue(response, new TypeReference<ArrayList<Category>>(){});
@@ -217,6 +221,8 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}

@@ -388,6 +388,13 @@ public class AppUtil {
     }
 		
 	public static ArrayList<DisplayStringInterface> parseAutocompleteResponse(String response) {
+		try {
+			JSONObject jsonObj = new JSONObject(response);
+			response = jsonObj.getJSONObject("model").getJSONArray("instanceList").toString();
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		
 		ArrayList<DisplayStringInterface> array=new ArrayList<DisplayStringInterface>();
 		try {
 			JSONArray jsonArray=new JSONArray(response);

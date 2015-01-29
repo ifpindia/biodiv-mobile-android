@@ -16,6 +16,8 @@ public class Constants {
 	public static final String DEFAULT_LAT ="18.4638392";
 	public static final String DEFAULT_LNG ="73.86471";
 	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
+	public static final String APP_KEY = "c9c91329-fb27-4b0d-94ca-ee939da0c91d";
+	public static final String APPLICATION_JSON = "application/json, text/json";
 	
 	public static final String NEARBY = "nearBy";
 	protected static final String GROUP_ID = "species_group_id";

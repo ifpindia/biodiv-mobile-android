@@ -93,19 +93,6 @@ public class ObservationRequestQueue {
 		ArrayList<String> mImageType=new ArrayList<String>();
 		ArrayList<Resource> mResourceList=new ArrayList<Resource>();
 		mResourceList.addAll(sp.getResource());
-		/*if(sp.getResources()!=null){
-			String[] items = sp.getResources().split(",");
-		    for (String item : items){
-		        resources.add(item);
-		    }
-		}*/
-		
-		/*if(sp.getImageType()!=null){
-			String[] imageT = sp.getImageType().split(",");
-		    for (String item : imageT){
-		    	imageType.add(item);
-		    }
-		}*/
 		
 		if(mResourceList!=null && mResourceList.size()>0){
 			for(int i=0;i<mResourceList.size();i++){
@@ -207,6 +194,7 @@ public class ObservationRequestQueue {
 			}
 
 			JSONObject jObj=new JSONObject(response);
+			jObj = jObj.getJSONObject("model");
 			JSONArray jArray=jObj.getJSONObject("observations").getJSONArray("resources");
 			if(jArray!=null && jArray.length()>0){
 				for(int i=0;i<jArray.length();i++){
@@ -235,11 +223,12 @@ public class ObservationRequestQueue {
 		if(sp.getId()==-1)
 			path=Request.PATH_SAVE_OBSERVATION;
 		else
-			path=Request.PATH_UPDATE_OBSERVATION;
+			path=String.format(Request.PATH_UPDATE_OBSERVATION, sp.getId());
 		
 		sp.setStatus(StatusType.PROCESSING);
 		ObservationInstanceTable.updateRowFromTable(context, sp);
-		WebService.sendRequest(context, Request.METHOD_POST, path, b, new WebService.ResponseHandler() {
+		String method = sp.getId()==-1?Request.METHOD_POST:Request.METHOD_PUT;
+		WebService.sendRequest(context, method, path, b, new WebService.ResponseHandler() {
 			
 			@Override
 			public void onSuccess(String response) {
@@ -249,7 +238,7 @@ public class ObservationRequestQueue {
 					boolean success=jObj.optBoolean("success");
 					if(success){
 						sp.setStatus(StatusType.SUCCESS);
-						sp.setId(jObj.getJSONObject("observationInstance").optLong("id"));
+						sp.setId(jObj.getJSONObject("instance").optLong("id"));
 						ObservationInstanceTable.updateRowFromTable(context, sp);
 						if(Preferences.DEBUG) Log.d("ObsRequestQueue", "******Broadcast send from ObsRequestQueue....");
 						

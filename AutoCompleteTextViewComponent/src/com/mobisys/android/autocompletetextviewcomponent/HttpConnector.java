@@ -5,18 +5,26 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Set;
 
+import android.os.Bundle;
 import android.util.Log;
 
 public class HttpConnector {
 
-	public static String getResponse(String urlString){
+	public static String getResponse(String urlString, Bundle headers){
 	    HttpURLConnection conn = null;
 	    StringBuilder jsonResults = new StringBuilder();
 	    try {
 
 	        URL url = new URL(urlString);
 	        conn = (HttpURLConnection) url.openConnection();
+	        Set<String> keys = headers.keySet();
+	        for(String key:keys){
+	        	String value = headers.getString(key);
+	        	Log.d("Autocomplete URL ==>", "Key: "+key+" Value: "+value);
+	        	conn.setRequestProperty(key, value);
+	        }
 	        InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
 	        // Load the results into a StringBuilder

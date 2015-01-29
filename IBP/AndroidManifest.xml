@@ -32,7 +32,7 @@
             android:value="@string/fb_app_id_production"/>
         
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="@string/map_api_key"/>
+		    android:value="AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s"/>
         	<!--priyank mac:  AIzaSyDv2Rm0VWnacNrWXKbtFwDbqZ1jmIpjp-s-->
         <meta-data
 		    android:name="com.google.android.gms.version"

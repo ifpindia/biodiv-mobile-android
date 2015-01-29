@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -30,8 +32,15 @@ public class WebService {
 		AsyncHttpResponseHandler asyncHandler = new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String response, Bundle headers) {
-				Log.d(TAG, "Response: "+response);
+				
+				try {
+					JSONObject jsonObj = new JSONObject(response);
+					response = jsonObj.getJSONObject("model").toString();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 
+				Log.d(TAG, "Response: "+response);
 				if (response != null && !("null".equals(response))) {
 					responseHandler.onSuccess(response);			
 				}
@@ -49,32 +58,34 @@ public class WebService {
 		};
 			
 		AsyncHttpClient client = new AsyncHttpClient();
-		
+		client.addHeader(Request.HEADER_APP_KEY, Constants.APP_KEY);
+		client.addHeader(Request.HEADER_ACCEPT, Constants.APPLICATION_JSON);
+		String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
+		if(user_key!=null) client.addHeader(Request.HEADER_AUTH_KEY, user_key);
+
 		if(Request.METHOD_GET.equals(methodString)){
-			String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
-			if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
 			String url = HttpUtils.getUri(actionString, paramsBundle).toString();
 			Log.d(TAG, "URL: "+url);
 			
 			client.get(url, asyncHandler);
 		}
 		else if(Request.METHOD_POST.equals(methodString)){
-			String token = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.APP_TOKEN, null);
-			if(token!=null) client.addHeader(Request.HEADER_AUTH_KEY, token);
 			String url = HttpUtils.getUri(actionString, (Bundle) null).toString();
 			Log.d(TAG, url);
 			if(paramsBundle!=null) Log.d(TAG, "Params: "+paramsBundle.toString());
 			client.post(url, HttpUtils.getRequestParams(paramsBundle), asyncHandler);
 		}
 		else if(Request.METHOD_PUT.equals(methodString)){
-			/*if(!actionString.contains(Request.PATH_LOGIN)){
-				String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
-				if(user_key!=null) client.addHeader(Request.HEADER_AUTH_KEY, user_key);
-			}*/
-			String url = HttpUtils.getUri(actionString, (Bundle) null).toString();
+			String url = HttpUtils.getUri(actionString, paramsBundle).toString();
 			Log.d(TAG, url);
 			if(paramsBundle!=null) Log.d(TAG, "Params: "+paramsBundle.toString());
 			client.put(url, HttpUtils.getRequestParams(paramsBundle), asyncHandler);
+		}
+		else if(Request.METHOD_DELETE.equals(methodString)){
+			String url = HttpUtils.getUri(actionString, (Bundle) null).toString();
+			Log.d(TAG, url);
+			if(paramsBundle!=null) Log.d(TAG, "Params: "+paramsBundle.toString());
+			client.delete(url, asyncHandler);
 		}
 	}
 
@@ -108,6 +119,8 @@ public class WebService {
 		AsyncHttpClient client = new AsyncHttpClient();
 		String user_key = SharedPreferencesUtil.getSharedPreferencesString(context, Request.HEADER_AUTH_KEY, null);
 		if(user_key!=null) client.addHeader(Request.HEADER_AUTH_KEY, user_key);
+		client.addHeader(Request.HEADER_APP_KEY, Constants.APP_KEY);
+		client.addHeader(Request.HEADER_ACCEPT, Constants.APPLICATION_JSON);
 		
 		if(Request.METHOD_GET.equals(methodString)){
 			String url = HttpUtils.getUri(actionString, null).toString();
@@ -158,6 +171,9 @@ public class WebService {
         };
 
         AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader(Request.HEADER_APP_KEY, Constants.APP_KEY);
+        client.addHeader(Request.HEADER_ACCEPT, Constants.APPLICATION_JSON);
+		
         if(Request.METHOD_GET.equals(methodString)){
             String url = HttpUtils.getUri(base_url, actionString, port, paramsBundle, false).toString().replaceAll("%25", "%");
 
