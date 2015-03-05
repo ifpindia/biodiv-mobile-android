@@ -45,12 +45,15 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 	private boolean mNoMoreItems = false, mMoreLoading = false;
 	private boolean userScrolled=false;
 	protected static final int DELETE_OBSERVATION = 200;
+	private boolean mShowAllObersvations;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.observation_list);
 		selected_group_id=getIntent().getLongExtra(Constants.GROUP_ID, -1);
+		mShowAllObersvations=getIntent().getBooleanExtra(Constants.SHOW_ALL, false);
+		
 		mList=(ListView)findViewById(R.id.list);
 		getNearByObservation();
 	}
@@ -61,12 +64,14 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 		if(!isMyCollection){
 			initActionTitle(getString(R.string.observations));
 			Location location = AppUtil.getCurrentLocation(this);
-			if(Preferences.LOCATION_DEBUG){
-				b.putString(Constants.LAT, Constants.LAT);
-				b.putString(Constants.LNG, Constants.LNG);
-			} else {
-				b.putString(Constants.LAT, String.valueOf(location.getLatitude()));
-				b.putString(Constants.LNG, String.valueOf(location.getLongitude()));
+			if(!mShowAllObersvations){
+				if(Preferences.LOCATION_DEBUG){
+					b.putString(Constants.LAT, Constants.LAT);
+					b.putString(Constants.LNG, Constants.LNG);
+				} else {
+					b.putString(Constants.LAT, String.valueOf(location.getLatitude()));
+					b.putString(Constants.LNG, String.valueOf(location.getLongitude()));
+				}
 			}
 			b.putString(Request.NEARBY_TYPE, Constants.NEARBY);
 			b.putString(Request.MAXRADIUS, String.valueOf(50000));

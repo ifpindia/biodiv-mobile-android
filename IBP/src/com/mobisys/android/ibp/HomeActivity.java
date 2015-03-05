@@ -110,8 +110,14 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 			
 			@Override
 			public void onClick(View v) {
-				if(!mLocationFetched) shallWeShowLastLocationDialog();
-				else showCategoryDialog();
+				/*if(!mLocationFetched) shallWeShowLastLocationDialog();
+				else showCategoryDialog();*/
+				
+				Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
+				i.putExtra(Constants.GROUP_ID, Long.valueOf(-1));//mCategoryList.get(which).getId());
+				i.putExtra(Constants.SHOW_ALL, true);
+				startActivity(i);
+				
 				/*if(!mLocationFetching) showCategoryDialog();
 				else if(mLocationFetching){
 					//Toast.makeText(getApplicationContext(), getString(R.string.wait_fetch_location), Toast.LENGTH_SHORT).show();
@@ -180,6 +186,7 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 			public void onClick(DialogInterface dialog, int which) {
 				Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
 				i.putExtra(Constants.GROUP_ID, mCategoryList.get(which).getId());
+				i.putExtra(Constants.SHOW_ALL, true);
 				startActivity(i);
 			}
 		});
