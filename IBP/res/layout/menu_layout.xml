@@ -110,6 +110,37 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:background="@drawable/menu_separator"/>
+		<RelativeLayout android:id="@+id/layout_joined_groups"
+		    android:layout_width="match_parent"
+		    android:layout_height="50dp">
+		    <View android:id="@+id/indicator_joined"
+		        android:layout_width="12dp"
+		        android:layout_height="match_parent"
+		        android:layout_alignParentLeft="true"
+		        android:paddingTop="10dp" android:paddingBottom="10dp"
+		        android:paddingLeft="8dp" android:paddingRight="8dp"
+		        android:visibility="invisible"
+		        android:background="@color/orange_color"/>
+		    <TextView android:id="@+id/joined_groups"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_toRightOf="@id/indicator_joined"
+		        android:layout_centerVertical="true"
+		        android:paddingTop="10dp" android:paddingBottom="10dp"
+		        android:paddingLeft="4dp" android:paddingRight="8dp"
+		        android:gravity="center_vertical"
+		        android:textColor="@android:color/white"
+		        android:text="@string/joined_groups"
+		        android:textSize="18sp"
+		        android:drawableLeft="@drawable/tags"
+		        android:drawablePadding="8dp"
+		        android:background="@drawable/menu_selector"
+		        android:clickable="true"/>
+		</RelativeLayout>
+		<ImageView android:id="@+id/separator18"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:background="@drawable/menu_separator"/>
 		<RelativeLayout android:id="@+id/layout_my_collection"
 		    android:layout_width="match_parent"
 		    android:layout_height="50dp">

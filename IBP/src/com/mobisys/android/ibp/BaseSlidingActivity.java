@@ -127,6 +127,21 @@ public class BaseSlidingActivity extends SlidingActivity{
 			}
 		});
 		
+		getSlidingMenu().findViewById(R.id.joined_groups).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!(BaseSlidingActivity.this instanceof JoinedGroupsActivity)){
+					Intent intent = new Intent(BaseSlidingActivity.this,JoinedGroupsActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+				else{
+					getSlidingMenu().toggle();
+				}
+			}
+		});
+		
 		getSlidingMenu().findViewById(R.id.my_collection).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -153,6 +168,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_joined).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof ObservationActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
@@ -170,6 +186,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 			}	
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_joined).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof NewObservationActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
@@ -178,6 +195,7 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_joined).setVisibility(View.INVISIBLE);
 		}
 		if(BaseSlidingActivity.this instanceof ObservationStatusActivity){
 			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
@@ -186,6 +204,16 @@ public class BaseSlidingActivity extends SlidingActivity{
 			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
 			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.VISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_joined).setVisibility(View.INVISIBLE);
+		}
+		if(BaseSlidingActivity.this instanceof JoinedGroupsActivity){
+			getSlidingMenu().findViewById(R.id.indicator_home).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_observation).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_nearme).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_my_collection).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_settings).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_status).setVisibility(View.INVISIBLE);
+			getSlidingMenu().findViewById(R.id.indicator_joined).setVisibility(View.VISIBLE);
 		}
 	}
 	

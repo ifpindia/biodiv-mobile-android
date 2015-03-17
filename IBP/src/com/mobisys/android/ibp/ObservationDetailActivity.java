@@ -38,10 +38,10 @@ public class ObservationDetailActivity extends ActionBarActivity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.obv_detail);
-		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
-		isFromStatusScreen=getIntent().getBooleanExtra(Constants.FROM_STATUS_SCREEN, false);
 		getSupportActionBar().hide();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
+		isMyCollection=getIntent().getBooleanExtra(Constants.IS_MY_COLLECTION, false);
+		isFromStatusScreen=getIntent().getBooleanExtra(Constants.FROM_STATUS_SCREEN, false);
 		initScreen();
 	}
 

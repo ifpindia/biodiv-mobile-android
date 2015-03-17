@@ -89,6 +89,9 @@ public class ObservationRequestQueue {
 		b.putString(Request.RESOURCE_LIST_TYPE, Constants.RESOURCE_LIST_TYPE);
 		b.putString(Request.AGREE_TERMS, Constants.AGREE_TERMS_VALUE);
 		
+		if(sp.getUserGroupsList().length()>0)
+			b.putString(Request.USER_GROUP_LIST, sp.getUserGroupsList());
+		
 		ArrayList<String> imageStringPath=new ArrayList<String>();
 		ArrayList<String> mImageType=new ArrayList<String>();
 		ArrayList<Resource> mResourceList=new ArrayList<Resource>();

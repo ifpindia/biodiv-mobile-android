@@ -119,6 +119,7 @@ public class ObservationInstanceTable {
 			query.updateColumnValue("status", sp.getStatus());
 			query.updateColumnValue("message", sp.getMessage());
 			query.updateColumnValue("notes", sp.getNotes());
+			query.updateColumnValue("userGroupsList", sp.getUserGroupsList());
 			if(sp.getId()==-1)
 				query.where().eq("server_id", sp.getServer_id()).and().eq("id", sp.getId());
 			else

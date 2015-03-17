@@ -12,4 +12,5 @@
     <color name="green_color">#549316</color>
      <color name="list_item_name_text_color">#452715</color>
      <color name="frame_brown_color">#beb092</color>
+     <color name="light_gray">#cccccc</color>
 </resources>

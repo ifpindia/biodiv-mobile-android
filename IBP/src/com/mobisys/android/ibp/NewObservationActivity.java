@@ -7,12 +7,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -20,17 +25,19 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,17 +56,19 @@ import com.mobisys.android.ibp.http.Request;
 import com.mobisys.android.ibp.http.WebService;
 import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Category;
+import com.mobisys.android.ibp.models.MyUserGroup;
 import com.mobisys.android.ibp.models.NameRecord;
 import com.mobisys.android.ibp.models.ObservationInstance;
 import com.mobisys.android.ibp.models.ObservationInstance.StatusType;
 import com.mobisys.android.ibp.models.Resource;
-
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.AppUtil.DateListener;
 import com.mobisys.android.ibp.utils.HttpRetriever;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil;
 import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
+import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
+import com.mobisys.android.ibp.widget.CheckableLayout;
 import com.mobisys.android.ibp.widget.MImageLoader;
 
 public class NewObservationActivity extends BaseSlidingActivity implements ConnectionCallbacks, OnConnectionFailedListener{
@@ -81,6 +90,8 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 	private String DATE_FORMAT1="yyyy:MM:dd hh:mm:ss";
 	private ObservationInstance mObv;
 	private Dialog mPG;
+	private ArrayList<MyUserGroup> myGroupList;
+	private GroupsAdapter mGroupsAdapter; 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -134,6 +145,20 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 				return AppUtil.parseAutocompleteResponse(response);
 			}
 		});
+		
+		myGroupList=getJoinedGroups();
+		findViewById(R.id.user_groups_layout).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(myGroupList!=null && myGroupList.size()>0){					
+					showGroupsDialog();
+				}
+				else
+					AppUtil.showErrorDialog("Join atleast 1 user groups from menu!", NewObservationActivity.this);
+			}
+		});
+		
 		
 		((CheckBox)findViewById(R.id.chk_help_identify)).setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
@@ -298,6 +323,83 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 		}
 	}
 
+	protected void showGroupsDialog() {
+		mGroupsAdapter=new GroupsAdapter(NewObservationActivity.this,myGroupList);
+		if(mGroupsAdapter!=null){
+			AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
+			builder.setTitle("Select Groups");
+			
+			builder.setAdapter(mGroupsAdapter, null);
+			builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					int count=0;
+					for(int i=0;i<myGroupList.size();i++){
+						if(myGroupList.get(i).isSelected()){
+							count++;
+						}	
+					}
+					((TextView)findViewById(R.id.user_groups)).setText(""+count);
+					//Log.d("CategoryActivity", "****Total categories selected: "+count);
+					dialog.dismiss();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}	
+	}
+
+	private ArrayList<MyUserGroup> getJoinedGroups() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		ArrayList<MyUserGroup> myList=null;
+		
+		String groupList=SharedPreferencesUtil.getSharedPreferencesString(NewObservationActivity.this, Constants.JOINED_GROUPS_JSON, "");
+		
+		try {
+			myList=mapper.readValue(groupList, new TypeReference<ArrayList<MyUserGroup>>(){});
+			
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return myList;
+	}
+
+	private class GroupsAdapter extends ArrayAdapter<MyUserGroup>{
+
+    	public GroupsAdapter(Context context, ArrayList<MyUserGroup> objects) {
+    		super(context, 0, objects);
+    	}
+
+    	@Override
+    	public View getView(final int position, View convertView, ViewGroup parent) {
+    		View rowView=convertView;
+
+    		if(rowView==null){
+    			LayoutInflater inflater= (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    		rowView = inflater.inflate(R.layout.dialog_row_group_item, parent, false);
+	    	}
+    		final CheckableLayout checkable_layout = (CheckableLayout)rowView;
+    		checkable_layout.setChecked(getItem(position).isSelected());
+    		
+    		((TextView)rowView.findViewById(R.id.title)).setText(getItem(position).getTitle());
+    		rowView.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					checkable_layout.toggle();
+					getItem(position).setSelected(checkable_layout.isChecked());
+				}
+			});
+    		return rowView;
+    	}
+	}
+	
 	private void initEditScreen() {
 		initActionTitle(getString(R.string.edit_observation));
 		
@@ -316,6 +418,20 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 				((TextView)findViewById(R.id.category)).setText(""+categoryListStr.get(i));
 				break;
 			}
+		}
+		
+		if(mObv.getUserGroups()!=null && mObv.getUserGroups().size()>0){
+			int count=0;
+			for(int i=0;i<mObv.getUserGroups().size();i++){
+				for(int j=0;j<myGroupList.size();j++){
+					if(mObv.getUserGroups().get(i).getId()==myGroupList.get(j).getId()){
+						myGroupList.get(j).setSelected(true);
+						++count;
+						break;
+					}
+				}
+			}
+			((TextView)findViewById(R.id.user_groups)).setText(""+count);
 		}
 		
 		mAddress=mObv.getPlaceName();
@@ -536,6 +652,18 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 		String notes=((EditText)findViewById(R.id.edit_add_notes)).getText().toString();
 		sp.setNotes(notes);
 		sp.setResource(mResourceList);  // image list
+		
+		ArrayList<Long> groupIds=new ArrayList<Long>();
+		for(int i=0;i<myGroupList.size();i++){
+			if(myGroupList.get(i).isSelected()){
+				groupIds.add(myGroupList.get(i).getId());
+			}	
+		}
+
+		if(groupIds.size()>0){
+			String list=groupIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
+			sp.setUserGroupsList(list);
+		}
 		
 		if(mObv!=null){
 			ArrayList<ObservationInstance> obvList= (ArrayList<ObservationInstance>) ObservationInstanceTable.getAllRecords(NewObservationActivity.this);

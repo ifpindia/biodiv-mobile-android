@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.ObjectCodec;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -103,6 +104,10 @@ public class ObservationInstance implements Parcelable{
 	private StatusType status;
 	@DatabaseField
 	private String message;
+	@DatabaseField
+	private String userGroupsList;
+	@JsonProperty("userGroups")
+	private ArrayList<UserGroup> userGroups;
 	
 	public ObservationInstance(){}
 	
@@ -114,7 +119,7 @@ public class ObservationInstance implements Parcelable{
 			Habitat habitat, Date fromDate, Date toDate, Date createdOn,
 			Date lastRevised, Author author, String thumbnail, String notes,
 			String summary, int rating, NameRecord maxVotedReco, ArrayList<Resource> resource, long habitat_id, String areas,
-			StatusType status, String message) {
+			StatusType status, String message, String userGroupsList, ArrayList<UserGroup> userGroups) {
 		super();
 		this.server_id = server_id;
 		this.id = id;
@@ -137,6 +142,8 @@ public class ObservationInstance implements Parcelable{
 		this.areas = areas;
 		this.status = status;
 		this.message = message;
+		this.userGroupsList = userGroupsList;
+		this.userGroups = userGroups;
 	}
 
 	public long getId() {
@@ -347,6 +354,22 @@ public class ObservationInstance implements Parcelable{
 		this.message = message;
 	}
 
+	public String getUserGroupsList() {
+		return userGroupsList;
+	}
+
+	public void setUserGroupsList(String userGroupsList) {
+		this.userGroupsList = userGroupsList;
+	}
+
+	public ArrayList<UserGroup> getUserGroups() {
+		return userGroups;
+	}
+
+	public void setUserGroups(ArrayList<UserGroup> userGroups) {
+		this.userGroups = userGroups;
+	}
+
 	private void readFromParcel(Parcel in) {
 		server_id=in.readLong();
 		id=in.readLong();
@@ -366,6 +389,8 @@ public class ObservationInstance implements Parcelable{
 		maxVotedReco=in.readParcelable(NameRecord.class.getClassLoader());
 		resource=new ArrayList<Resource>();
 		in.readList(resource, Resource.class.getClassLoader());
+		userGroups=new ArrayList<UserGroup>();
+		in.readList(userGroups, UserGroup.class.getClassLoader());
 		//group_id=in.readLong();
 		habitat_id=in.readLong();
 		areas=in.readString();
@@ -375,6 +400,7 @@ public class ObservationInstance implements Parcelable{
 		image_type=in.readString();*/
 		status=StatusType.valueOf(in.readString());
 		message=in.readString();
+		userGroupsList=in.readString();
 	}
 	
 	@Override
@@ -401,6 +427,7 @@ public class ObservationInstance implements Parcelable{
 		dest.writeInt(rating);
 		dest.writeParcelable(maxVotedReco, flags);
 		dest.writeList(resource);
+		dest.writeList(userGroups);
 		//dest.writeLong(group_id);
 		dest.writeLong(habitat_id);
 		dest.writeString(areas);
@@ -411,6 +438,7 @@ public class ObservationInstance implements Parcelable{
 		if(status!=null) dest.writeString(status.name());
 		else dest.writeString("SUCCESS");
 		dest.writeString(message);
+		dest.writeString(userGroupsList);
 	}
 
 	public static final Creator<ObservationInstance> CREATOR = new Creator<ObservationInstance>() {

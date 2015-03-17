@@ -18,7 +18,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 
     private static DatabaseHelper mInstance;
 
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	public static final String DATABASE_NAME = "data";
 
 	public static final String KEY_ID = "_id";
@@ -84,6 +84,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper{
 
 	@Override
 	public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion,int newVersion) {
+		switch(oldVersion+1){
+		case 4:
+			try {
+				mSaveParamsDao = getDao(ObservationInstance.class);
+				
+				if(mSaveParamsDao != null)
+					mSaveParamsDao.executeRaw("ALTER TABLE observations ADD COLUMN userGroupsList TEXT;");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void createTablesIfNotExists(){

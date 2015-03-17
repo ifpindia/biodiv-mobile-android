@@ -25,6 +25,7 @@ import com.mobisys.android.ibp.http.WebService.ResponseHandler;
 import com.mobisys.android.ibp.models.Category;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.ProgressDialog;
+import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 
 
 import android.app.AlertDialog;
@@ -222,7 +223,8 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 			if(mCategoryList!=null && mCategoryList.size()>0){
 				for(int i=0;i<mCategoryList.size();i++)
 					CategoriesTable.createOrUpdateCategory(HomeActivity.this, mCategoryList.get(i));
-			}			
+			}	
+			getUserJoinedGroups();
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -234,6 +236,49 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 		}
 	}
 
+	private void getUserJoinedGroups() {
+		String id=SharedPreferencesUtil.getSharedPreferencesString(HomeActivity.this, Constants.USER_ID, "-1");
+		Bundle b=new Bundle();
+		b.putString(Request.PARAM_ID, id);
+		b.putString(Request.LIMIT, String.valueOf(50));
+		WebService.sendRequest(HomeActivity.this, Request.METHOD_GET, Request.PATH_GET_USER_GROUPS,b, new ResponseHandler() {
+			
+			@Override
+			public void onSuccess(String response) {
+				parseUserResponse(response);
+			}
+			
+			@Override
+			public void onFailure(Throwable e, String content) {
+				AppUtil.showErrorDialog(content, HomeActivity.this);
+			}
+		});
+	}
+
+	protected void parseUserResponse(String response) {
+		try {
+			JSONObject jobj=new JSONObject(response);
+			String groupList=jobj.getJSONArray("observations").toString();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			
+			SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.JOINED_GROUPS_JSON, groupList);
+			//ArrayList<MyUserGroup> myList=mapper.readValue(groupList, new TypeReference<ArrayList<MyUserGroup>>(){});
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		/*catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+		
+	}
+	
 	private void createLocationRequest() {
 	    mLocationRequest = new LocationRequest();
 	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

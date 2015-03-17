@@ -32,6 +32,9 @@ public class Request {
 	//public static final String PATH_DELETE_OBSERVATION = "/api/observation/flagDeleted";
 	public static final String PATH_DELETE_OBSERVATION = "/api/observation/%d/flagDeleted";
 	public static final String PATH_AUTO_COMPLETE = "/api/recommendation/suggest";
+	public static final String PATH_ALL_USER_GROUPS = "/api/group";
+	public static final String PATH_GET_USER_GROUPS="/api/userGroup/getUserUserGroups";
+	public static final String PATH_JOIN_GROUP="/api/group/%s/joinUs";
 	
 	//PARAMS
 	public static final String PARAM_EMAIL = "email";
@@ -59,9 +62,12 @@ public class Request {
 	public static final String AGREE_TERMS = "agreeTerms";
 	public static final String USER = "user";
 	public static final String NOTES = "notes";
-
 	public static final String OBV_ID = "id";
-
+	public static final String PARAM_ID = "id";
+	
 	public static final String AUTO_COMPLETE_URL = "http://"+HttpUtils.stageOrProdBaseURL()+PATH_AUTO_COMPLETE;
-
+	public static final String USER_GROUP_LIST = "userGroupsList";
+	public static final String MAX = "max";
+	public static final String LIMIT = "limit";
+	
 }

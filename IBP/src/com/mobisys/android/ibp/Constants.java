@@ -17,7 +17,7 @@ public class Constants {
 	public static final String DEFAULT_LNG ="73.86471";
 	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
 	public static final String APP_KEY = "f947a3cd-1409-4a30-9ca2-4cdfcc5fd0a9";//"c9c91329-fb27-4b0d-94ca-ee939da0c91d";
-	public static final String APPLICATION_JSON = "application/json, text/json";
+	public static final String APPLICATION_JSON = "application/json;v=1.0";//"application/json, text/json";
 
 	public static final String NEARBY = "nearBy";
 	protected static final String GROUP_ID = "species_group_id";
@@ -41,6 +41,7 @@ public class Constants {
 	public static final String FROM_STATUS_SCREEN = "from_status_screen";
 	public static final String LOCATION_NOT_FETCHED = "location_not_fetched";
 	public static final String SHOW_ALL = "show_all_obeservations";
+	public static final String JOINED_GROUPS_JSON = "joined_group_json";
 
 	public static final long stagingOrProdHabitatId(){
 		if(Preferences.IS_STAGING) return HABITATE_ID_STAGING;
