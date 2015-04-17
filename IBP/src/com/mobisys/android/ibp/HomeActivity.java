@@ -10,13 +10,6 @@ import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.mobisys.android.ibp.database.CategoriesTable;
 import com.mobisys.android.ibp.database.ObservationInstanceTable;
 import com.mobisys.android.ibp.http.Request;
@@ -26,6 +19,7 @@ import com.mobisys.android.ibp.models.Category;
 import com.mobisys.android.ibp.utils.AppUtil;
 import com.mobisys.android.ibp.utils.ProgressDialog;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
+import com.mobisys.android.ibp.widget.MyLocation;
 
 
 import android.app.AlertDialog;
@@ -42,24 +36,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class HomeActivity extends BaseSlidingActivity implements ConnectionCallbacks, OnConnectionFailedListener{
+public class HomeActivity extends BaseSlidingActivity /*implements ConnectionCallbacks, OnConnectionFailedListener*/{
 
 	boolean mLocationFetched=false;
 	private ArrayList<Category> mCategoryList;
 	private Dialog mPg;
-	private LocationRequest mLocationRequest;
-	private GoogleApiClient mGoogleApiClient;
-	private boolean mBrowseObservationPressed = false;
-	
+//	private boolean mBrowseObservationPressed = false;
+	private MyLocation mLocation;
+	private Location mCurrentLocation;
+	private double mLat=0.0d, mLng=0.0d;
+	 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_screen);
 		initActionTitle(getString(R.string.home));
 		initScreen();
-		buildGoogleApiClient();
+		setUpLocation();
+		//buildGoogleApiClient();
 	}
 	
 	 @Override
@@ -78,19 +73,20 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 	 @Override
 	 public void onDestroy(){
 		 super.onDestroy();
+		 if(mLocation!=null)mLocation.stopLocationUpdates();
 	 }
 	 
 	 @Override
 	 protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+       // mGoogleApiClient.connect();
 	 }
 	 
 	 @Override
 	 protected void onStop() {
         super.onStop();
-        stopLocationUpdates();
-        if(mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
+        //stopLocationUpdates();
+        //if(mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
 	 }
 	 public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 			@Override
@@ -279,20 +275,20 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 		
 	}
 	
-	private void createLocationRequest() {
+	/*private void createLocationRequest() {
 	    mLocationRequest = new LocationRequest();
 	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-	}
+	}*/
 	
-	protected void startLocationUpdates() {
+	/*protected void startLocationUpdates() {
 	    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
 	}
 	
 	protected void stopLocationUpdates() {
 	    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
-	}
+	}*/
 
-	protected synchronized void buildGoogleApiClient() {
+	/*protected synchronized void buildGoogleApiClient() {
 	    mGoogleApiClient = new GoogleApiClient.Builder(this)
 	        .addConnectionCallbacks(this)
 	        .addOnConnectionFailedListener(this)
@@ -336,9 +332,86 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 	@Override
 	public void onConnectionFailed(ConnectionResult connectionResult) {
 		
-	}
+	}*/
 
-	private void shallWeShowLastLocationDialog(){
+	private void setUpLocation(){
+
+        mLocation = new MyLocation(HomeActivity.this, new MyLocation.LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if(AppUtil.isNetworkAvailable(HomeActivity.this) && (mPg!=null && mPg.isShowing()))mPg.dismiss();
+                if(location!=null){
+                    mCurrentLocation = location;
+                    mLat=mCurrentLocation.getLatitude();
+                    mLng=mCurrentLocation.getLongitude();
+
+                    /*if(AppUtil.isNetworkAvailable(HomeActivity.this) && (location!=null && !mIsInitScreen)){
+                        getDashboardDetail();
+                        mIsInitScreen=true;
+                    }*/
+                    SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LAT, String.valueOf(mCurrentLocation.getLatitude()));
+                    SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LNG, String.valueOf(mCurrentLocation.getLongitude()));
+                    //BusProvider.getBusInstance().post(mCurrentLocation);
+                }
+            }
+        });
+
+        mLocation.setMinimumDisplacement(100);
+        if(mLocation.isLocationEnabled()){
+            //if(AppUtil.isNetworkAvailable(this)&&mLat==0.0) mPg = ProgressDialog.show(this, "Fetching Location");
+            mLocation.startLocationUpdates();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(mPg!=null && mPg.isShowing()) mPg.dismiss();
+                    if(mCurrentLocation==null) mCurrentLocation = AppUtil.getCurrentLocation(HomeActivity.this);
+
+                    if (mCurrentLocation!=null){
+                        mLat = mCurrentLocation.getLatitude();
+                        mLng = mCurrentLocation.getLongitude();
+                       // BusProvider.getBusInstance().post(mCurrentLocation);
+                        SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LAT, String.valueOf(mLat));
+                        SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LNG, String.valueOf(mLng));
+                    } else {
+                        SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LAT, Constants.DEFAULT_LAT);
+                        SharedPreferencesUtil.putSharedPreferencesString(HomeActivity.this, Constants.LNG, Constants.DEFAULT_LAT);
+                    }
+
+                    /*if(AppUtil.isNetworkAvailable(DashboardActivity.this) && !mIsInitScreen){
+                        getDashboardDetail();
+                        mIsInitScreen=true;
+                    }*/
+                }
+            }, 30000);
+        }
+        else {
+        	alertForGPSNotEnabled();
+        }
+    }
+
+	private void alertForGPSNotEnabled() {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this);
+        dialog.setMessage("Please enable location settings.");
+        dialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            	finish();
+                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            	finish();
+            }
+        });
+        dialog.show();
+	}
+	/*private void shallWeShowLastLocationDialog(){
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 		alertDialog.setMessage("Please wait while we fetch current location. Otherwise, you can view observations near your last known location?");
 		alertDialog.setTitle("Location not fetched");
@@ -359,5 +432,5 @@ public class HomeActivity extends BaseSlidingActivity implements ConnectionCallb
 			}
 		});
 		alertDialog.show();
-	}
+	}*/
 }

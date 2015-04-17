@@ -432,10 +432,26 @@ public class AppUtil {
 			location.setLatitude(Double.parseDouble(latStr));
 			location.setLongitude(Double.parseDouble(lngStr));
 		} else {
-			location.setLatitude(Double.parseDouble(Constants.LAT));
-			location.setLongitude(Double.parseDouble(Constants.LNG));
+			location.setLatitude(Double.parseDouble(Constants.DEFAULT_LAT));
+			location.setLongitude(Double.parseDouble(Constants.DEFAULT_LNG));
 		}
 		
 		return location;
 	}
+	
+	/*public static Location getAppLastKnownLocationLocation(Context context){
+        String lat = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LAT, null);
+        String lng = SharedPreferencesUtil.getSharedPreferencesString(context, Constants.LNG, null);
+        if(lat!=null && lng!=null){
+            Location location = new Location("");
+            location.setLatitude(Double.parseDouble(lat));
+            location.setLongitude(Double.parseDouble(lng));
+            return location;
+        } else {
+            Location location = new Location("");
+            location.setLatitude(Double.parseDouble(Constants.DEFAULT_LAT));
+			location.setLongitude(Double.parseDouble(Constants.DEFAULT_LNG));
+            return location;
+        }
+    }*/
 }

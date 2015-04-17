@@ -13,8 +13,8 @@ public class Constants {
 	public static final String PROVIDER = "provider";
 	public static final String SPEED = "speed";
 	public static final String TIME = "time";
-	public static final String DEFAULT_LAT ="18.4638392";
-	public static final String DEFAULT_LNG ="73.86471";
+	public static final String DEFAULT_LAT ="12.9719400";//<-bengluru  //==> "18.4638392"; pune
+	public static final String DEFAULT_LNG ="77.5936900";//<-bengluru  //==> //"73.86471"pune;
 	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
 	public static final String APP_KEY = "f947a3cd-1409-4a30-9ca2-4cdfcc5fd0a9";//"c9c91329-fb27-4b0d-94ca-ee939da0c91d";
 	public static final String APPLICATION_JSON = "application/json;v=1.0";//"application/json, text/json";

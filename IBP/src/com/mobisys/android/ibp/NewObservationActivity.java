@@ -24,6 +24,7 @@ import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +40,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.kbeanie.imagechooser.api.ImageChooserActivity;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParserInterface;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
@@ -70,13 +64,14 @@ import com.mobisys.android.ibp.utils.ReveseGeoCodeUtil.ReveseGeoCodeListener;
 import com.mobisys.android.ibp.utils.SharedPreferencesUtil;
 import com.mobisys.android.ibp.widget.CheckableLayout;
 import com.mobisys.android.ibp.widget.MImageLoader;
+import com.mobisys.android.ibp.widget.MyLocation;
 
-public class NewObservationActivity extends BaseSlidingActivity implements ConnectionCallbacks, OnConnectionFailedListener{
+public class NewObservationActivity extends BaseSlidingActivity /*implements ConnectionCallbacks, OnConnectionFailedListener*/{
 
 	private static final int IMAGE_CHOOSER = 100;
-	
-	private GoogleApiClient mGoogleApiClient;
-	private LocationRequest mLocationRequest;
+	private Dialog mPg;
+	//private GoogleApiClient mGoogleApiClient;
+	//private LocationRequest mLocationRequest;
 	private int mSelectedImagePos;
 	private ImageView mSelectedImageView;
 	private ArrayList<Resource> mResourceList;
@@ -92,14 +87,17 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 	private Dialog mPG;
 	private ArrayList<MyUserGroup> myGroupList;
 	private GroupsAdapter mGroupsAdapter; 
-	
+	private MyLocation mLocation;
+	private Location mCurrentLocation;
+	 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_observation);
 		mHttpRetriever = new HttpRetriever();
 		mObv=getIntent().getParcelableExtra(ObservationInstance.ObsInstance);
-		buildGoogleApiClient();
+		//buildGoogleApiClient();
+		//setUpLocation();
 		initActionTitle(getString(R.string.new_observation));
 		initScreen();
 		if(mObv!=null){
@@ -110,7 +108,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 		}
 	}
 
-	 @Override
+	 /*@Override
 	 protected void onStart() {
        super.onStart();
        mGoogleApiClient.connect();
@@ -120,7 +118,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 	 protected void onStop() {
        super.onStop();
        if(mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
-	 }
+	 }*/
 	 
 	@SuppressLint("SimpleDateFormat")
 	private void initScreen() {
@@ -258,7 +256,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 			@Override
 			public void onClick(View arg0) {
 				enableDisableLocationProgress(false);
-				stopLocationUpdates();
+				//stopLocationUpdates();
 			}
 		});
 		
@@ -683,7 +681,7 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 		if(AppUtil.isNetworkAvailable(NewObservationActivity.this)) Toast.makeText(NewObservationActivity.this, R.string.observation_msg, Toast.LENGTH_SHORT).show();
 		else Toast.makeText(NewObservationActivity.this, R.string.observation_msg_without_internet, Toast.LENGTH_SHORT).show();
 		
-		Intent i = new Intent(NewObservationActivity.this, HomeActivity.class);
+		Intent i = new Intent(NewObservationActivity.this, NewObservationActivity.class);
 		startActivity(i);
 		finish();
 	}
@@ -798,7 +796,8 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 			public void onClick(DialogInterface dialog, int which) {
 				if(which==0){
 					enableDisableLocationProgress(true);
-					getCurrentLocation();
+					//getCurrentLocation();
+					setUpLocation();
 				} else if(which == 1){
 					Intent i=new Intent(NewObservationActivity.this, SelectLocationActivity.class);
 					i.putExtra(Constants.LAT, mLat);
@@ -812,9 +811,9 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
         alert.show();
 	}
 	
-	private void getCurrentLocation(){
+	/*private void getCurrentLocation(){
 		startLocationUpdates();
-	}
+	}*/
 	
 	private void showImportMetaDataDialog(final Uri imageUri){
 		AlertDialog.Builder builder = new AlertDialog.Builder(NewObservationActivity.this);
@@ -914,8 +913,102 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 			});
 		} 
 	}
+	
+	private void setUpLocation(){
 
-	private void createLocationRequest() {
+        mLocation = new MyLocation(NewObservationActivity.this, new MyLocation.LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if(AppUtil.isNetworkAvailable(NewObservationActivity.this) && (mPg!=null && mPg.isShowing()))mPg.dismiss();
+                if(location!=null){
+                    mCurrentLocation = location;
+                    mLat=mCurrentLocation.getLatitude();
+                    mLng=mCurrentLocation.getLongitude();
+
+                    if(location!=null) reverseGeocodeLocation(location.getLatitude(), location.getLongitude());
+        			
+                    /*if(AppUtil.isNetworkAvailable(HomeActivity.this) && (location!=null && !mIsInitScreen)){
+                        getDashboardDetail();
+                        mIsInitScreen=true;
+                    }*/
+                    SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LAT, String.valueOf(mCurrentLocation.getLatitude()));
+                    SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LNG, String.valueOf(mCurrentLocation.getLongitude()));
+                    //BusProvider.getBusInstance().post(mCurrentLocation);
+                }
+                else{
+    				enableDisableLocationProgress(false);
+    				Toast.makeText(NewObservationActivity.this, getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
+    			}
+            }
+        });
+
+        mLocation.setMinimumDisplacement(100);
+        if(mLocation.isLocationEnabled()){
+            //if(AppUtil.isNetworkAvailable(this)&&mLat==0.0) mPg = ProgressDialog.show(this, "Fetching Location");
+            mLocation.startLocationUpdates();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(mPg!=null && mPg.isShowing()) mPg.dismiss();
+                    if(mCurrentLocation==null) mCurrentLocation = AppUtil.getCurrentLocation(NewObservationActivity.this);
+
+                    if (mCurrentLocation!=null){
+                        mLat = mCurrentLocation.getLatitude();
+                        mLng = mCurrentLocation.getLongitude();
+                       // BusProvider.getBusInstance().post(mCurrentLocation);
+                        if(mCurrentLocation!=null) reverseGeocodeLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                        
+                        SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LAT, String.valueOf(mLat));
+                        SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LNG, String.valueOf(mLng));
+                    } else {
+        				enableDisableLocationProgress(false);
+        				Toast.makeText(NewObservationActivity.this, getString(R.string.cannot_get_current_location), Toast.LENGTH_SHORT).show();
+                        SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LAT, Constants.DEFAULT_LAT);
+                        SharedPreferencesUtil.putSharedPreferencesString(NewObservationActivity.this, Constants.LNG, Constants.DEFAULT_LAT);
+                    }
+
+                    /*if(AppUtil.isNetworkAvailable(DashboardActivity.this) && !mIsInitScreen){
+                        getDashboardDetail();
+                        mIsInitScreen=true;
+                    }*/
+                }
+            }, 30000);
+        }
+        else {
+        	alertForGPSNotEnabled();
+        }
+    }
+	
+	@Override
+	 public void onDestroy(){
+		 super.onDestroy();
+		 if(mLocation!=null)mLocation.stopLocationUpdates();
+	 }
+
+	private void alertForGPSNotEnabled() {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(NewObservationActivity.this);
+        dialog.setMessage("Please enable location settings.");
+        dialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            	finish();
+                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            	finish();
+            }
+        });
+        dialog.show();
+	}
+	
+	/*private void createLocationRequest() {
 	    mLocationRequest = new LocationRequest();
 	    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 	}
@@ -926,9 +1019,9 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 	
 	private void stopLocationUpdates() {
 	    LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
-	}
+	}*/
 	
-	private LocationListener mLocationListener = new LocationListener() {
+	/*private LocationListener mLocationListener = new LocationListener() {
 		
 		@Override
 		public void onLocationChanged(Location location) {
@@ -961,5 +1054,5 @@ public class NewObservationActivity extends BaseSlidingActivity implements Conne
 
 	@Override
 	public void onConnectionSuspended(int arg0) {
-	}
+	}*/
 }
