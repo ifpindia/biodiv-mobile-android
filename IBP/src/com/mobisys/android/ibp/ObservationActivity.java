@@ -254,10 +254,19 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 				
 				@Override
 				public void onClick(View v) {
-					Intent i=new Intent(ObservationActivity.this, ObservationDetailActivity.class);
-					i.putExtra(ObservationInstance.ObsInstance, getItem(position));
-					i.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
-					startActivityForResult(i, DELETE_OBSERVATION);
+					if(isMyCollection){
+						Intent i=new Intent(ObservationActivity.this, ObservationDetailActivity.class);
+						i.putExtra(ObservationInstance.ObsInstance, getItem(position));
+						i.putExtra(Constants.IS_MY_COLLECTION, isMyCollection);
+						startActivityForResult(i, DELETE_OBSERVATION);
+					}
+					else{
+						Intent i=new Intent(ObservationActivity.this, ObservationDetailSlideActivity.class);
+						i.putParcelableArrayListExtra(ObservationInstance.ObsInstanceList, mObsList);
+						i.putExtra(ObservationInstance.ObsInstance, getItem(position));
+						i.putExtra("index", position);
+						startActivity(i);
+					}
 				}
 			});
  			

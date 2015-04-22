@@ -107,13 +107,18 @@ public class HomeActivity extends BaseSlidingActivity /*implements ConnectionCal
 			
 			@Override
 			public void onClick(View v) {
+				if(AppUtil.isNetworkAvailable(HomeActivity.this)){ 
+					showCategoryDialog();
+				}
+				else AppUtil.showErrorDialog(getString(R.string.no_connection), HomeActivity.this);
+				
 				/*if(!mLocationFetched) shallWeShowLastLocationDialog();
 				else showCategoryDialog();*/
 				
-				Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
+				/*Intent i=new Intent(HomeActivity.this, ObservationActivity.class);
 				i.putExtra(Constants.GROUP_ID, Long.valueOf(-1));//mCategoryList.get(which).getId());
 				i.putExtra(Constants.SHOW_ALL, true);
-				startActivity(i);
+				startActivity(i);*/
 				
 				/*if(!mLocationFetching) showCategoryDialog();
 				else if(mLocationFetching){

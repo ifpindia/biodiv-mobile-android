@@ -134,7 +134,7 @@ public class ObservationDetailActivity extends ActionBarActivity{
 	    if(mObv.getResource().size()==1) indicator.setVisibility(View.GONE);
 	}
 	
-	public class ImagePagerAdapter extends PagerAdapter {
+	private class ImagePagerAdapter extends PagerAdapter {
 
 		private Context context;
 		private ArrayList<Resource> resource;

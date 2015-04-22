@@ -85,15 +85,19 @@ public class AppUtil {
     }
 
 	public static String parseErrorResponse(Context context, String content, Throwable e){
-		try {
-			JSONObject jobj=new JSONObject(content);
-			//String error=jobj.optString("error");
-			String message=jobj.optString("message");
-			return message;
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-			return "Error occured ";
+		if(content!=null && content.length()>0){
+			try {
+				JSONObject jobj=new JSONObject(content);
+				//String error=jobj.optString("error");
+				String message=jobj.optString("message");
+				return message;
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+				return "Error occured ";
+			}
 		}
+		else
+			return "Error occured ";
 	}
 
 	public static boolean isNetworkAvailable(Context context) {

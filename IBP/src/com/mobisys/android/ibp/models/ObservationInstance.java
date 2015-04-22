@@ -28,6 +28,7 @@ public class ObservationInstance implements Parcelable{
 
 	public static final String OI = "oi";
 	public static final String ObsInstance = "obs_instance";
+	public static final String ObsInstanceList = "obs_instance_list";
 	
 	public enum StatusType {
 	    SUCCESS,
