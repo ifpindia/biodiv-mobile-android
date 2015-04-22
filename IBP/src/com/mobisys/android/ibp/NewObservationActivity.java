@@ -751,11 +751,12 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
         		Uri selectedImage = Uri.fromFile(new File(path));
 
         		onImageSelected(selectedImage);
-        		MImageLoader.displayImage(this, selectedImage.toString(), mSelectedImageView, R.drawable.user_stub);
+        		if(mSelectedImageView!=null) 
+        			MImageLoader.displayImage(NewObservationActivity.this, selectedImage.toString(), mSelectedImageView, R.drawable.user_stub);
     		} else {
         		if(data!=null){
             		String reason = data.getStringExtra(ImageChooserActivity.INTENT_ERROR_MESSAGE);
-            		AppUtil.showErrorDialog(reason, this);
+            		AppUtil.showErrorDialog(reason, NewObservationActivity.this);
         		}
     		}
     	}
