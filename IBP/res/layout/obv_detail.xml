@@ -120,7 +120,7 @@
 			    android:layout_marginLeft="8dp"
 		        android:layout_marginRight="8dp"
 			    android:layout_height="@dimen/bike_image_height">
-			    <com.mobisys.android.ibp.widget.SmartViewPager
+			    <com.ifp.wikwio.widget.SmartViewPager
 			        android:id="@+id/pager"
 			        android:layout_width="fill_parent"
 			        android:layout_height="0dp"

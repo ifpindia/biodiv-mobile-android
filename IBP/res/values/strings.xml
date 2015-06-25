@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="fb_app_id_pamba">681570278574753</string>
-	<string name="fb_app_id_production">320284831369968</string>
+	<string name="fb_app_id_production">1639851092919190</string>
 	<string name="auto_complete_url">http://pamba.strandls.com/api/recommendation/suggest</string>
 	<string name="auto_complete_url_prod">http://indiabiodiversity.org/api/recommendation/suggest</string>
 	<string name="wait_fetch_location">Please wait while we fetch location..</string>
-    <string name="app_name">IBP</string>
+    <string name="app_name">Wikwio CS</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="name">Name</string>
@@ -49,7 +49,7 @@
 	<string name="help_identify">Help Identify</string>
 	<string name="common_name">Common Name</string>
 	<string name="scientific_name">Scientific Name</string>
-	<string name="additional_comments">Additional comments</string>
+	<string name="additional_comments">Notes</string>
 	<string name="date_sighted">Date Sighted</string>
 	<string name="submit">Submit</string>
 	<string name="pick_date">Pick Date</string>
@@ -60,7 +60,7 @@
 	<string name="label_reverse_lookup_error">Cannot fetch address</string>
 	<string name="reverse_lookup_error_address" formatted="false">Latitude: %f, Longitude:%f</string> 
 	<string name="map_api_key_vikas">AIzaSyAJArV-YV1Z-xtXzGY1s6BTq0NJY1Ho8YE</string>
-	<string name="map_api_key">AIzaSyBF39us82IoS8f8C-p20NyEzIH6DcR5IrA</string>
+	<string name="map_api_key">AIzaSyBbMXETlzPy5lkoKDhOSoqMvB11j7d4BWU</string>
 	<string name="observation_msg">Your observation will be submitted shortly!</string> 
 	<string name="observation_msg_without_internet">Your observation will be submitted when you are next online.</string> 
 	<string name="view_on_map">View on Map</string> 
@@ -95,4 +95,6 @@
 	<string name="joined_groups">Joined Groups</string>
 	<string name="join">Join</string>
 	<string name="select_user_groups">Select User Groups</string>
+	<string name="msgNotificationTitle">Observation submitted</string>
+	<string name="msgNotificationMessage">Observation %s has been submitted to the website </string>
 </resources>

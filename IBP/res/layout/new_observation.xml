@@ -1,385 +1,622 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_color"
-    android:paddingBottom="8dp">
-	<LinearLayout android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="vertical">
-		<TextView android:id="@+id/label_add_photos"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginLeft="8dp"
-		    android:layout_marginTop="8dp"
-		    android:text="@string/add_photos"
-		    android:textSize="18sp"
-		    android:textStyle="bold"
-		    android:textColor="@color/list_item_name_text_color"/>
-		<LinearLayout android:id="@+id/image_layout"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_marginTop="8dp"
-		    android:orientation="horizontal"
-		    android:weightSum="3.0">
-		    <LinearLayout android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1.0"
-	            android:orientation="vertical"
-	            android:padding="6dp">
-	            <ImageView android:id="@+id/species_image_1"
-	                android:layout_width="80dp"
-	                android:layout_height="80dp"
-	                android:layout_gravity="center_horizontal"
-	                android:scaleType="centerCrop"
-	                android:background="@drawable/user_stub"/>
-	            <Button android:id="@+id/btn_add_photo_1"
-	                android:layout_width="120dp"
-	                android:layout_height="40dp"
-	                android:layout_marginTop="8dp"
-	                android:text="@string/add_photo"
-	                android:textColor="@android:color/white"
-	                android:layout_gravity="center_horizontal"
-	                android:background="@drawable/app_btn"/>
-	        </LinearLayout>
-	        <LinearLayout android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1.0"
-	            android:orientation="vertical"
-	            android:padding="6dp">
-	            <ImageView android:id="@+id/species_image_2"
-	                android:layout_width="80dp"
-	                android:layout_height="80dp"
-	                android:layout_gravity="center_horizontal"
-	                android:scaleType="centerCrop"
-	                android:background="@drawable/user_stub"/>
-	            <Button android:id="@+id/btn_add_photo_2"
-	                android:layout_width="120dp"
-	                android:layout_height="40dp"
-	                android:layout_marginTop="8dp"
-	                android:text="@string/add_photo"
-	                android:textColor="@android:color/white"
-	                android:layout_gravity="center_horizontal"
-	                android:background="@drawable/app_btn"/>
-	        </LinearLayout>
-	        <LinearLayout android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1.0"
-	            android:orientation="vertical"
-	            android:padding="6dp">
-	            <ImageView android:id="@+id/species_image_3"
-	                android:layout_width="80dp"
-	                android:layout_height="80dp"
-	                android:layout_gravity="center_horizontal"
-	                android:scaleType="centerCrop"
-	                android:background="@drawable/user_stub"/>
-	            <Button android:id="@+id/btn_add_photo_3"
-	                android:layout_width="120dp"
-	                android:layout_height="40dp"
-	                android:layout_marginTop="8dp"
-	                android:text="@string/add_photo"
-	                android:textColor="@android:color/white"
-	                android:layout_gravity="center_horizontal"
-	                android:background="@drawable/app_btn"/>
-	        </LinearLayout>
-		</LinearLayout>
-		<LinearLayout android:layout_width="match_parent"
-	          android:layout_height="wrap_content"
-	          android:orientation="horizontal"
-	          android:weightSum="3.0"
-	          android:layout_marginTop="8dp">
-	       <LinearLayout android:layout_width="0dp"
-	           android:layout_height="wrap_content"
-	           android:layout_weight="1.0"
-	           android:orientation="vertical"
-	           android:padding="6dp">
-	           <ImageView android:id="@+id/species_image_4"
-	               android:layout_width="80dp"
-	               android:layout_height="80dp"
-	               android:layout_gravity="center_horizontal"
-	               android:scaleType="centerCrop"
-	               android:background="@drawable/user_stub"/>
-	           <Button android:id="@+id/btn_add_photo_4"
-	               android:layout_width="120dp"
-	               android:layout_height="40dp"
-	               android:layout_marginTop="8dp"
-	               android:text="@string/add_photo"
-	               android:textColor="@android:color/white"
-	               android:layout_gravity="center_horizontal"
-	               android:background="@drawable/app_btn"/>
-	       </LinearLayout>
-	       <LinearLayout android:layout_width="0dp"
-	           android:layout_height="wrap_content"
-	           android:layout_weight="1.0"
-	           android:orientation="vertical"
-	           android:padding="6dp">
-	           <ImageView android:id="@+id/species_image_5"
-	               android:layout_width="80dp"
-	               android:layout_height="80dp"
-	               android:layout_gravity="center_horizontal"
-	               android:scaleType="centerCrop"
-	               android:background="@drawable/user_stub"/>
-	           <Button android:id="@+id/btn_add_photo_5"
-	               android:layout_width="120dp"
-	               android:layout_height="40dp"
-	               android:layout_marginTop="8dp"
-	               android:text="@string/add_photo"
-	               android:textColor="@android:color/white"
-	               android:layout_gravity="center_horizontal"
-	               android:background="@drawable/app_btn"/>
-	        </LinearLayout>
-	    </LinearLayout>
-	    <LinearLayout android:id="@+id/observation_detail_layout"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="8dp"
-			android:layout_marginLeft="8dp"
-			android:layout_marginRight="8dp"
-			android:orientation="vertical"
-			android:background="@drawable/white_bg_image_frame">
-	        <RelativeLayout android:id="@+id/category_layout"
-		         android:layout_width="fill_parent"
-		         android:layout_height="wrap_content"
-		         android:paddingLeft="8dp"
-		         android:clickable="true"
-		         android:background="@drawable/layout_selector">
-		         <TextView android:id="@+id/label_category"
-		             android:layout_width="fill_parent"
-		             android:layout_height="wrap_content"
-		             android:layout_toLeftOf="@+id/category"
-		             android:layout_centerVertical="true"
-		             android:gravity="left"
-		             android:layout_marginRight="6dp"
-		             android:text="@string/select_category"
-		             android:textSize="16sp"
-		             android:textColor="@android:color/black"
-		             android:textStyle="bold"
-		             android:singleLine="true"
-		             android:ellipsize="end"/>
-		         <TextView android:id="@+id/category" 
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_centerVertical="true"
-		        	 android:layout_alignParentRight="true"
-		        	 android:gravity="center_vertical"
-		             android:drawableRight="@drawable/arrow"
-		             android:singleLine="true"
-		             android:ellipsize="end"/>      
-		     </RelativeLayout>
-		     <View android:id="@+id/rule02"
-		        android:layout_width="fill_parent"
-		        android:layout_height="1dp"
-		        android:background="@color/light_gray_bg"/>
-		     <RelativeLayout android:id="@+id/date_layout"
-		         android:layout_width="fill_parent"
-		         android:layout_height="wrap_content"
-		         android:paddingLeft="8dp"
-		         android:clickable="true"
-		         android:background="@drawable/layout_selector">
-		         <TextView android:id="@+id/label_date"
-		             android:layout_width="fill_parent"
-		             android:layout_height="wrap_content"
-		             android:layout_toLeftOf="@+id/date_sighted"
-		             android:layout_centerVertical="true"
-		             android:gravity="left"
-		             android:layout_marginRight="6dp"
-		             android:text="@string/date_sighted"
-		             android:textSize="16sp"
-		             android:textColor="@android:color/black"
-		             android:textStyle="bold"
-		             android:singleLine="true"
-		             android:ellipsize="end"/>
-		         <TextView android:id="@+id/date_sighted" 
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_centerVertical="true"
-		        	 android:layout_alignParentRight="true"
-		        	 android:gravity="center_vertical"
-		             android:drawableRight="@drawable/arrow"
-		             android:singleLine="true"
-		             android:ellipsize="end"/>   
-		     </RelativeLayout>
-		     <View android:id="@+id/rule04"
-		        android:layout_width="fill_parent"
-		        android:layout_height="1dp"
-		        android:background="@color/light_gray_bg"/>
-		     <RelativeLayout android:id="@+id/address_layout"
-		         android:layout_width="fill_parent"
-		         android:layout_height="60dp"
-		         android:paddingLeft="8dp"
-		         android:clickable="true"
-		         android:background="@drawable/layout_selector">
-		         <TextView android:id="@+id/address"
-		             android:layout_width="fill_parent"
-		             android:layout_height="wrap_content"
-		             android:layout_alignParentLeft="true"
-		             android:layout_centerVertical="true"
-		             android:layout_toLeftOf="@+id/locationLayout"
-		             android:gravity="left"
-		             android:text="@string/select_loc"
-		             android:lines="2"
-		             android:textSize="16sp"
-		             android:textColor="@android:color/black"
-		             android:textStyle="bold"
-		             android:ellipsize="end"/>
-		         <FrameLayout android:id="@+id/locationLayout" 
-		             android:layout_width="100dp"
-		             android:layout_height="60dp"
-		             android:layout_centerVertical="true"
-		             android:layout_alignParentRight="true"
-		             android:layout_marginRight="6dp">
-			         <Button android:id="@+id/btn_gps" 
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:layout_gravity="right|center_vertical"
-			             android:text="GPS"/>
-		             <LinearLayout android:id="@+id/search_location_progress" 
-		                 android:layout_width="wrap_content"
-		                 android:layout_height="wrap_content"
-		                 android:layout_gravity="right|center_vertical"
-		                 android:gravity="center_vertical"
-		                 android:orientation="horizontal"
-		                 android:visibility="gone">
-						<ProgressBar android:id="@+id/loading"
-					        android:layout_width="wrap_content"
-					        android:layout_height="wrap_content"
-					        style="?android:attr/android:progressBarStyleSmall"/>		                 
-				         <ImageButton android:id="@+id/btn_stop" 
-				             android:layout_width="wrap_content"
-				             android:layout_height="wrap_content"
-				             android:src="@drawable/close"/>
-		             </LinearLayout>
-		         </FrameLayout>
-		     </RelativeLayout>
-	    </LinearLayout>
-	    <CheckBox android:id="@+id/chk_help_identify"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:checked="false"
-	        android:text="@string/help_identify"
-	        android:textColor="@color/list_item_name_text_color"
-	        android:textStyle="bold"
-	        android:textSize="18sp"
-	        android:layout_marginTop="10dp"
-	        android:layout_marginLeft="8dp"
-	        android:button="@drawable/checbox_selector"/>
-		<LinearLayout android:id="@+id/help_identify_layout"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="8dp"
-	        android:layout_marginLeft="8dp"
-	        android:layout_marginRight="8dp"
-	        android:orientation="vertical"
-	        android:background="@drawable/white_bg_image_frame">
-            <com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView android:id="@+id/edit_common_name"
-		        android:layout_width="fill_parent"
-		        android:layout_height="45dp"
-		        android:singleLine="true"
-		        android:textColorHint="@android:color/darker_gray"
-		        android:textColor="@android:color/black"
-		        android:hint="@string/common_name"
-		        android:gravity="center_vertical"
-		        android:background="@android:color/transparent"
-		        android:paddingLeft="8dp"
-		        xmlns:app="http://schemas.android.com/apk/res-auto" 
-		    	app:google_places_api_key=""
-		    	app:input_key="term"/>
-		   <View android:id="@+id/rule03"
-		        android:layout_width="fill_parent"
-		        android:layout_height="1dp"
-		        android:background="@color/light_gray_bg"/>
-		   <com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView android:id="@+id/edit_sci_name"
-		        android:layout_width="fill_parent"
-		        android:layout_height="45dp"
-		        android:singleLine="true"
-		        android:textColorHint="@android:color/darker_gray"
-		        android:textColor="@android:color/black"
-		        android:hint="@string/scientific_name"
-		        android:gravity="center_vertical"
-		        android:background="@android:color/transparent"
-		        android:paddingLeft="8dp"
-		        xmlns:app="http://schemas.android.com/apk/res-auto" 
-		    	app:google_places_api_key=""
-		    	app:input_key="term"/>
-		   <View android:id="@+id/rule05"
-		        android:layout_width="fill_parent"
-		        android:layout_height="1dp"
-		        android:background="@color/light_gray_bg"/>
-		   <EditText android:id="@+id/edit_add_notes"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:textColorHint="@android:color/darker_gray"
-		        android:textColor="@android:color/black"
-		        android:background="@android:color/transparent"
-		        android:paddingLeft="8dp"
-		        android:paddingTop="8dp"
-		        android:inputType="textMultiLine"
-		        android:lines="3"
-		        android:ellipsize="end"
-		        android:gravity="top"
-		        android:hint="@string/additional_comments"/>              
-	    </LinearLayout>
-	    <RelativeLayout android:id="@+id/user_groups_layout"
-	         android:layout_width="fill_parent"
-	         android:layout_height="wrap_content"
-	         android:paddingLeft="8dp"
-	         android:clickable="true"
-	         android:layout_marginTop="8dp"
-	         android:layout_marginLeft="8dp"
-	         android:layout_marginRight="8dp"
-	         android:background="@drawable/white_bg_image_frame">
-	         <TextView android:id="@+id/label_user_groups"
-	             android:layout_width="fill_parent"
-	             android:layout_height="wrap_content"
-	             android:layout_toLeftOf="@+id/user_groups"
-	             android:layout_centerVertical="true"
-	             android:gravity="left"
-	             android:layout_marginRight="6dp"
-	             android:text="@string/select_user_groups"
-	             android:textSize="16sp"
-	             android:textColor="@android:color/black"
-	             android:textStyle="bold"
-	             android:singleLine="true"
-	             android:ellipsize="end"/>
-	         <TextView android:id="@+id/user_groups" 
-	             android:layout_width="wrap_content"
-	             android:layout_height="wrap_content"
-	             android:layout_centerVertical="true"
-	        	 android:layout_alignParentRight="true"
-	        	 android:gravity="center_vertical"
-	             android:drawableRight="@drawable/arrow"
-	             android:singleLine="true"
-	             android:ellipsize="end"/>      
-	     </RelativeLayout>
-	    <LinearLayout android:id="@+id/btn_layout"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="12dp"
-	        android:layout_marginLeft="8dp"
-	        android:layout_marginRight="8dp"
-	        android:weightSum="2.0"
-	        android:orientation="horizontal">
-			<Button android:id="@+id/btn_submit"
-		        android:layout_width="0dp"
-		        android:layout_height="fill_parent"
-		        android:layout_weight="0.9"
-		        android:gravity="center"
-		        android:text="@string/submit"
-		        android:textColor="@android:color/white"
-		        android:background="@drawable/app_btn"/>
-			<View android:id="@+id/view00"
-		        android:layout_width="0dp"
-		        android:layout_height="fill_parent"
-		        android:layout_weight="0.2"
-		        android:background="@android:color/transparent"/>
-			<Button android:id="@+id/btn_delete"
-		        android:layout_width="0dp"
-		        android:layout_height="fill_parent"
-		        android:layout_weight="0.9"
-		        android:gravity="center"
-		        android:text="@string/delete"
-		        android:textColor="@android:color/white"
-		        android:background="@drawable/app_btn"/>
-		 </LinearLayout>       
-	</LinearLayout>
+    android:paddingBottom="8dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/label_add_photos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/add_photos"
+            android:textColor="@color/list_item_name_text_color"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/image_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:weightSum="3.0" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_1"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_1"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_2"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_2"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_3"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_3"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearlayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="3.0" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_4"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_4"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_5"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_5"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="3dp" >
+
+                    <ImageView
+                        android:id="@+id/species_image_6"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/user_stub"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/deleteimg6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|top"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/deleteimg"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <Button
+                    android:id="@+id/btn_add_photo_6"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/app_btn"
+                    android:text="@string/add_photo"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageButton
+                android:id="@+id/addimage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/addbutton" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/observation_detail_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/white_bg_image_frame"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/category_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp" >
+
+                <TextView
+                    android:id="@+id/label_category"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@+id/category"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:singleLine="true"
+                    android:text="@string/select_category"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:drawableRight="@drawable/arrow"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:singleLine="true" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/rule02"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray_bg" />
+
+            <RelativeLayout
+                android:id="@+id/date_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp" >
+
+                <TextView
+                    android:id="@+id/label_date"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@+id/date_sighted"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:singleLine="true"
+                    android:text="@string/date_sighted"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/date_sighted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:drawableRight="@drawable/arrow"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:singleLine="true" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/rule04"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray_bg" />
+
+            <RelativeLayout
+                android:id="@+id/address_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/layout_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp" >
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/locationLayout"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:lines="2"
+                    android:text="@string/select_loc"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:id="@+id/locationLayout"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="6dp" >
+
+                    <Button
+                        android:id="@+id/btn_gps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center_vertical"
+                        android:text="GPS" />
+
+                    <LinearLayout
+                        android:id="@+id/search_location_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone" >
+
+                        <ProgressBar
+                            android:id="@+id/loading"
+                            style="?android:attr/android:progressBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageButton
+                            android:id="@+id/btn_stop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/close" />
+                    </LinearLayout>
+                </FrameLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/chk_help_identify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="10dp"
+            android:button="@drawable/checbox_selector"
+            android:checked="false"
+            android:text="@string/help_identify"
+            android:textColor="@color/list_item_name_text_color"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/help_identify_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/white_bg_image_frame"
+            android:orientation="vertical" >
+
+            <com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/edit_common_name"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:hint="@string/common_name"
+                android:paddingLeft="8dp"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray"
+                app:input_key="term" >
+
+                <requestFocus />
+            </com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView>
+
+            <View
+                android:id="@+id/rule03"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray_bg" />
+
+            <com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/edit_sci_name"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:hint="@string/scientific_name"
+                android:paddingLeft="8dp"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray"
+                app:input_key="term" />
+
+            <View
+                android:id="@+id/rule05"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray_bg" />
+
+            <EditText
+                android:id="@+id/edit_add_notes"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:ellipsize="end"
+                android:gravity="top"
+                android:hint="@string/additional_comments"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/user_groups_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/white_bg_image_frame"
+            android:clickable="true"
+            android:paddingLeft="8dp" >
+
+            <TextView
+                android:id="@+id/label_user_groups"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="6dp"
+                android:layout_toLeftOf="@+id/user_groups"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:singleLine="true"
+                android:text="@string/select_user_groups"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/user_groups"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:drawableRight="@drawable/arrow"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="2.0" >
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.9"
+                android:background="@drawable/app_btn"
+                android:gravity="center"
+                android:text="@string/submit"
+                android:textColor="@android:color/white" />
+
+            <View
+                android:id="@+id/view00"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.2"
+                android:background="@android:color/transparent" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.9"
+                android:background="@drawable/app_btn"
+                android:gravity="center"
+                android:text="@string/delete"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+
 </ScrollView>
