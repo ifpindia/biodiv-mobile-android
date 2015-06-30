@@ -21,6 +21,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
 @DatabaseTable(tableName="observations")
@@ -29,6 +30,9 @@ public class ObservationInstance implements Parcelable{
 	public static final String OI = "oi";
 	public static final String ObsInstance = "obs_instance";
 	public static final String ObsInstanceList = "obs_instance_list";
+	private volatile Integer mProgress=0;
+  	private volatile ProgressBar mProgressBar=null;
+
 	
 	public enum StatusType {
 	    SUCCESS,
@@ -306,6 +310,21 @@ public class ObservationInstance implements Parcelable{
 	public void setAreas(String areas) {
 		this.areas = areas;
 	}
+
+	public ProgressBar getProgressBar() {
+    	return mProgressBar;
+	  }
+  	public void setProgressBar(ProgressBar progressBar) {
+	    mProgressBar = progressBar;
+  	} 
+
+  	public Integer getProgress() {
+	    return mProgress;
+	  }
+
+	  public void setProgress(Integer progress) {
+	    this.mProgress = progress;
+	  }
 
 	/*public String getCommonName() {
 		return commonName;

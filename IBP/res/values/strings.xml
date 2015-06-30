@@ -97,4 +97,11 @@
 	<string name="select_user_groups">Select User Groups</string>
 	<string name="msgNotificationTitle">Observation submitted</string>
 	<string name="msgNotificationMessage">Observation %s has been submitted to the website </string>
+	<string name="wifisettings">Upload over WIFI</string>
+	<string name="wifisummary">Use only WIFI connection &amp; upload observations</string>
+	<string name="manualsettings">Upload Manually</string>
+	<string name="manualsummary">Prevents automated uploading of observation from the queue</string>
+	<string name="manual_observation">Submit Pending observations</string>
+	<string name="pending_obs">Your Pending observations will be submitted soon</string>
+	<string name="pending_obs_network">Please make sure you are connected to Internet</string>
 </resources>

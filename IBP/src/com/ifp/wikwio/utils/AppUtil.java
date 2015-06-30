@@ -108,6 +108,12 @@ public class AppUtil {
 	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
+	public static boolean isWIFINetworkAvailable(Context context) {
+	    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
 	public static boolean emailValidator(String email){
 	    Pattern pattern;
 	    Matcher matcher;

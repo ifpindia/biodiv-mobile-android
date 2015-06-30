@@ -35,5 +35,8 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/header_title_text_color</item>
-    </style>    
+    </style>  
+    <style name="settings_theme" parent="android:Theme.Light">
+        <item name="android:textColorSecondary">@color/orange_color</item>
+    </style>  
 </resources>

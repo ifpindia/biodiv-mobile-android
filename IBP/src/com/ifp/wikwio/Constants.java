@@ -35,6 +35,9 @@ public class Constants {
 	public static final String USER_ID = "user_id";
 	public static final String SPECIES_ID = "species_id";
 	public static final String SCI_NAME = "sci_name";
+	public static final String WIFI_SUBMIT = "wifi_submit";
+	public static final String M_UPLOAD = "mupload";
+	public static final String M_UPLOAD_BUTTON = "muploadbutton";
 
 	public static final long HABITATE_ID_STAGING = 4;
 	public static final long HABITATE_ID_PRODUCTION = 1;
