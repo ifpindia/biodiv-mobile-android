@@ -253,7 +253,7 @@ public class ObservationRequestQueue {
 						if(Preferences.DEBUG) Log.d("ObsRequestQueue", "******Broadcast send from ObsRequestQueue....");
 						
 						//send broadcast to HomeActivity and ObsStatusActivity to change status or view
-						Intent i=new Intent("com.mobisys.android.ibp.check_incomplete_obs"); 
+						Intent i=new Intent("com.ifp.wikwio.check_incomplete_obs"); 
 				    	context.sendBroadcast(i);
 					}
 					else{

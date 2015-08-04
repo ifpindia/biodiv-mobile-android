@@ -13,8 +13,8 @@ public class Constants {
 	public static final String PROVIDER = "provider";
 	public static final String SPEED = "speed";
 	public static final String TIME = "time";
-	public static final String DEFAULT_LAT ="12.9719400";//<-bengluru  //==> "18.4638392"; pune
-	public static final String DEFAULT_LNG ="77.5936900";//<-bengluru  //==> //"73.86471"pune;
+	public static final String DEFAULT_LAT ="-18.9136800";//"12.9719400";//<-bengluru  //==> "18.4638392"; pune
+	public static final String DEFAULT_LNG ="47.5361300";//"77.5936900";//<-bengluru  //==> //"73.86471"pune;
 	public static final String DEFAULT_ADDRESS="B-406, Swami Vivekanand Rd, Padmavati, Upper Indira Nagar Pune, Maharashtra 411037";
 	public static final String APP_KEY = "a4fbb540-0385-4fff-b5da-590ddb9e2552";//"f947a3cd-1409-4a30-9ca2-4cdfcc5fd0a9";//"c9c91329-fb27-4b0d-94ca-ee939da0c91d";
 	public static final String APPLICATION_JSON = "application/json;v=1.0";//"application/json, text/json";
@@ -35,6 +35,9 @@ public class Constants {
 	public static final String USER_ID = "user_id";
 	public static final String SPECIES_ID = "species_id";
 	public static final String SCI_NAME = "sci_name";
+	public static final String WIFI_SUBMIT = "wifi_submit";
+	public static final String M_UPLOAD = "mupload";
+	public static final String M_UPLOAD_BUTTON = "muploadbutton";
 
 	public static final long HABITATE_ID_STAGING = 4;
 	public static final long HABITATE_ID_PRODUCTION = 1;

@@ -1,6 +1,10 @@
 package com.ifp.wikwio;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -70,6 +74,8 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 					b.putString(Constants.LAT, Constants.LAT);
 					b.putString(Constants.LNG, Constants.LNG);
 				} else {
+								Log.d("Parsing Observation: ",String.valueOf(location.getLatitude()) +","+ String.valueOf(location.getLongitude()));
+
 					b.putString(Constants.LAT, String.valueOf(location.getLatitude()));
 					b.putString(Constants.LNG, String.valueOf(location.getLongitude()));
 				}
@@ -161,6 +167,8 @@ public class ObservationActivity extends BaseSlidingActivity implements OnScroll
 			}
 		}).start();
 	}
+
+	 
 	
 	private void initScreen() {
 		//if(isMyCollection){

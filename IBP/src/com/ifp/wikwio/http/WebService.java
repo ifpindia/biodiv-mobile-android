@@ -1,5 +1,9 @@
 package com.ifp.wikwio.http;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 
@@ -39,6 +43,7 @@ public class WebService {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+				appendLog(response);
 
 				Log.d(TAG, "Response: "+response);
 				if (response != null && !("null".equals(response))) {
@@ -88,6 +93,32 @@ public class WebService {
 			client.delete(url, asyncHandler);
 		}
 	}
+
+	public static void appendLog(String text)
+		{
+		    File logFile = new File("sdcard/log.txt");
+		    if (!logFile.exists())
+		    {
+		        try
+		        {
+		            logFile.createNewFile();
+		        } catch (IOException e)
+		        {
+		            e.printStackTrace();
+		        }
+		    }
+		    try
+		    {
+		        // BufferedWriter for performance, true to set append to file flag
+		        BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+		        buf.append(text);
+		        buf.newLine();
+		        buf.close();
+		    } catch (IOException e)
+		    {
+		        e.printStackTrace();
+		    }
+		}
 
 	public static void sendMultiPartRequest(final Context context, String methodString, String actionString, final ResponseHandler responseHandler, MultipartEntity reqEntity) {
 		

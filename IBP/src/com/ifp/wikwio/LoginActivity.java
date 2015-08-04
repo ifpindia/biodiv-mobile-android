@@ -65,7 +65,7 @@ public class LoginActivity extends ActionBarActivity implements ConnectionCallba
         
         uiHelper = new UiLifecycleHelper(LoginActivity.this, fbCallback);
 		uiHelper.onCreate(savedInstanceState);
-		mFbButton= (com.facebook.widget.LoginButton) findViewById(R.id.btn_fb);
+		 mFbButton= (com.facebook.widget.LoginButton) findViewById(R.id.btn_fb);
 		//mFbButton.setReadPermissions(Arrays.asList("basic_info", "email"));
 		//generateHashCode();
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -105,7 +105,7 @@ public class LoginActivity extends ActionBarActivity implements ConnectionCallba
 			onSessionStateChange(session, session.getState(), null);
 		}
 		else
-			mFbButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
+			 mFbButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
 		
 		uiHelper.onResume();
 	}
@@ -277,7 +277,7 @@ public class LoginActivity extends ActionBarActivity implements ConnectionCallba
 			}
 		});
     	
-    	findViewById(R.id.btn_sign_in).setOnClickListener(new View.OnClickListener() {
+    	  findViewById(R.id.btn_sign_in).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {

@@ -59,7 +59,7 @@ public class HomeActivity extends BaseSlidingActivity /*implements ConnectionCal
 	
 	 @Override
 	 protected void onResume(){
-		 registerReceiver(mBroadcastReceiver, new IntentFilter("com.mobisys.android.ibp.check_incomplete_obs"));
+		 registerReceiver(mBroadcastReceiver, new IntentFilter("com.ifp.wikwio.check_incomplete_obs"));
 		 checkInCompleteObservations();
 	     super.onResume();
 	 }

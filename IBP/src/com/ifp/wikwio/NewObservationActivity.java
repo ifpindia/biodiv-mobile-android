@@ -94,8 +94,8 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 	private GroupsAdapter mGroupsAdapter; 
 	private MyLocation mLocation;
 	private Location mCurrentLocation;
-	private ImageView imageB1, imageB2, imageB3, imageB4, imageB5, imageB6;
-
+	private ImageView imageB1, imageB2, imageB3, imageB4, imageB5, imageB6, imageB7, imageB8, imageB9, imageB10, imageB11, imageB12;
+	private int clickcount = 0;
 	public static NewObservationActivity ne;
 
 	NotificationManager notificationManager;
@@ -272,6 +272,66 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 			}
 		});
 
+		((Button)findViewById(R.id.btn_add_photo_7)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 6;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_7);
+				showImageChooserActivity();
+			}
+		});
+
+		((Button)findViewById(R.id.btn_add_photo_8)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 7;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_8);
+				showImageChooserActivity();
+			}
+		});
+
+		((Button)findViewById(R.id.btn_add_photo_9)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 8;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_9);
+				showImageChooserActivity();
+			}
+		});
+
+		((Button)findViewById(R.id.btn_add_photo_10)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 9;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_10);
+				showImageChooserActivity();
+			}
+		});
+
+		((Button)findViewById(R.id.btn_add_photo_11)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 10;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_11);
+				showImageChooserActivity();
+			}
+		});
+
+		((Button)findViewById(R.id.btn_add_photo_12)).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mSelectedImagePos = 11;
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_12);
+				showImageChooserActivity();
+			}
+		});
+
 		((Button)findViewById(R.id.btn_gps)).setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -288,11 +348,24 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 			}
 		});
 		ImageButton imageB=(ImageButton)findViewById(R.id.addimage);
+
 		imageB.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				
+				if(clickcount==0){
+					clickcount++;
 				LinearLayout mainLayout=(LinearLayout)findViewById(R.id.linearlayout2);
 				mainLayout.setVisibility(View.VISIBLE);
-				v.setVisibility(View.GONE);
+				}else if (clickcount==1) {
+					clickcount++;
+					LinearLayout mainLayout1=(LinearLayout)findViewById(R.id.linearlayout3);
+					mainLayout1.setVisibility(View.VISIBLE);
+				}else {
+					LinearLayout mainLayout2=(LinearLayout)findViewById(R.id.linearlayout4);
+					mainLayout2.setVisibility(View.VISIBLE);
+					v.setVisibility(View.GONE);
+				}
+				
 			}
 		});
 
@@ -363,6 +436,78 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 			public void onClick(View v) {
 				mResourceList.remove(5);
 				mSelectedImageView=(ImageView)findViewById(R.id.species_image_6);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB7=(ImageView)findViewById(R.id.deleteimg7);
+		imageB7.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(6);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_7);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB8=(ImageView)findViewById(R.id.deleteimg8);
+		imageB8.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(7);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_8);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB9=(ImageView)findViewById(R.id.deleteimg9);
+		imageB9.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(8);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_9);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB10=(ImageView)findViewById(R.id.deleteimg10);
+		imageB10.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(9);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_10);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB11=(ImageView)findViewById(R.id.deleteimg11);
+		imageB11.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(10);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_11);
+				mSelectedImageView.setImageResource(R.drawable.user_stub);
+				v.setVisibility(v.GONE);
+
+			}
+		});
+		imageB12=(ImageView)findViewById(R.id.deleteimg6);
+		imageB12.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mResourceList.remove(11);
+				mSelectedImageView=(ImageView)findViewById(R.id.species_image_12);
 				mSelectedImageView.setImageResource(R.drawable.user_stub);
 				v.setVisibility(v.GONE);
 
@@ -574,59 +719,174 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 				String url=mObv.getResource().get(i).getIcon();
 				String uri=mObv.getResource().get(i).getUri();
 				if(i==0){
+					imageB1=(ImageView)findViewById(R.id.deleteimg1);
 					if(url!=null){
 						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_1), R.drawable.user_stub);
 						((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.edit_photo));
+						imageB1.setVisibility(View.VISIBLE);
 					}
 					else if(uri!=null){
 						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_1), Uri.parse(uri), NewObservationActivity.this, 100);
 						((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.edit_photo));
+						imageB1.setVisibility(View.VISIBLE);
 					}	
 					else ((Button)findViewById(R.id.btn_add_photo_1)).setText(getString(R.string.add_photo));
 				}
 				else if(i==1){
+					imageB2=(ImageView)findViewById(R.id.deleteimg2);
 					if(url!=null){
 						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_2), R.drawable.user_stub);
 						((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.edit_photo));
+						imageB2.setVisibility(View.VISIBLE);
 					}
 					else if(uri!=null){
 						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_2), Uri.parse(uri), NewObservationActivity.this, 100);
 						((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.edit_photo));
+						imageB2.setVisibility(View.VISIBLE);
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_2)).setText(getString(R.string.add_photo));
 				}
 				else if(i==2){
+					imageB3=(ImageView)findViewById(R.id.deleteimg3);
 					if(url!=null){
 						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_3), R.drawable.user_stub);
 						((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.edit_photo));
+						imageB3.setVisibility(View.VISIBLE);
 					}
 					else if(uri!=null){
 						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_3), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.edit_photo));
+						imageB3.setVisibility(View.VISIBLE);
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_3)).setText(getString(R.string.add_photo));
 				}
 				else if(i==3){
+					imageB4=(ImageView)findViewById(R.id.deleteimg5);
 					if(url!=null){
+						
 						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_4), R.drawable.user_stub);
 						((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.edit_photo));
+						imageB4.setVisibility(View.VISIBLE);
 					}
 					else if(uri!=null){
+						
 						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_4), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.edit_photo));
+						imageB4.setVisibility(View.VISIBLE);
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_4)).setText(getString(R.string.add_photo));
 				}
 				else if(i==4){
+					imageB5=(ImageView)findViewById(R.id.deleteimg5);
 					if(url!=null){
+						imageB5.setVisibility(View.VISIBLE);
 						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_5), R.drawable.user_stub);
 						((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.edit_photo));
 					}
 					else if(uri!=null){
+						imageB5.setVisibility(View.VISIBLE);
 						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_5), Uri.parse(uri), NewObservationActivity.this,100);
 						((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.edit_photo));
 					}
 					else ((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.add_photo));
+				}
+				else if(i==5){
+					imageB6=(ImageView)findViewById(R.id.deleteimg6);
+					if(url!=null){
+						imageB6.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_6), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_6)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB6.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_6), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_6)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_6)).setText(getString(R.string.add_photo));
+				}
+				else if(i==6){
+					imageB7=(ImageView)findViewById(R.id.deleteimg7);
+					if(url!=null){
+						imageB7.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_7), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_7)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB7.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_7), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_7)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_7)).setText(getString(R.string.add_photo));
+				}
+				else if(i==7){
+					imageB8=(ImageView)findViewById(R.id.deleteimg8);
+					if(url!=null){
+						imageB8.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_8), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_8)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB8.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_8), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_8)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_5)).setText(getString(R.string.add_photo));
+				}
+				else if(i==8){
+					imageB9=(ImageView)findViewById(R.id.deleteimg9);
+					if(url!=null){
+						imageB9.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_9), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_9)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB9.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_9), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_9)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_9)).setText(getString(R.string.add_photo));
+				}
+				else if(i==9){
+					imageB10=(ImageView)findViewById(R.id.deleteimg10);
+					if(url!=null){
+						imageB10.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_10), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_10)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB10.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_10), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_10)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_10)).setText(getString(R.string.add_photo));
+				}
+				else if(i==10){
+					imageB11=(ImageView)findViewById(R.id.deleteimg11);
+					if(url!=null){
+						imageB11.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_11), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_11)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB11.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_11), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_11)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_11)).setText(getString(R.string.add_photo));
+				}
+				else if(i==11){
+					imageB12=(ImageView)findViewById(R.id.deleteimg12);
+					if(url!=null){
+						imageB12.setVisibility(View.VISIBLE);
+						MImageLoader.displayImage(NewObservationActivity.this, url, (ImageView)findViewById(R.id.species_image_12), R.drawable.user_stub);
+						((Button)findViewById(R.id.btn_add_photo_12)).setText(getString(R.string.edit_photo));
+					}
+					else if(uri!=null){
+						imageB12.setVisibility(View.VISIBLE);
+						AppUtil.setUriBitmap((ImageView)findViewById(R.id.species_image_12), Uri.parse(uri), NewObservationActivity.this,100);
+						((Button)findViewById(R.id.btn_add_photo_12)).setText(getString(R.string.edit_photo));
+					}
+					else ((Button)findViewById(R.id.btn_add_photo_12)).setText(getString(R.string.add_photo));
 				}
 			}
 		}
@@ -742,8 +1002,9 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 			sp.setStatus(StatusType.PENDING);
 		}
 		else{
-			if(mLng!=0.0 && mLat!=0.0)
+			if(mLng!=0.0 && mLat!=0.0){
 				sp.setStatus(StatusType.PENDING);
+		}
 			else
 				sp.setStatus(StatusType.INCOMPLETE);
 
@@ -860,7 +1121,7 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 			if(resultCode == RESULT_OK) {
 				String path = data.getStringExtra(ImageChooserActivity.INTENT_IMAGE_PATH);
 				Uri selectedImage = Uri.fromFile(new File(path));
-
+				Log.d("Imageeeeeeeee", "Uri: "+selectedImage);
 				onImageSelected(selectedImage);
 
 
@@ -903,6 +1164,23 @@ public class NewObservationActivity extends BaseSlidingActivity /*implements Con
 		}
 		else if(mSelectedImagePos==5){
 			imageB6.setVisibility(View.VISIBLE);
+		}else if(mSelectedImagePos==6){
+			imageB7.setVisibility(View.VISIBLE);
+		}
+		else if(mSelectedImagePos==7){
+			imageB8.setVisibility(View.VISIBLE);
+		}
+		else if(mSelectedImagePos==8){
+			imageB9.setVisibility(View.VISIBLE);
+		}
+		else if(mSelectedImagePos==9){
+			imageB10.setVisibility(View.VISIBLE);
+		}
+		else if(mSelectedImagePos==10){
+			imageB11.setVisibility(View.VISIBLE);
+		}
+		else if(mSelectedImagePos==11){
+			imageB12.setVisibility(View.VISIBLE);
 		}
 	}
 
