@@ -277,8 +277,13 @@ class PostToTwitter extends AsyncTask<String,Integer,String>{
 				}
 				
 			}else if(getItem(position).getStatus().equals(StatusType.SUCCESS)){
+<<<<<<< HEAD
 			}
 				holder.progressBar.setVisibility(View.GONE);
+=======
+				holder.progressBar.setVisibility(View.GONE);
+			}
+>>>>>>> 3a2a3458f56e010c86950bd6374388a901195fe8
 
 
  			if(getItem(position).getStatus().equals(StatusType.FAILURE)){
